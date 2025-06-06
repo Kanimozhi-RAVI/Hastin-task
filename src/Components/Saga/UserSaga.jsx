@@ -1,6 +1,6 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
-import {postloginRequest, postloginSuccess,postloginFailure} from '../Action_file/Action';
+import { postloginSuccess,postloginFailure} from '../Action_file/Action';
 import '../Login_page/Login.css'
 
 import { POST_LOGIN_REQUEST } from '../Type';
@@ -11,6 +11,7 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('authToken');
+  
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
@@ -29,8 +30,10 @@ function* handleLogin(action) {
     });
 
     const data = response.data;
+    console.log(data)
+localStorage.setItem('authToken', data.data.jwt); 
+localStorage.setItem('opaque', data.data.opaque);  
 
-    localStorage.setItem('authToken', data.data.token);
 
     yield put(postloginSuccess(data.data));
   } catch (error) {
@@ -38,6 +41,8 @@ function* handleLogin(action) {
     yield put(postloginFailure(message));
   }
 }
+
+
 
 function* userSaga() {
   yield takeLatest(POST_LOGIN_REQUEST, handleLogin);

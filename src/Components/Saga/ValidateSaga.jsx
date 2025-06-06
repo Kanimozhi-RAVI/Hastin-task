@@ -1,19 +1,37 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
-import api from './api'; // your axios instance file
-import { ACCESSCODE_REQUEST, accessCodeSuccess, accessCodeFailure } from './actions';
+import { accesscodeSuccess, accesscodeFailure } from '../Action_file/Action';
+import { ACCESS_CODE_REQUEST } from '../Type';
 
-function* handleAccessCodeValidation(action) {
+function* accessCodeVerifySaga(action) {
   try {
-    const response = yield call(api.post, '/auth/access-code/validate', action.payload);
-    yield put(accessCodeSuccess(response.data));
+    const token = localStorage.getItem('authToken');
+    const { opaque, accessCode } = action.payload;
+
+    const response = yield call(fetch, 'https://hastin-container.com/staging/app/auth/access-code/validate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `BslogiKey ${token}`,
+      },
+      body: JSON.stringify({
+        opaque,
+        accessCode,
+      }),
+    });
+
+    const data = yield response.json();
+    console.log(data)
+
+    if (response.ok && data?.data?.isValidAccessCode) {
+      yield put(accesscodeSuccess(data));
+    } else {
+      yield put(accesscodeFailure(data?.data?.message || 'Invalid OTP'));
+    }
   } catch (error) {
-    const message = error.response?.data?.message || 'Validation Failed';
-    yield put(accessCodeFailure(message));
+    yield put(accesscodeFailure(error.message || 'Network error'));
   }
 }
 
-function* accessCodeSaga() {
-  yield takeLatest(ACCESSCODE_REQUEST, handleAccessCodeValidation);
+export  function* watchAccessCode() {
+  yield takeLatest(ACCESS_CODE_REQUEST, accessCodeVerifySaga);
 }
-
-export default accessCodeSaga;
