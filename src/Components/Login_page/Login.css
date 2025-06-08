@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  
 }
 
 
@@ -52,28 +53,13 @@
   margin-bottom: 30px;
 }
 
-.extra-register-btn {
-  padding: 12px 28px;
-  border: 2px solid #eeeff1;
-  background: #f7f6f8;
-  color: #812990;
-  font-weight: bold;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.extra-register-btn:hover {
-  background: #812990;
-  color:white ;
-}
 
 .extra-right {
   flex: 1;
   padding: 30px 40px;
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
+  justify-content: center;
   background-color: white;
 }
 
@@ -114,12 +100,15 @@
   border: none;
   border-radius: 12px;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 22px;
   cursor: pointer;
   transition: 0.3s;
   margin-top: 40px;
 }
-
+.right-header{
+  justify-items: center;
+  align-items: center;
+}
 .extra-login-btn:hover {
   background-color: #5b146a;
 }

@@ -57,8 +57,8 @@ const handleClose = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-backdrop">
-      <div className="otp-modal shadow-lg p-4 bg-white rounded">
+    <div className="custom-backdrop">
+      <div className="otp-modal  rounded">
         <button className="btn-close float-end" onClick={onClose}></button>
         <h5 className="text-center fw-bold mb-3">OTP Verification</h5>
 

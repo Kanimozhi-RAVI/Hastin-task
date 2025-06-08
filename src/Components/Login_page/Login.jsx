@@ -4,6 +4,7 @@ import { postloginRequest, accesscodeRequest } from '../Action_file/Action';
 import AccessCodeModal from '../Login_page/AccessCode';
 import { useNavigate } from 'react-router';
 import '../Login_page/Login.css';
+import { FaUserCircle } from "react-icons/fa";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -61,15 +62,14 @@ const Login = () => {
           <div className="extra-left">
             <h2>Welcome Back!</h2>
             <p>Sign in to your account and manage your tasks easily.</p>
-            <button className="extra-register-btn" onClick={() => alert('Redirect to Register page')}>
-              Register
-            </button>
           </div>
 
           {/* Right side login form */}
           <div className="extra-right">
+            <div className='right-header'> 
+              <FaUserCircle style={{fontSize:"50px"}} />
             <h3>Sign In</h3>
-
+            </div>
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
@@ -78,8 +78,9 @@ const Login = () => {
                 onChange={(e) => setUserName(e.target.value)}
                 required
                 autoComplete="username"
-              />
+                style={{width:"100%"}}
 
+              />
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
@@ -87,22 +88,20 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
+                style={{width:"100%"}}
               />
-
-              <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', marginBottom: '20px' }}>
-                <input
+                  <input
                   type="checkbox"
                   checked={showPassword}
                   onChange={() => setShowPassword(!showPassword)}
                   style={{ marginRight: '8px' }}
                 />
-                Show Password
-              </label>
-
+                <span>Show Password</span><br/>
               <button
                 type="submit"
                 className="extra-login-btn"
                 disabled={loading}
+
               >
                 Login
               </button>
