@@ -1,19 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import rootSaga from '../Components/RootSaga'; // your rootSaga.js
-import accessCodeReducer from './Reducer/ValidateReducer';
-import resendOtpReducer from './Reducer/ResendOtpReducer';
+import rootReducer from '../Components/RootRudecer';  // the file from Step 1
+import userSaga from '../Components/Saga/UserSaga';
 
 const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
-  reducer: {
-    accessCodeReducer: accessCodeReducer,
-    resendOtpReducer: resendOtpReducer,
-  },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware),
+  reducer: rootReducer,  // <- reducer must be an object (combined reducer)
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
 });
 
-sagaMiddleware.run(rootSaga);
+sagaMiddleware.run(userSaga);
 
 export default store;

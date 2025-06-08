@@ -1,110 +1,132 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postloginRequest } from '../Action_file/Action';
-import { FaUserCircle } from "react-icons/fa";
-import { accesscodeRequest } from '../Action_file/ValidateAction';
+import { postloginRequest, accesscodeRequest } from '../Action_file/Action';
 import AccessCodeModal from '../Login_page/AccessCode';
+import { useNavigate } from 'react-router';
+import '../Login_page/Login.css';
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { loading, error, accessCodeStatus } = useSelector((state) => state.user || {});
+  const navigate = useNavigate();
+
+  const { loading, error, loginData, accessCodeStatus } = useSelector(state => state.user || {});
 
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [opaqueValue, setOpaqueValue] = useState('Pdov');
+  const [userOtp, setUserOtp] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const payload = {
-      userName,
-      password,
-      recaptcha: '',
-      origin: 'AGENT'
-    };
-
-    dispatch(postloginRequest(payload));
-    setTimeout(() => {
+  useEffect(() => {
+    if (loginData) {
       setIsModalOpen(true);
-    }, 500); // Short delay to simulate login before OTP modal
-  };
-
-  const closeAccessCodeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleAccessCodeSubmit = (accessCode) => {
-    dispatch(accesscodeRequest({ opaque: opaqueValue, accessCode: Number(accessCode) }));
-  };
+    }
+  }, [loginData]);
 
   useEffect(() => {
     if (accessCodeStatus?.data?.isValidAccessCode) {
-      alert('Access code verified! Redirecting...');
+      // alert('Access code verified! Redirecting...');
       setIsModalOpen(false);
-      // Navigate if needed
-      // navigate('/dashboard');
+      navigate('/nextpage');
     }
-  }, [accessCodeStatus]);
+  }, [accessCodeStatus, navigate]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(postloginRequest({
+      userName,
+      password,
+      recaptcha: '',
+      origin: 'AGENT',
+    }));
+  };
+
+  const handleOtpSubmit = () => {
+    if (!userOtp) {
+      alert('Please enter the OTP');
+      return;
+    }
+    dispatch(accesscodeRequest({
+      opaque: loginData?.opaque,
+      accessCode: Number(userOtp),
+    }));
+  };
 
   return (
-    <div className='body-text'>
+    <div className="body-text">
       <div className="extra-login-wrapper">
-        <div className="extra-container">
+        <div className="extra-container glass">
+
+          {/* Left side with background image, title, text, and Register button */}
           <div className="extra-left">
             <h2>Welcome Back!</h2>
-            <p>Experience the best platform with stunning design.</p>
+            <p>Sign in to your account and manage your tasks easily.</p>
+            <button className="extra-register-btn" onClick={() => alert('Redirect to Register page')}>
+              Register
+            </button>
           </div>
 
-          <div className="extra-right glass">
-            <div className='logo'><FaUserCircle /></div>
+          {/* Right side login form */}
+          <div className="extra-right">
             <h3>Sign In</h3>
+
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
-                name="username"
                 placeholder="Username"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 required
-                style={{ width: "100%" }}
+                autoComplete="username"
               />
 
               <input
                 type={showPassword ? 'text' : 'password'}
-                name="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{ width: "100%" }}
+                autoComplete="current-password"
               />
 
-              <div className="extra-options">
-                <input type="checkbox" onChange={() => setShowPassword(!showPassword)} />
-                <span> Show Password</span>
-              </div>
+              <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.9rem', marginBottom: '20px' }}>
+                <input
+                  type="checkbox"
+                  checked={showPassword}
+                  onChange={() => setShowPassword(!showPassword)}
+                  style={{ marginRight: '8px' }}
+                />
+                Show Password
+              </label>
 
-              <button type="submit" className="extra-login-btn" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
+              <button
+                type="submit"
+                className="extra-login-btn"
+                disabled={loading}
+              >
+                Login
               </button>
             </form>
 
+            {error && <p style={{ color: '#d9534f', marginTop: '20px', textAlign: 'center', fontWeight: 'bold' }}>{error}</p>}
           </div>
         </div>
-      </div>
-      {error && <p className="text-danger mt-2">{error}</p>}
 
-      <AccessCodeModal
-        isOpen={isModalOpen}
-        onClose={closeAccessCodeModal}
-        onSubmit={handleAccessCodeSubmit}
-        loading={loading}
-        error={error}
-        success={accessCodeStatus?.data?.message}
-      />
+        {/* OTP Modal */}
+        <AccessCodeModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          opaque={loginData?.opaque}
+          backendAccessCode={loginData?.accessCode}
+          userOtp={userOtp}
+          setUserOtp={setUserOtp}
+          onSubmit={handleOtpSubmit}
+          loading={loading}
+          error={error}
+        />
+      </div>
     </div>
   );
 };
+
 export default Login;

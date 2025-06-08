@@ -1,27 +1,35 @@
 import {
   POST_LOGIN_REQUEST,
   POST_LOGIN_SUCCESS,
-  POST_LOGIN_FAILURE,   ACCESS_CODE_REQUEST,
+  POST_LOGIN_FAILURE,
+  ACCESS_CODE_REQUEST,
   ACCESS_CODE_SUCCESS,
   ACCESS_CODE_FAILURE,
-  RESEND_OTP_FAILURE,
   RESEND_OTP_REQUEST,
-  RESEND_OTP_SUCCESS
+  RESEND_OTP_SUCCESS,
+  RESEND_OTP_FAILURE,
+  CLEAR_ACCESSCODE_STATUS,
 } from '../Type';
+
+
+export const clearAccessCodeStatus = () => ({
+  type: CLEAR_ACCESSCODE_STATUS,
+});
+
 
 export const postloginRequest = (payload) => ({
   type: POST_LOGIN_REQUEST,
-  payload
+  payload,
 });
 
-export const postloginSuccess = (payload) => ({
+export const postloginSuccess = (data) => ({
   type: POST_LOGIN_SUCCESS,
-  payload
+  payload: data,
 });
 
-export const postloginFailure = (data) => ({
+export const postloginFailure = (error) => ({
   type: POST_LOGIN_FAILURE,
-  payload:data,
+  payload: error,
 });
 
 export const accesscodeRequest = (payload) => ({
@@ -39,9 +47,8 @@ export const accesscodeFailure = (error) => ({
   payload: error,
 });
 
-export const resendOtpRequest = (payload) => ({
+export const resendOtpRequest = () => ({
   type: RESEND_OTP_REQUEST,
-  payload,
 });
 
 export const resendOtpSuccess = (data) => ({

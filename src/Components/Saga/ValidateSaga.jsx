@@ -1,37 +1,37 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { accesscodeSuccess, accesscodeFailure } from '../Action_file/Action';
-import { ACCESS_CODE_REQUEST } from '../Type';
+// import { call, put, takeLatest } from 'redux-saga/effects';
+// import axios from 'axios';
+// import { ACCESS_CODE_REQUEST } from '../Type';
+// import { accesscodeSuccess, accesscodeFailure } from '../Action_file/Action';
 
-function* accessCodeVerifySaga(action) {
-  try {
-    const token = localStorage.getItem('authToken');
-    const { opaque, accessCode } = action.payload;
+// function* validateAccessCodeSaga(action) {
+//   try {
+//     const token = localStorage.getItem('authToken');
+//     const { opaque, accessCode } = action.payload;
 
-    const response = yield call(fetch, 'https://hastin-container.com/staging/app/auth/access-code/validate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `BslogiKey ${token}`,
-      },
-      body: JSON.stringify({
-        opaque,
-        accessCode,
-      }),
-    });
+//     // 🪵 Debug log
+//     console.log("🔐 Validating OTP...", { opaque, accessCode, token });
 
-    const data = yield response.json();
-    console.log(data)
+//     const response = yield call(
+//       axios.post,
+//       'https://hastin-container.com/staging/app/auth/access-code/validate',
+//       { opaque, accessCode },
+//       {
+//         headers: {
+//           Authorization: `BslogiKey ${token}`, // ✅ MUST be 'BslogiKey' not Bearer
+//         },
+//       }
+//     );
 
-    if (response.ok && data?.data?.isValidAccessCode) {
-      yield put(accesscodeSuccess(data));
-    } else {
-      yield put(accesscodeFailure(data?.data?.message || 'Invalid OTP'));
-    }
-  } catch (error) {
-    yield put(accesscodeFailure(error.message || 'Network error'));
-  }
-}
+//     console.log("✅ OTP Validation Success", response.data);
 
-export  function* watchAccessCode() {
-  yield takeLatest(ACCESS_CODE_REQUEST, accessCodeVerifySaga);
-}
+//     yield put(accesscodeSuccess(response.data));
+//   } catch (error) {
+//     const message = error.response?.data?.message || 'Access code validation failed';
+//     console.error("❌ OTP Validation Failed", error.response?.data);
+//     yield put(accesscodeFailure(message));
+//   }
+// }
+
+// export function* watchAccessCode() {
+//   yield takeLatest(ACCESS_CODE_REQUEST, validateAccessCodeSaga);
+// }

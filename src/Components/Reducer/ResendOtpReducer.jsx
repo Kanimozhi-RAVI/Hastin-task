@@ -1,26 +1,40 @@
-import {
-  ACCESS_CODE_REQUEST,
-  ACCESS_CODE_SUCCESS,
-  ACCESS_CODE_FAILURE,
-} from '../Type';
+// // resendCodeReducer.js
+// import {
+//   RESEND_OTP_SUCCESS,
+//   RESEND_OTP_REQUEST,
+//   RESEND_OTP_FAILURE,
+//   CLEAR_OTP,
+//   CLEAR_ACCESSCODE_ERROR,
+// } from '../Type';
 
-const initialState = {
-  loading: false,
-  data: null,
-  error: null,
-};
 
-const accessCodeReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case ACCESS_CODE_REQUEST:
-      return { ...state, loading: true };
-    case ACCESS_CODE_SUCCESS:
-      return { loading: false, data: action.payload, error: null };
-    case ACCESS_CODE_FAILURE:
-      return { loading: false, data: null, error: action.payload };
-    default:
-      return state;
-  }
-};
+//  const initialState = {
+//   accessCode: '',
+//   opaque: '',
+//   loading: false,
+//   error: null,
+// };
 
-export default accessCodeReducer;
+// const resendCodeReducer = (state = initialState, action) => {
+//   switch (action.type) {
+//     case RESEND_OTP_REQUEST:
+//       return { ...state, isResending: true, error: null };
+
+
+// case RESEND_OTP_SUCCESS:
+//   return {
+//     ...state,
+//     accessCode: action.payload.accessCode,
+//     opaque: action.payload.opaque,
+//     loading: false,
+//   };
+
+//     case RESEND_OTP_FAILURE:
+//       return { ...state, isResending: false, error: action.payload };
+
+//     default:
+//       return state;
+//   }
+// };
+
+// export default resendCodeReducer;

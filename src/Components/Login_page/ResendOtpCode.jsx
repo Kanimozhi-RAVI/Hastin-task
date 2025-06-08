@@ -18,7 +18,7 @@ const AccessCodeComponent = () => {
       setShowResend(false);
     }
   }, [resendState.data]);
-
+// 
   const handleResendClick = () => {
     dispatch(resendOtpRequest());
   };
