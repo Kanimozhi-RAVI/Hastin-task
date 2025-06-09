@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { accesscodeRequest, resendOtpRequest ,  } from '../Action_file/Action';
-
+import { accesscodeRequest, resendOtpRequest , clearAccessCodeData } from '../Action_file/Action';
 import './AccessCodeModal.css';
 
 const AccessCodeModal = ({ isOpen, onClose }) => {
@@ -31,11 +30,9 @@ const AccessCodeModal = ({ isOpen, onClose }) => {
     
     } else {
       setShowResend(true);
-    localStorage.removeItem('opaque');
-    localStorage.removeItem('accessCode');
-    }
+    dispatch(clearAccessCodeData());
 
-  }, [countdown, isOpen]);
+    }}, [countdown, isOpen, dispatch]);
 
   const handleSubmit = () => {
     if (finalOpaque && finalAccessCode) {
@@ -53,6 +50,10 @@ const AccessCodeModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
+    
+    <>
+
+
     <div className="custom-backdrop">
       <div className="otp-modal  rounded">
         <button className="btn-close float-end" onClick={onClose}></button>
@@ -87,10 +88,11 @@ const AccessCodeModal = ({ isOpen, onClose }) => {
         </div>
 
         <button
-          className={`btn w-100 ${showResend ? 'btn-warning' : 'btn-primary'}`}
-          onClick={showResend ? handleResend : handleSubmit}
-          disabled={loading}
-        >
+         className={`btn w-100 ${showResend ? 'btn-warning' : 'btn-purple'}`}
+        onClick={showResend ? handleResend : handleSubmit}
+        disabled={loading}
+         >
+
           {loading ? (
             <span className="spinner-border spinner-border-sm me-2" />
           ) : showResend ? (
@@ -112,6 +114,7 @@ const AccessCodeModal = ({ isOpen, onClose }) => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

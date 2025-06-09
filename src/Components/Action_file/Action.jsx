@@ -15,10 +15,14 @@ import {
 } from '../Type';
 
 
-export const clearAccessCodeStatus = () => ({
-  type: CLEAR_ACCESSCODE_STATUS,
-});
+export const clearAccessCodeData = () => {
+  localStorage.setItem('opaque', '');
+  localStorage.setItem('accessCode', '');
 
+  return {
+    type: CLEAR_ACCESSCODE_STATUS,
+  };
+};
 
 export const postloginRequest = (payload) => ({
   type: POST_LOGIN_REQUEST,

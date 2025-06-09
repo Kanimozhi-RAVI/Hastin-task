@@ -7,7 +7,7 @@ import '../Login_page/Login.css';
 import { FaUserCircle } from "react-icons/fa";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Loader from '../Loader_File/Loader';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -118,6 +118,8 @@ useEffect(() => {
             {error && <p style={{ color: '#d9534f', marginTop: '20px', textAlign: 'center', fontWeight: 'bold' }}>{error}</p>}
           </div>
         </div>
+   {loading && <Loader />}
+
         <AccessCodeModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

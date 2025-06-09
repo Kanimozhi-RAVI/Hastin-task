@@ -1,27 +1,17 @@
 import React from 'react';
-import { useNavigate } from 'react-router';
 import { FaUserCircle } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Ensure Bootstrap JS is loaded
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
 
 const MainFile = () => {
-  const navigate = useNavigate();
-
-
 const handleLogout = () => {
-  // Clear all auth data
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('opaque');
-  localStorage.removeItem('accessCode');
-
-  // Replace history so user can't go back
-  navigate('/', { replace: true });
+  localStorage.clear();
+  window.location.replace("/"); 
 };
-
   
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <nav className="navbar navbar-expand-lg navbar-dark  px-4 " style={{backgroundColor:"#812990"}}>
       <span className="navbar-brand text-white fs-4">🔒 SecureApp</span>
 
       <div className="ms-auto dropdown">
@@ -32,8 +22,8 @@ const handleLogout = () => {
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          <FaUserCircle className="me-2" size={20} />
-          <span>User</span>
+          <FaUserCircle className="me-2" size={24} />
+          
         </button>
 
         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

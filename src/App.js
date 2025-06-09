@@ -3,7 +3,8 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import Login from './Components/Login_page/Login';
 import AccessCodeModal from './Components/Login_page/AccessCode';
-import MainFile from './Components/MainFile';
+import MainFile from './Components/Navbar_File/MainFile';
+import Loader from './Components/Loader_File/Loader';
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
       <Route path='/' element={<Login/>}/>
       <Route path='/access' element ={<AccessCodeModal/>}/>
       <Route path= '/nextpage' element={<MainFile/>}/>
-      {/* <Route path='/auth'element={<ap/>} */}
+     <Route path='/loader' element={<Loader/>}/>
     </Routes>
     </BrowserRouter>
   );

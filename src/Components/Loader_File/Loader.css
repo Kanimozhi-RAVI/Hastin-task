@@ -1,0 +1,55 @@
+/* src/Loader_File/Loader.css */
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Orbit animation */
+.orbit-loader {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.orbit-loader span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px;
+  border-radius: 50%;
+  background: #00f2ff;
+  animation: orbit 1.2s linear infinite;
+}
+
+.orbit-loader span:nth-child(2) {
+  background: #00ff9d;
+  animation-delay: 0.15s;
+}
+.orbit-loader span:nth-child(3) {
+  background: #ff00f7;
+  animation-delay: 0.3s;
+}
+.orbit-loader span:nth-child(4) {
+  background: #fff600;
+  animation-delay: 0.45s;
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(30px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(30px) rotate(-360deg);
+  }
+}
