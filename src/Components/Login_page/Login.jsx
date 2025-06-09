@@ -5,6 +5,9 @@ import AccessCodeModal from '../Login_page/AccessCode';
 import { useNavigate } from 'react-router';
 import '../Login_page/Login.css';
 import { FaUserCircle } from "react-icons/fa";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -18,19 +21,51 @@ const Login = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userOtp, setUserOtp] = useState('');
 
-  useEffect(() => {
-    if (loginData) {
-      setIsModalOpen(true);
-    }
-  }, [loginData]);
+
 
   useEffect(() => {
-    if (accessCodeStatus?.data?.isValidAccessCode) {
-      // alert('Access code verified! Redirecting...');
-      setIsModalOpen(false);
-      navigate('/nextpage');
-    }
-  }, [accessCodeStatus, navigate]);
+  if (loginData) {
+    toast.success("Login successful! OTP sent.", {
+      position: "top-right",
+      autoClose: 3000,
+      pauseOnHover: true,
+      theme: "colored",
+    });
+    setIsModalOpen(true);
+  }
+}, [loginData]);
+
+useEffect(() => {
+  if (accessCodeStatus?.data?.isValidAccessCode) {
+    toast.success("Access code verified!", {
+      position: "top-right",
+      autoClose: 3000,
+      pauseOnHover: true,
+      theme: "colored",
+    });
+    setIsModalOpen(false);
+    navigate('/nextpage');
+  }
+}, [accessCodeStatus, navigate]);
+
+useEffect(() => {
+  if (error) {
+    toast.error(error, {
+      position: "top-right",
+      autoClose: 3000,
+      pauseOnHover: true,
+      theme: "colored",
+    });
+  }
+}, [error]);
+
+  // useEffect(() => {
+  //   if (accessCodeStatus?.data?.isValidAccessCode) {
+  //     // alert('Access code verified! Redirecting...');
+  //     setIsModalOpen(false);
+  //     navigate('/nextpage');
+  //   }
+  // }, [accessCodeStatus, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -101,7 +136,6 @@ const Login = () => {
                 type="submit"
                 className="extra-login-btn"
                 disabled={loading}
-
               >
                 Login
               </button>
@@ -111,7 +145,7 @@ const Login = () => {
           </div>
         </div>
 
-        {/* OTP Modal */}
+    
         <AccessCodeModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -124,6 +158,8 @@ const Login = () => {
           error={error}
         />
       </div>
+      <ToastContainer />
+
     </div>
   );
 };

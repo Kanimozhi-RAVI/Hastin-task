@@ -21,6 +21,7 @@ const api = axios.create({
 function* handleLogin(action) {
   try {
     const { userName, password, recaptcha, origin } = action.payload;
+    
     const response = yield call(api.post, '/login', {
       userName,
       password,
