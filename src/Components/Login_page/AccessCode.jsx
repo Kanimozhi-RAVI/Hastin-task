@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { accesscodeRequest, resendOtpRequest , clearAccessCodeStatus } from '../Action_file/Action';
+import { accesscodeRequest, resendOtpRequest ,  } from '../Action_file/Action';
 
 import './AccessCodeModal.css';
 
@@ -15,7 +15,6 @@ const AccessCodeModal = ({ isOpen, onClose }) => {
   const [showResend, setShowResend] = useState(false);
 
 
-  // Reset timer when modal opens
   useEffect(() => {
     if (isOpen) {
       setCountdown(90);
@@ -29,26 +28,23 @@ const AccessCodeModal = ({ isOpen, onClose }) => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(prev => prev - 1), 1000);
       return () => clearTimeout(timer);
+    
     } else {
       setShowResend(true);
+    localStorage.removeItem('opaque');
+    localStorage.removeItem('accessCode');
     }
+
   }, [countdown, isOpen]);
 
-  // Manual submit OTP
   const handleSubmit = () => {
     if (finalOpaque && finalAccessCode) {
       dispatch(accesscodeRequest({ opaque: finalOpaque, accessCode: Number(finalAccessCode) }));
     }
   };
 
-// Inside your AccessCodeModal component
-const handleClose = () => {
-  dispatch(clearAccessCodeStatus());
-  onClose();
-};
-
-  // Manual resend
   const handleResend = () => {
+  
     dispatch(resendOtpRequest());
     setCountdown(90);
     setShowResend(false);
@@ -90,7 +86,6 @@ const handleClose = () => {
                 .padStart(2, '0')}`}
         </div>
 
-        {/* Button logic */}
         <button
           className={`btn w-100 ${showResend ? 'btn-warning' : 'btn-primary'}`}
           onClick={showResend ? handleResend : handleSubmit}
@@ -106,14 +101,12 @@ const handleClose = () => {
         </button>
 
 
-        {/* Success message */}
         {accessCodeStatus?.data?.message && (
           <div className="alert alert-success mt-3 text-center">
             {accessCodeStatus.data.message}
           </div>
         )}
 
-        {/* Error message */}
         {error && (
           <div className="alert alert-danger mt-3 text-center">{error}</div>
         )}

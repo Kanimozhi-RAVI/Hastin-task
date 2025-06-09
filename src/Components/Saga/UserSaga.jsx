@@ -4,6 +4,9 @@ import {
   POST_LOGIN_REQUEST,
   ACCESS_CODE_REQUEST,
   RESEND_OTP_REQUEST,
+  GET_USER_DETAILS_REQUEST,
+
+ 
 } from '../Type';
 import {
   postloginSuccess,
@@ -12,6 +15,10 @@ import {
   accesscodeFailure,
   resendOtpSuccess,
   resendOtpFailure,
+  getUserDetailsFailure,
+  getUserDetailsSuccess,
+  getUserDetailsRequest
+ 
 } from '../Action_file/Action';
 
 const api = axios.create({
@@ -20,13 +27,11 @@ const api = axios.create({
 
 function* handleLogin(action) {
   try {
-    const { userName, password, recaptcha, origin } = action.payload;
+    const { userName, password } = action.payload;
     
     const response = yield call(api.post, '/login', {
       userName,
       password,
-      recaptcha,
-      origin,
     });
 
     const data = response.data;
@@ -49,12 +54,18 @@ function* handleAccessCode(action) {
 
     const config = {
       headers: {
-        Authorization: `BslogiKey ${token}`,  // Important: custom header
+        Authorization: `BslogiKey ${token}`,  
       },
     };
 
     const response = yield call(api.post, '/access-code/validate', { opaque, accessCode }, config);
+
     yield put(accesscodeSuccess(response.data));
+
+    if (response.data?.data?.message === "Access code successfully verified.") {
+      yield put(getUserDetailsRequest()); 
+    }
+
   } catch (error) {
     const message = error.response?.data?.message || 'Access code validation failed';
     yield put(accesscodeFailure(message));
@@ -74,7 +85,6 @@ function* handleResendOtp() {
 
     const response = yield call(api.post, '/access-code/resend', { opaque }, config);
 
-    // ✅ Set new values in localStorage from API response
     const newOpaque = response.data?.data?.opaque;
     const newAccessCode = response.data?.data?.accessCode;
 
@@ -90,11 +100,24 @@ function* handleResendOtp() {
   }
 }
 
+function* handleGetUserDetails() {
+  try {
+    const token = localStorage.getItem('authToken');
+    const config = {
+      headers: { Authorization: `BslogiKey ${token}` },
+    };
+    const response = yield call(api.get, '/user-details', config);
+    yield put(getUserDetailsSuccess(response.data.data));  // <-- pass payload here!
+  } catch (error) {
+    yield put(getUserDetailsFailure(error.message));      // <-- pass error message here!
+  }
+}
 
 function* userSaga() {
   yield takeLatest(POST_LOGIN_REQUEST, handleLogin);
   yield takeLatest(ACCESS_CODE_REQUEST, handleAccessCode);
   yield takeLatest(RESEND_OTP_REQUEST, handleResendOtp);
+  yield takeLatest(GET_USER_DETAILS_REQUEST, handleGetUserDetails);
 }
 
 export default userSaga;
