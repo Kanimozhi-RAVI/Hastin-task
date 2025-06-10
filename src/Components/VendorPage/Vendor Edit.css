@@ -1,0 +1,52 @@
+.vendor-edit-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.form-section {
+  background: #f9f9f9;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-actions {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.loading, .error-container, .no-data {
+  text-align: center;
+  padding: 40px;
+}
+
+.error-message {
+  color: #d32f2f;
+  margin-bottom: 15px;
+}

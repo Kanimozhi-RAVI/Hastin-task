@@ -5,6 +5,9 @@ import Login from './Components/Login_page/Login';
 import AccessCodeModal from './Components/Login_page/AccessCode';
 import MainFile from './Components/Navbar_File/MainFile';
 import Loader from './Components/Loader_File/Loader';
+import VendorUpdate from './Components/VendorPage/VendorUpdate';
+import VendorTable from './Components/VendorPage/VendorTable';
+import VendorEdit from './Components/VendorPage/VendorEdit';
 
 function App() {
   return (
@@ -14,6 +17,10 @@ function App() {
       <Route path='/access' element ={<AccessCodeModal/>}/>
       <Route path= '/nextpage' element={<MainFile/>}/>
      <Route path='/loader' element={<Loader/>}/>
+     <Route path='/vendor' element={<VendorUpdate/>}/>
+     <Route path='/tab' element={<VendorTable/>}/>
+    <Route path="/vendoredit/:id" element={<VendorEdit />} />
+
     </Routes>
     </BrowserRouter>
   );

@@ -1,0 +1,148 @@
+.vendor-container {
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f8fc;
+}
+
+.vendor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+}
+
+.tab {
+  border: none;
+  background: none;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 10px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tab.active {
+  border-bottom: 2px solid #007bff;
+  color: #007bff;
+}
+
+.btn-new {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.vendor-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.search-input {
+  padding: 8px;
+  width: 200px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.btn-export {
+  background: #007bff;
+  color: white;
+  border: none;
+  font-size: 18px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.vendor-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 800px;
+}
+.vendor-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-edit {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  color: #0056b3;
+}
+
+.vendor-table th, .vendor-table td {
+  padding: 12px 10px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.vendor-table th {
+  background-color: #007bff;
+  color: white;
+}
+
+.vendor-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-active {
+  background-color: #e0f5e9;
+  color: #28a745;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #777;
+}
+
+.status-msg {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.error-msg {
+  color: red;
+}

@@ -23,7 +23,8 @@
     "redux": "^5.0.1",
     "redux-saga": "^1.3.0",
     "toastify": "^2.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "proxy": "https://hastin-container.com"
   },
   "scripts": {
     "start": "react-scripts start",

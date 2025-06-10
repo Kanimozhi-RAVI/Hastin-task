@@ -2,6 +2,7 @@ import React from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
+import VendorTable from '../VendorPage/VendorTable';
 
 const MainFile = () => {
 const handleLogout = () => {
@@ -11,6 +12,7 @@ const handleLogout = () => {
   
 
   return (
+    <>
     <nav className="navbar navbar-expand-lg navbar-dark  px-4 " style={{backgroundColor:"#812990"}}>
       <span className="navbar-brand text-white fs-4">🔒 SecureApp</span>
 
@@ -35,6 +37,8 @@ const handleLogout = () => {
         </ul>
       </div>
     </nav>
+    <VendorTable/>
+    </>
   );
 };
 
