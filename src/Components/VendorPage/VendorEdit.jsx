@@ -1,213 +1,210 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router';
 import {
   fetchVendorByIdRequest,
   fetchCountriesRequest,
   fetchCurrenciesRequest,
   fetchCitiesRequest,
+  updateVendorByIdRequest,
+  createVendorRequest,
 } from '../Action_file/VendorAction';
-// import { Button } from '@mui/material';
+import VendorContacts  from './VendorContacts';
+
+import './VendorEdit.css'; // 👈 Add this
 
 const VendorEdit = () => {
   const { id } = useParams();
+  const isEdit = Boolean(id);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const vendor = useSelector((state) => state.vendor.singleVendor || {});
-  const countries = useSelector((state) => state.vendor.countries || []);
-  const currencies = useSelector((state) => state.vendor.currencies || []);
-  const cities = useSelector((state) => state.vendor.cities || []);
+  const [form, setForm] = useState({});
+  const [contacts, setContacts] = useState([]);
 
-  const fetchVendorDetails = useCallback(async () => {
-    try {
-      setLoading(true);
-       dispatch(fetchVendorByIdRequest(id));
-       dispatch(fetchCountriesRequest());
-       dispatch(fetchCurrenciesRequest());
-       dispatch(fetchCitiesRequest());
-    } catch (err) {
-      setError('Failed to fetch vendor details');
-      console.error('Fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [dispatch, id]);
+  const vendor = useSelector(state => state.vendor.singleVendor || {});
+  const countries = useSelector(state => state.vendor.countries || []);
+  const currencies = useSelector(state => state.vendor.currencies || []);
+  const cities = useSelector(state => state.vendor.cities || []);
 
   useEffect(() => {
-    fetchVendorDetails();
-  }, [fetchVendorDetails]);
+    dispatch(fetchCountriesRequest());
+    dispatch(fetchCurrenciesRequest());
+    dispatch(fetchCitiesRequest());
+    if (isEdit) 
+      dispatch(fetchVendorByIdRequest(id));
+  }, [dispatch, id, isEdit]);
 
-  useEffect(() => {
-    if (vendor && Object.keys(vendor).length > 0) {
-      setFormData(vendor);
-    }
-  }, [vendor]);
+useEffect(() => {
+  if (isEdit && vendor && vendor.id && form.id !== vendor.id) {
+    setForm(vendor);
+    setContacts(JSON.parse(JSON.stringify(vendor.contactList || [])));
+  }
+}, [vendor, isEdit]);
+
 
   const handleChange = (e) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      [e.target.name]: e.target.value 
-    }));
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submit Updated Data: ", formData);
-    // dispatch(updateVendorRequest(formData));
-  };
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-  if (loading) return <div className="p-8">Loading vendor details...</div>;
-  if (error) return <div className="p-8 text-red-500">{error}</div>;
-  if (!formData) return <div className="p-8">No vendor data found</div>;
+  const defaultCount = contacts.filter(c => c.isDefault === 'YES').length;
+  if (defaultCount !== 1) {
+    alert("One contact must be default.");
+    return;
+  }
+
+ const payload = {
+  id,
+  ...form,
+  contactList: contacts.map(c => ({
+    ...c,
+    isDefault: c.isDefault === 'YES',
+  })),
+};
+
+
+  if (isEdit) {
+     console.log("Sending payload:", payload);
+    dispatch(updateVendorByIdRequest(payload)); // ✅ Pass payload here
+  } else {
+    dispatch(createVendorRequest(payload));
+  }
+
+  navigate('/tab');
+};
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-blue-800">Vendor View & Edit</h2>
-        {/* <Button 
-          variant="contained" 
-          color="primary"
-          onClick={() => navigate(-1)}
-        >
-          Back
-        </Button> */}
-        </div>
+    <div className="vendor-edit-container">
+      <h2>{isEdit ? "Edit Vendor" : "Create Vendor"}</h2>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Section 1: Basic Details */}
-          <div className="bg-white p-6 shadow rounded-xl border">
-            <h3 className="text-blue-700 text-lg font-semibold mb-4">BASIC DETAILS</h3>
-            {[
-              { label: 'Vendor Name', name: 'vendorName', value: formData.vendorName },
-              { label: 'Vendor Code', name: 'vendorCode', value: formData.vendorCode },
-              { label: 'Vendor Type', name: 'vendorType', value: formData.vendorType },
-              { label: 'Tax Registration No', name: 'taxRegistrationNo', value: formData.taxRegistrationNo },
-              { label: 'Company Registration No', name: 'companyRegistrationNo', value: formData.companyRegistrationNo },
-            ].map((item, idx) => (
-              <div className="mb-3" key={idx}>
-                <label className="text-sm font-medium">{item.label}</label>
-                <input 
-                  name={item.name}
-                  className="w-full p-2 border rounded" 
-                  value={item.value || ''} 
-                  onChange={handleChange}
-                />
-              </div>
-            ))}
-            <div className="mb-3">
-              <label className="text-sm font-medium">Currency</label>
-              <select 
-                name="defaultCurrencyId"
-                className="w-full p-2 border rounded" 
-                value={formData.defaultCurrencyId || ''}
-                onChange={handleChange}
-              >
-                {currencies.map((cur) => (
-                  <option key={cur.id} value={cur.id}>
-                    {cur.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+        <div className="form-sections" style={{ justifyItems:"center"}}>
+          
+<div className="form-card">
+  <h3>Basic Info</h3>
+  <label>
+    Vendor Name
+    <input name="vendorName" value={form.vendorName || ''} onChange={handleChange} />
+  </label>
+  <label>
+    Vendor Code
+    <input name="vendorCode" value={form.vendorCode || ''} onChange={handleChange} />
+  </label>
+ <label>
+  Vendor Type
+  <select name="vendorType" value={form.vendorType || ''} onChange={handleChange}>
+    <option value="">Select Vendor Type</option>
+    <option value="Individual">Individual</option>
+    <option value="Company">Company</option>
+  </select>
+</label>
+  <label>
+    Tax Registration Number
+    <input name="taxRegNo" value={form.taxRegNo || ''} onChange={handleChange} />
+  </label>
+ <label>
+  Company Registration Number
+  <input
+    name="companyRegNo"
+    value={form.companyRegNo || ''}
+    onChange={handleChange}
+  />
+</label>
 
-          {/* Section 2: Address Details */}
-          <div className="bg-white p-6 shadow rounded-xl border">
-            <h3 className="text-blue-700 text-lg font-semibold mb-4">ADDRESS DETAILS</h3>
-            <div className="mb-3">
-              <label className="text-sm font-medium">Address 1</label>
-              <input 
-                name="address1"
-                className="w-full p-2 border rounded" 
-                value={formData.address1 || ''} 
-                onChange={handleChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="text-sm font-medium">Address 2</label>
-              <input 
-                name="address2"
-                className="w-full p-2 border rounded" 
-                value={formData.address2 || ''} 
-                onChange={handleChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label className="text-sm font-medium">Country</label>
-              <select 
-                name="country"
-                className="w-full p-2 border rounded" 
-                value={formData.country || ''}
-                onChange={handleChange}
-              >
-                {countries.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="text-sm font-medium">City</label>
-              <select
-                name="cityId"
-                className="w-full p-2 border rounded"
-                value={formData.cityId || ''}
-                onChange={handleChange}
-              >
-                {cities.map(city => (
-                  <option key={city.id} value={city.id}>
-                    {city.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="text-sm font-medium">Zip Code</label>
-              <input 
-                name="zipCode"
-                className="w-full p-2 border rounded" 
-                value={formData.zipCode || ''} 
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+<label>
+  Default Currency
+  <select
+    name="defaultCurrencyId"
+    value={form.defaultCurrencyId || ''}
+    onChange={(e) => {
+      const selectedId = e.target.value;
+      setForm((prev) => ({
+        ...prev,
+        defaultCurrencyId: selectedId,
+        companyRegNo: selectedId  
+      }));
+    }}
+  >
+    <option value="">Select Currency</option>
+    {currencies.map(c => (
+      <option key={c.id} value={c.id}>
+        {c.name}
+      </option>
+    ))}
+  </select>
+</label>
 
-          {/* Section 3: Bank Details */}
-          <div className="bg-white p-6 shadow rounded-xl border">
-            <h3 className="text-blue-700 text-lg font-semibold mb-4">BANK DETAILS</h3>
-            {[
-              { label: 'Bank Account Name', name: 'bankAccountName', value: formData.bankAccountName },
-              { label: 'Bank Account No', name: 'bankAccountNo', value: formData.bankAccountNo },
-              { label: 'Bank Name', name: 'bankName', value: formData.bankName },
-              { label: 'Branch', name: 'branch', value: formData.branch },
-              { label: 'Swift Code', name: 'swiftCode', value: formData.swiftCode },
-            ].map((item, idx) => (
-              <div className="mb-3" key={idx}>
-                <label className="text-sm font-medium">{item.label}</label>
-                <input 
-                  name={item.name}
-                  className="w-full p-2 border rounded" 
-                  value={item.value || ''} 
-                  onChange={handleChange}
-                />
-              </div>
-            ))}
-          </div>
+
+</div>
+
+{/* Address */}
+<div className="form-card">
+  <h3>Address</h3>
+  <label>
+    Address Line 1
+    <input name="address1" value={form.address1 || ''} onChange={handleChange} />
+  </label>
+  <label>
+    Address Line 2
+    <input name="address2" value={form.address2 || ''} onChange={handleChange} />
+  </label>
+  <label>
+    Postal Code
+    <input name="postalCode" value={form.postalCode || ''} onChange={handleChange} />
+  </label>
+  <label>
+    Country
+    <select name="country" value={form.country || ''} onChange={handleChange}>
+      <option value="">Select Country</option>
+      {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+    </select>
+  </label>
+  <label>
+    City
+    <select name="cityId" value={form.cityId || ''} onChange={handleChange}>
+      <option value="">Select City</option>
+      {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+    </select>
+  </label>
+</div>
+
+{/* Bank Info */}
+<div className="form-card">
+  <h3>Bank Info</h3>
+  <label>
+    Bank Account Name
+    <input name="bankAcctName" value={form.bankAcctName || ''} onChange={handleChange} />
+  </label>
+  <label>
+    Bank Account Number
+    <input name="bankAccountNum" value={form.bankAccountNum || ''} onChange={handleChange} />
+  </label>
+  <label>
+    Bank Name
+    <input name="bankName" value={form.bankName || ''} onChange={handleChange} />
+  </label>
+  <label>
+    Branch
+    <input name="bankBranchName" value={form.bankBranchName || ''} onChange={handleChange} />
+  </label>
+  <label>
+    SWIFT Code
+    <input name="bankSwiftCode" value={form.bankSwiftCode || ''} onChange={handleChange} />
+  </label>
+</div>
+</div>
+
+        {/* Contact Info */}
+          <div>
+          <h3>Contact Info</h3>
+          <VendorContacts contacts={contacts} setContacts={setContacts} />
         </div>
 
-        <div className="mt-6 flex justify-end">
-          <button 
-            type="submit" 
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Save Changes
-          </button>
+        <div className="form-actions">
+          <button type="submit">{isEdit ? "Update" : "Save"}</button>
         </div>
       </form>
     </div>

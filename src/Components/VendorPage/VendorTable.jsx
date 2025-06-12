@@ -3,16 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { vendorUpdateRequest } from '../Action_file/VendorAction';
 import './VendorTable.css';
 import { FaEdit } from "react-icons/fa";
-import { useNavigate } from 'react-router-dom'; // ✅ useRouter-dom not just 'react-router'
+import { useNavigate } from 'react-router'; 
 
 const VendorTable = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // ✅ useNavigate from react-router-dom
+  const navigate = useNavigate(); 
 
   const { vendors = [], loading, error } = useSelector(state => state.vendor || {});
 
   useEffect(() => {
-    dispatch(vendorUpdateRequest()); // ✅ Dispatch vendor list
+    dispatch(vendorUpdateRequest()); 
   }, [dispatch]);
 
   return (
@@ -22,12 +22,13 @@ const VendorTable = () => {
           <button className="tab active">ACTIVE</button>
           <button className="tab">INACTIVE</button>
         </div>
-        <button className="btn-new">+ New Vendor</button>
+        <button className="btn-new" onClick={() => navigate('/vendorcreate')}>+ New Vendor</button>
+
       </div>
 
       <div className="vendor-toolbar">
         <input type="text" placeholder="Search" className="search-input" />
-        <button className="btn-export">📥</button>
+        {/* <button className="btn-export">📥</button> */}
       </div>
 
       {loading && <p className="status-msg">Loading...</p>}
@@ -68,7 +69,7 @@ const VendorTable = () => {
                     <button
                       className="btn-edit"
                       title="Edit"
-                      onClick={() => navigate(`/vendoredit/${vendor.id}`)} // ✅ Correct route
+                      onClick={() => navigate(`/vendoredit/${vendor.id}`)} 
                     >
                       <FaEdit />
                     </button>

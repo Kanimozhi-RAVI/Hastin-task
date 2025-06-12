@@ -92,7 +92,7 @@
 }
 
 .btn-edit:hover {
-  color: #0056b3;
+  color: #f1f6fc;
 }
 
 .vendor-table th, .vendor-table td {
@@ -102,7 +102,7 @@
 }
 
 .vendor-table th {
-  background-color: #007bff;
+  background-color: #812990;
   color: white;
 }
 

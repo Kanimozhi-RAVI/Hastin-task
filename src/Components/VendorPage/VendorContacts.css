@@ -1,0 +1,79 @@
+.contact-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.contact-section h3 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.contact-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.contact-table th,
+.contact-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.contact-table th {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+}
+
+.contact-table td input,
+.contact-table td select {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.contact-table td select {
+  height: 32px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.icon {
+  cursor: pointer;
+  margin-left: 0.4rem;
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
+
+.icon.tick {
+  color: #2563eb; /* blue ✔️ */
+}
+
+.icon.delete {
+  color: #ef4444; /* red 🗑️ */
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.4rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1d4ed8;
+}
