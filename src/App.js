@@ -9,6 +9,7 @@ import VendorUpdate from './Components/VendorPage/VendorUpdate';
 import VendorTable from './Components/VendorPage/VendorTable';
 import VendorEdit from './Components/VendorPage/VendorEdit';
 import VendorContacts from './Components/VendorPage/VendorContacts';
+import ExamFile from './Components/ExamFile';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
     <Route path="/vendorcreate" element={<VendorEdit />} />
     <Route path="/vendor/update/:id" element={<VendorEdit />} />
     <Route path='/vendorcontact'element={<VendorContacts/>}/>
+    <Route path='/exam' element={<ExamFile/>}/>
 
 
 

@@ -28,7 +28,6 @@ const VendorTable = () => {
 
       <div className="vendor-toolbar">
         <input type="text" placeholder="Search" className="search-input" />
-        {/* <button className="btn-export">📥</button> */}
       </div>
 
       {loading && <p className="status-msg">Loading...</p>}

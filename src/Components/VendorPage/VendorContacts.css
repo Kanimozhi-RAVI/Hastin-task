@@ -56,11 +56,11 @@
 }
 
 .icon.tick {
-  color: #2563eb; /* blue ✔️ */
+  color: #2563eb; 
 }
 
 .icon.delete {
-  color: #ef4444; /* red 🗑️ */
+  color: #ef4444;
 }
 
 button {

@@ -5,6 +5,15 @@ import { VENDOR_UPDATE_FAILURE, VENDOR_UPDATE_REQUEST, VENDOR_UPDATE_SUCCESS,FET
   UPDATE_VENDOR_BY_ID_SUCCESS,
   UPDATE_VENDOR_BY_ID_FAILURE,
   CREATE_VENDOR_REQUEST,
+  DELETE_CONTACT_REQUEST,
+  DELETE_CONTACT_SUCCESS,
+  DELETE_CONTACT_FAILURE,
+  PUT_CONTACT_REQUEST,
+  PUT_CONTACT_SUCCESS,
+  PUT_CONTACT_FAILURE,
+  CREATE_CONTACT_REQUEST,
+  CREATE_CONTACT_SUCCESS,
+  CREATE_CONTACT_FAILURE,
  } from "../Type"
 
 export const vendorUpdateRequest = (payload) => ({
@@ -67,3 +76,48 @@ export const createVendorRequest = (payload) => ({
 //   type: UPDATE_VENDOR_BY_ID_REQUEST,
 //   payload:{id}
 // });
+export const createContactRequest = (payload) => ({
+  type: CREATE_CONTACT_REQUEST,
+  payload,
+});
+
+export const createContactSuccess = (data) => ({
+  type: CREATE_CONTACT_SUCCESS,
+  payload: data,
+});
+
+export const createContactFailure = (error) => ({
+  type: CREATE_CONTACT_FAILURE,
+  payload: error,
+});
+
+
+export const putcontactRequest = (payload) => ({
+  type:PUT_CONTACT_REQUEST,
+  payload,
+});
+export const putcontactSuccess = (data) => ({
+  type:PUT_CONTACT_SUCCESS,
+  payload:data,
+});
+export const putcontactFailure = (error) => ({
+  type:PUT_CONTACT_FAILURE,
+  payload:error,
+});
+
+
+
+export const deleteContactRequest = (vendorId, contactId) => ({
+  type: DELETE_CONTACT_REQUEST,
+  payload: { vendorId, contactId },
+});
+
+export const deleteContactSuccess = (contactId) => ({
+  type: DELETE_CONTACT_SUCCESS,
+  payload: contactId,
+});
+
+export const deleteContactFailure = (error) => ({
+  type: DELETE_CONTACT_FAILURE,
+  payload: error,
+});

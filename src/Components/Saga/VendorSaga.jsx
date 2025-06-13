@@ -8,7 +8,12 @@ import {
   fetchVendorByIdSuccess,
   fetchVendorByIdFailure,
   updateVendorByIdSuccess,
-  updateVendorByIdFailure
+  updateVendorByIdFailure,  deleteContactSuccess,
+  deleteContactFailure,
+  putcontactSuccess,
+  putcontactFailure,
+    createContactSuccess,
+  createContactFailure,
 } from '../Action_file/VendorAction';
 
 
@@ -19,6 +24,10 @@ import {
   FETCH_COUNTRIES_REQUEST,
   FETCH_VENDOR_BY_ID_REQUEST,
   UPDATE_VENDOR_BY_ID_REQUEST,
+  DELETE_CONTACT_REQUEST,
+  CREATE_VENDOR_REQUEST,
+  PUT_CONTACT_REQUEST,
+  CREATE_CONTACT_REQUEST,
 
 
 } from "../Type";
@@ -87,6 +96,7 @@ function* fetchCountries() {
     yield put(fetchCountriesSuccess(response.data?.data || []));
   } catch (error) {
     console.error("Country Fetch Error:", error.message);
+
   }
 }
 
@@ -165,7 +175,7 @@ function* fetchVendorByIdSaga(action) {
 
 function* updateVendorSaga(action) {
   try {
-    const payload = action.payload; // ✅ Must come from dispatch
+    const payload = action.payload; 
     const token = localStorage.getItem("authToken");
     const config = {
       headers: {
@@ -194,7 +204,6 @@ function* updateVendorSaga(action) {
 
 
 
-// In your saga
 function* createVendorSaga(action) {
   try {
     const token = localStorage.getItem('authToken');
@@ -212,11 +221,108 @@ function* createVendorSaga(action) {
       config
     );
 
-    yield put({ type: 'CREATE_VENDOR_SUCCESS', payload: response.data });
+    yield put({ type: 'CREATE_VENDOR_SUCCESS', payload: response.data.data });
   } catch (error) {
     yield put({ type: 'CREATE_VENDOR_FAILURE', payload: error.message });
   }
 }
+
+
+
+function* deleteContactSaga(action) {
+  const { vendorId, contactId } = action.payload;
+
+  try {
+    const token = localStorage.getItem('token');
+    const response = yield call(axios.delete, 
+      `https://hastin-container.com/staging/api/vendor/contact/delete/${contactId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    yield put(deleteContactSuccess(contactId));
+  } catch (error) {
+    yield put(deleteContactFailure(error.response?.data?.message || error.message));
+  }
+}
+
+
+
+// contact url = 'https://hastin-container.com/staging/api/vendor/contact/update'
+function* putcontactlist(action) {
+  try {
+    const token = localStorage.getItem("authToken");
+
+    const config = {
+      headers: {
+        Authorization: `BslogiKey ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+  const payload = action.payload;
+
+    const response = yield call(
+      axios.put,
+      "https://hastin-container.com/staging/api/vendor/contact/update",
+      payload,
+      config
+    );
+
+    console.log("Update contact response:", response?.data?.data?.contactList);
+    yield put(putcontactSuccess(response?.data?.data?.contactList || []));
+  } catch (error) {
+    console.error("Contact update error:", error);
+    yield put(
+      putcontactFailure(error?.response?.data?.message || "Contact Update Error")
+    );
+  }
+}
+
+
+
+function* createContactSaga(action) {
+  try {
+    const token = localStorage.getItem("authToken");
+
+    const config = {
+      headers: {
+        Authorization: `BslogiKey ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const payload = {
+      name: action.payload.name,
+      email: action.payload.email,
+      mobileNo: Number(action.payload.mobileNo),
+      isDefault: action.payload.isDefault === "YES" ? true : false,
+      vendorId: action.payload.vendorId,
+      createdBy: action.payload.createdBy,
+    };
+
+    console.log("Payload for contact create:", JSON.stringify(payload, null, 2));
+
+    const response = yield call(
+      axios.post,
+      "https://hastin-container.com/staging/api/vendor/contact/create",
+      payload,
+      config
+    );
+
+    yield put(createContactSuccess(response.data.data));
+  } catch (error) {
+    console.error("Contact creation error:", error?.response?.data || error.message);
+    yield put(
+      createContactFailure(
+        error?.response?.data?.message || "Contact Create Error"
+      )
+    );
+  }
+}
+
 
 
 export default function* vendorSaga() {
@@ -226,77 +332,12 @@ export default function* vendorSaga() {
   yield takeLatest(FETCH_CITIES_REQUEST, fetchCities);
   yield takeLatest(UPDATE_VENDOR_BY_ID_REQUEST, updateVendorSaga);
   yield takeLatest(FETCH_VENDOR_BY_ID_REQUEST, fetchVendorByIdSaga);
-  yield takeLatest('CREATE_VENDOR_REQUEST', createVendorSaga);
+  yield takeLatest(CREATE_VENDOR_REQUEST, createVendorSaga);
+  yield takeLatest(DELETE_CONTACT_REQUEST, deleteContactSaga);
+  yield takeLatest(PUT_CONTACT_REQUEST,putcontactlist)
+  yield takeLatest(CREATE_CONTACT_REQUEST,createContactSaga)
+
+
 
 
 }
-
-
-// vendorSaga.js
-// import { call, put, takeLatest } from 'redux-saga/effects';
-// import axios from 'axios';
-// import {
-//   FETCH_VENDOR_BY_ID_REQUEST,
-//   UPDATE_VENDOR_BY_ID_REQUEST,
-// } from '../Type';
-// import {
-//   fetchVendorByIdSuccess,
-//   fetchVendorByIdFailure,
-//   updateVendorByIdSuccess,
-//   updateVendorByIdFailure,
-// } from '../Action_file/VendorAction';
-
-// const api = axios.create({
-//   baseURL: 'https://hastin-container.com/staging/api',
-// });
-
-// function* fetchVendorByIdSaga(action) {
-//   try {
-//     const token = localStorage.getItem('authToken');
-//     const { id } = action.payload;
-
-//     const config = {
-//       headers: {
-//         Authorization: `BslogiKey ${token}`,
-//         'Content-Type': 'application/json',
-//       },
-//     };
-
-//     const response = yield call(api.get, `/vendor/${id}`, config);
-//     yield put(fetchVendorByIdSuccess(response.data.data));
-//   } catch (error) {
-//     yield put(
-//       fetchVendorByIdFailure(
-//         error.response?.data?.message || error.message || 'Fetch failed'
-//       )
-//     );
-//   }
-// }
-
-// function* updateVendorByIdSaga(action) {
-//   try {
-//     const token = localStorage.getItem('authToken');
-//     const { id, data } = action.payload;
-
-//     const config = {
-//       headers: {
-//         Authorization: `BslogiKey ${token}`,
-//         'Content-Type': 'application/json',
-//       },
-//     };
-
-//     const response = yield call(api.put, `/vendor/${id}`, data, config);
-//     yield put(updateVendorByIdSuccess(response.data.data));
-//   } catch (error) {
-//     yield put(
-//       updateVendorByIdFailure(
-//         error.response?.data?.message || error.message || 'Update failed'
-//       )
-//     );
-//   }
-// }
-
-// export default function* vendorSaga() {
-//   yield takeLatest(FETCH_VENDOR_BY_ID_REQUEST, fetchVendorByIdSaga);
-//   yield takeLatest(UPDATE_VENDOR_BY_ID_REQUEST, updateVendorByIdSaga);
-// }
