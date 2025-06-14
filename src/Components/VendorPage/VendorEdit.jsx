@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+
 import {
   fetchVendorByIdRequest,
   fetchCountriesRequest,
@@ -8,20 +11,17 @@ import {
   fetchCitiesRequest,
   updateVendorByIdRequest,
   createVendorRequest,
-  // putcontactRequest,
 } from '../Action_file/VendorAction';
 import VendorContacts from './VendorContacts';
-
 import './VendorEdit.css';
+import Loader from '../Loader_File/Loader';
 
 const VendorEdit = () => {
-  
   const { id } = useParams();
   const isEdit = Boolean(id);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({});
   const [contacts, setContacts] = useState([]);
 
   const vendor = useSelector(state => state.vendor.singleVendor || {});
@@ -29,186 +29,232 @@ const VendorEdit = () => {
   const currencies = useSelector(state => state.vendor.currencies || []);
   const cities = useSelector(state => state.vendor.cities || []);
 
+    const [isLoading, setIsLoading] = useState(true); // ✅ State for loader
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Stop loader after 2 seconds
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
   useEffect(() => {
     dispatch(fetchCountriesRequest());
     dispatch(fetchCurrenciesRequest());
     dispatch(fetchCitiesRequest());
     if (isEdit) {
       dispatch(fetchVendorByIdRequest(id));
-    }else{
-      alert("Some details missing")
     }
   }, [dispatch, id, isEdit]);
 
-  useEffect(() => {
-    if (isEdit && vendor && vendor.id && form.id !== vendor.id) {
-      setForm(vendor);
-      setContacts(JSON.parse(JSON.stringify(vendor.contactList || [])));
+  const initialValues = {
+    vendorName: '',
+    vendorCode: '',
+    vendorType: '',
+    taxRegNo: '',
+    companyRegNo: '',
+    defaultCurrencyId: '',
+    address1: '',
+    address2: '',
+    postalCode: '',
+    country: '',
+    cityId: '',
+    bankAcctName: '',
+    bankAccountNum: '',
+    bankName: '',
+    bankBranchName: '',
+    bankSwiftCode: '',
+  };
+
+  const validationSchema = Yup.object().shape({
+    vendorName: Yup.string().required('Vendor name is required'),
+    vendorCode: Yup.string().required('Vendor code is required'),
+    vendorType: Yup.string().required('Vendor type is required'),
+    taxRegNo: Yup.string().required('Taxregno required'),
+    companyRegNo: Yup.string(),
+    defaultCurrencyId: Yup.string().required('Currency is required'),
+    address1: Yup.string().required('Address 1 is required'),
+    address2: Yup.string().required('Address 2 is required'),
+    postalCode: Yup.string(),
+    country: Yup.string().required('Country is required'),
+    cityId: Yup.string().required('City is required'),
+    bankAcctName: Yup.string(),
+    bankAccountNum: Yup.string(),
+    bankName: Yup.string(),
+    bankBranchName: Yup.string(),
+    bankSwiftCode: Yup.string(),
+  });
+
+  const handleSubmit = (values) => {
+    const defaultCount = contacts.filter(c => c.isDefault === 'YES' || c.isDefault === true).length;
+    
+
+    if (defaultCount !== 1) {
+      alert('One contact must be default.');
+      return;
     }
-  }, [vendor, isEdit,]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const payload = {
+      id,
+      ...values,
+      contactList: contacts.map(c => ({
+        ...c,
+        isDefault: c.isDefault === 'YES' || c.isDefault === true,
+      })),
+    };
+
+    if (isEdit) {
+      dispatch(updateVendorByIdRequest(payload));
+    } else {
+      dispatch(createVendorRequest(payload));
+    }
   };
 
-  const handleSubmit = (e) => {
-  e.preventDefault();
+  const [initialForm, setInitialForm] = useState(initialValues);
 
-  const defaultCount = contacts.filter(c => c.isDefault === 'YES' || c.isDefault === true).length;
-  if (defaultCount !== 1) {
-    alert("One contact must be default.");
-    return;
-  }
-
-  const payload = {
-    id,
-    ...form,
-    contactList: contacts.map(c => ({
-      ...c,
-      isDefault: c.isDefault === 'YES' || c.isDefault === true,
-    })),
-  };
-
-  if (isEdit) {
-    console.log("Sending payload:", payload);
-    dispatch(updateVendorByIdRequest(payload)); 
-  } else {
-    dispatch(createVendorRequest(payload));
-  }
-};
-
+  useEffect(() => {
+    if (isEdit && vendor?.id) {
+      const { contactList, ...vendorDetails } = vendor;
+      setInitialForm({
+        ...initialValues,
+        ...vendorDetails,
+      });
+      setContacts(JSON.parse(JSON.stringify(contactList || [])));
+    }
+  }, [vendor,isEdit]);
 
   return (
+    <>
+     {isLoading && <Loader />}
     <div className="vendor-edit-container">
-      <h2>{isEdit ? "Edit Vendor" : "Create Vendor"}</h2>
+      <h2>{isEdit ? 'Edit Vendor' : 'Create Vendor'}</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-sections" style={{ justifyItems: "center" }}>
-          <div className="form-card">
-            <h3>Basic Info</h3>
-            <label>
-              Vendor Name
-              <input name="vendorName" value={form.vendorName || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Vendor Code
-              <input name="vendorCode" value={form.vendorCode || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Vendor Type
-              <select name="vendorType" value={form.vendorType || ''} onChange={handleChange}>
-                <option value="">Select Vendor Type</option>
-                <option value="Individual">Individual</option>
-                <option value="Company">Company</option>
-              </select>
-            </label>
-            <label>
-              Tax Registration Number
-              <input name="taxRegNo" value={form.taxRegNo || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Company Registration Number
-              <input name="companyRegNo" value={form.companyRegNo || ''} onChange={handleChange} />
-            </label>
+      <Formik
+  enableReinitialize
+  initialValues={initialForm}
+  validationSchema={validationSchema}
+  onSubmit={handleSubmit}
+>
+  {({ values, setFieldValue }) => (  
+    <Form>
+            <div className="form-sections">
+              <div className="form-card">
+                <h3>Basic Info</h3>
+                <label>Vendor Name
+                  <Field name="vendorName" />
+                  <ErrorMessage name="vendorName" component="div" className="error" />
+                </label>
+                <label>Vendor Code
+                  <Field name="vendorCode" />
+                  <ErrorMessage name="vendorCode" component="div" className="error" />
+                </label>
+                <label>Vendor Type
+                  <Field as="select" name="vendorType">
+                    <option value="">Select Vendor Type</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Company">Company</option>
+                  </Field>
+                  <ErrorMessage name="vendorType" component="div" className="error" />
+                </label>
+                <label>Tax Registration Number
+                  <Field name="taxRegNo" />
+                  <ErrorMessage name="taxRegNo" component="div" className="error" />
 
-            <label>
-              Default Currency
-              <select
+                </label>
+                  <label>Company Registration Number
+                    <Field name="companyRegNo" />
+                    <ErrorMessage name="companyRegNo" component="div" className="error" />
+                  </label>
+
+               <label>Default Currency
+               <Field
+                as="select"
                 name="defaultCurrencyId"
-                value={form.defaultCurrencyId || ''}
                 onChange={(e) => {
-                  const selectedId = e.target.value;
-                  setForm((prev) => ({
-                    ...prev,
-                    defaultCurrencyId: selectedId,
-                    companyRegNo: selectedId, 
-                  }));
-                }}
-              >
-                <option value="">Select Currency</option>
-                {currencies.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
+                const selectedId = e.target.value;
+                setFieldValue("defaultCurrencyId", selectedId);
+                setFieldValue("companyRegNo", selectedId); 
+                 }}
+                 >
+               <option value="">Select Currency</option>
+                 {currencies.map((c) => (
+                 <option key={c.id} value={c.id}>
+                 {c.name}
+                </option>
                 ))}
-              </select>
-            </label>
-          </div>
+              </Field>
+              <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
+             </label>
+              </div>
 
-          <div className="form-card">
-            <h3>Address</h3>
-            <label>
-              Address Line 1
-              <input name="address1" value={form.address1 || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Address Line 2
-              <input name="address2" value={form.address2 || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Postal Code
-              <input name="postalCode" value={form.postalCode || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Country
-              <select name="country" value={form.country || ''} onChange={handleChange}>
-                <option value="">Select Country</option>
-                {countries.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              City
-              <select name="cityId" value={form.cityId || ''} onChange={handleChange}>
-                <option value="">Select City</option>
-                {cities.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </label>
-          </div>
+              <div className="form-card">
+                <h3>Address</h3>
+                <label>Address Line 1
+                  <Field name="address1" />
+                  <ErrorMessage name="address1" component="div" className="error" />
+                </label>
+                <label>Address Line 2
+                  <Field name="address2"  />
+                  <ErrorMessage name="address2" component="div" className="error" />
 
-          <div className="form-card">
-            <h3>Bank Info</h3>
-            <label>
-              Bank Account Name
-              <input name="bankAcctName" value={form.bankAcctName || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Bank Account Number
-              <input name="bankAccountNum" value={form.bankAccountNum || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Bank Name
-              <input name="bankName" value={form.bankName || ''} onChange={handleChange} />
-            </label>
-            <label>
-              Branch
-              <input name="bankBranchName" value={form.bankBranchName || ''} onChange={handleChange} />
-            </label>
-            <label>
-              SWIFT Code
-              <input name="bankSwiftCode" value={form.bankSwiftCode || ''} onChange={handleChange} />
-            </label>
-          </div>
-        </div>
+                </label>
+                <label>Postal Code
+                  <Field name="postalCode" />
+                </label>
+                <label>Country
+                  <Field as="select" name="country">
+                    <option value="">Select Country</option>
+                    {countries.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="country" component="div" className="error" />
+                </label>
+                <label>City
+                  <Field as="select" name="cityId">
+                    <option value="">Select City</option>
+                    {cities.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </Field>
+                  <ErrorMessage name="cityId" component="div" className="error" />
+                </label>
+              </div>
 
-        <div>
-          <h3>Contact Info</h3>
-          <VendorContacts
-          contacts={contacts}
-          setContacts={setContacts}
-          ve={id} 
-          />
+              <div className="form-card">
+                <h3>Bank Info</h3>
+                <label>Bank Account Name
+                  <Field name="bankAcctName" />
+                </label>
+                <label>Bank Account Number
+                  <Field name="bankAccountNum" />
+                </label>
+                <label>Bank Name
+                  <Field name="bankName" />
+                </label>
+                <label>Branch
+                  <Field name="bankBranchName" />
+                </label>
+                <label>SWIFT Code
+                  <Field name="bankSwiftCode" />
+                </label>
+              </div>
+            </div>
 
-        </div>
+            <div className="contact-design">
+              <br/>
+              <h3 style={{ marginLeft: '20px', marginTop:"10px" }}>Contact Info</h3>
+              <VendorContacts contacts={contacts} setContacts={setContacts} ve={id} />
+            </div>
 
-        <div className="form-actions">
-          <button type="submit">{isEdit ? "Update" : "Save"}</button>
-        </div>
-      </form>
+            <div className="form-actions">
+              <button type="submit">{isEdit ? 'Update' : 'Save'}</button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+      
     </div>
+    </>
   );
 };
 

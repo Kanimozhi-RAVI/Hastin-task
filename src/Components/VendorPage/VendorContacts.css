@@ -4,6 +4,7 @@
   background-color: #fff;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
+  
 }
 
 .contact-section h3 {
@@ -76,4 +77,10 @@ button {
 
 button:hover {
   background-color: #1d4ed8;
+}
+@media screen and (max-width:320px) {
+  .contact-section{
+ overflow: scroll; 
+ }
+
 }

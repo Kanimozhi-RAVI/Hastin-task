@@ -50,10 +50,7 @@ const AccessCodeModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    
     <>
-
-
     <div className="custom-backdrop">
       <div className="otp-modal  rounded">
         <button className="btn-close float-end" onClick={onClose}></button>

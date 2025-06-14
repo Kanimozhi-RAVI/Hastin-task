@@ -70,7 +70,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
   const addContact = () => {
     setContacts([
       ...contacts,
-      { name: '', email: '', mobileNo: '', isDefault: 'NO' },
+      { name: '', email: '', mobileNo: '', isDefault: 'YES' },
     ]);
   };
 

@@ -15,8 +15,6 @@ import {
     createContactSuccess,
   createContactFailure,
 } from '../Action_file/VendorAction';
-
-
 import {
   VENDOR_UPDATE_REQUEST,
   FETCH_CURRENCIES_REQUEST,
@@ -33,6 +31,7 @@ import {
 } from "../Type";
 
 import { takeLatest, put, call } from "redux-saga/effects";
+import { toast } from "react-toastify";
 
 
 
@@ -66,14 +65,26 @@ function* handleVendor() {
 
     const vendorlist = response.data?.data?.tableData || [];
     yield put(vendorUpdateSuccess(vendorlist));
+  
     console.log(response.data)
+      toast.success("Vendor Table fetched successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   } catch (error) {
     console.error("Vendor Fetch Error:", error);
     yield put(
       vendorUpdateFailure(
         error?.response?.data?.message || "Vendor fetch failed"
+        
       )
     );
+    toast.error(" Vendor table  failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   }
 }
 
@@ -94,6 +105,7 @@ function* fetchCountries() {
     );
 
     yield put(fetchCountriesSuccess(response.data?.data || []));
+    
   } catch (error) {
     console.error("Country Fetch Error:", error.message);
 
@@ -161,6 +173,11 @@ function* fetchVendorByIdSaga(action) {
 
     if (response.data && response.data.data) {
       yield put(fetchVendorByIdSuccess(response.data.data));
+         toast.success(" Vendor fetched successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
     } else {
       throw new Error('Invalid response structure');
     }
@@ -170,6 +187,11 @@ function* fetchVendorByIdSaga(action) {
       error.message || 
       'Failed to fetch vendor details'
     ));
+      toast.error(" Vendor fetched Fialed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   }
 }
 
@@ -193,11 +215,21 @@ function* updateVendorSaga(action) {
 
     console.log("Update API response:", response.data.data);
     yield put(updateVendorByIdSuccess(response.data?.data));
+    toast.success(" Vendor updated successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   } catch (error) {
     // console.error("Update saga error:", error);
     yield put(updateVendorByIdFailure(
       error?.response?.data?.message || error.message || 'Update failed'
     ));
+     toast.error(" Vendor updated Failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   }
 }
 
@@ -222,9 +254,19 @@ function* createVendorSaga(action) {
     );
 
     yield put({ type: 'CREATE_VENDOR_SUCCESS', payload: response.data.data });
+       toast.success("Vendor Create successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   } catch (error) {
     yield put({ type: 'CREATE_VENDOR_FAILURE', payload: error.message });
   }
+   toast.error("Vendor Create Failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
 }
 
 function* deleteContactSaga(action) {
@@ -250,9 +292,19 @@ function* deleteContactSaga(action) {
     yield call(axios.delete, url, config);
 
     yield put(deleteContactSuccess(contactId));
+       toast.success("Contact Deleted successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   } catch (error) {
     console.error("Delete Contact Error:", error?.response?.data || error.message);
     yield put(deleteContactFailure(error?.response?.data?.message || "Delete contact failed"));
+      toast.error("Contact Deleted failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   }
 }
 
@@ -282,11 +334,21 @@ function* putcontactlist(action) {
 
     console.log("Update contact response:", response?.data?.data?.contactList);
     yield put(putcontactSuccess(response?.data?.data?.contactList || []));
+       toast.success(" Contact  Upadted successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   } catch (error) {
     console.error("Contact update error:", error);
     yield put(
       putcontactFailure(error?.response?.data?.message || "Contact Update Error")
     );
+     toast.error(" Contact  Upadted failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   }
 }
 
@@ -320,10 +382,15 @@ function* createContactSaga(action) {
 
     const newContact = {
       ...payload,
-      id: response.data.data, // this is the contactId
+      id: response.data.data, 
     };
 
     yield put(createContactSuccess(newContact));
+       toast.success(" Contact Created successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   } catch (error) {
     console.error("Contact creation error:", error?.response?.data || error.message);
     yield put(
@@ -331,6 +398,11 @@ function* createContactSaga(action) {
         error?.response?.data?.message || "Contact Create Error"
       )
     );
+     toast.error(" Contact  created failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   }
 }
 
@@ -348,8 +420,4 @@ export default function* vendorSaga() {
   yield takeLatest(DELETE_CONTACT_REQUEST, deleteContactSaga);
   yield takeLatest(PUT_CONTACT_REQUEST,putcontactlist)
   yield takeLatest(CREATE_CONTACT_REQUEST,createContactSaga)
-
-
-
-
 }

@@ -4,7 +4,7 @@ import '../Loader_File/Loader.css'
 const Loader = () => {
   return (
     <div className="loader-overlay">
-      <div className="orbit-loader">
+      <div className="ring-loader">
         <span></span>
         <span></span>
         <span></span>

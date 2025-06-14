@@ -10,10 +10,14 @@ import VendorTable from './Components/VendorPage/VendorTable';
 import VendorEdit from './Components/VendorPage/VendorEdit';
 import VendorContacts from './Components/VendorPage/VendorContacts';
 import ExamFile from './Components/ExamFile';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
+    <>
     <BrowserRouter>
+     <ToastContainer /> 
     <Routes>
       <Route path='/' element={<Login/>}/>
       <Route path='/access' element ={<AccessCodeModal/>}/>
@@ -26,11 +30,9 @@ function App() {
     <Route path="/vendor/update/:id" element={<VendorEdit />} />
     <Route path='/vendorcontact'element={<VendorContacts/>}/>
     <Route path='/exam' element={<ExamFile/>}/>
-
-
-
     </Routes>
     </BrowserRouter>
+    </>
   );
 }
 

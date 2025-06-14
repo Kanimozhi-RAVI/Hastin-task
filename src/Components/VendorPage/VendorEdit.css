@@ -4,12 +4,11 @@
   font-family: 'Segoe UI', sans-serif;
   /* width: 90%; */
   padding: 2rem;
-  background-color: #f9fafb;
+  /* background-color: #f9fafb; */
   justify-items: center;
  
 }
 
-/* Header */
 .vendor-edit-container h2 {
   color: #1e3a8a;
   font-size: 1.75rem;
@@ -17,7 +16,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Form layout */
 .form-sections {
   display: flex;
   flex-wrap: wrap;
@@ -29,7 +27,7 @@
   background-color: #ffffff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   flex: 1;
   min-width: 300px;
 }
@@ -43,7 +41,6 @@
   padding-bottom: 0.5rem;
 }
 
-/* Label & Inputs */
 .form-card label {
   display: flex;
   flex-direction: column;
@@ -72,7 +69,6 @@
  
 }
 
-/* Contact Info section */
 .vendor-edit-container > div > h3 {
   margin-top: 2rem;
   color: #2563eb;
@@ -81,7 +77,6 @@
   margin-bottom: 1rem;
 }
 
-/* Submit button section */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -102,4 +97,26 @@
 
 .form-actions button:hover {
   background-color: #1d4ed8;
+}
+.contact-design{
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  border-radius: 15px;
+  margin-top: 50px;
+} .error {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+@media screen and (max-width:320px){
+.form-card{
+  max-width: 50px;
+}
+.vendor-edit-container{
+  justify-items: center;
+}
+  
+.contact-design{
+max-width: 300px;
+
+}
 }

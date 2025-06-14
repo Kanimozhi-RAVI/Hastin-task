@@ -16,6 +16,7 @@ const VendorTable = () => {
   }, [dispatch]);
 
   return (
+    
     <div className="vendor-container">
       <div className="vendor-header">
         <div className="tabs">
