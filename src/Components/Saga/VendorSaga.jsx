@@ -227,26 +227,35 @@ function* createVendorSaga(action) {
   }
 }
 
-
-
 function* deleteContactSaga(action) {
-  const { vendorId, contactId } = action.payload;
+  console.log("Saga received payload:", action.payload); // ✅ LOG IT
+
+  const { contactId, createdBy } = action.payload || {};
+  console.log("contactId:", contactId); // check if undefined
+  console.log("createdBy:", createdBy);
 
   try {
-    const token = localStorage.getItem('token');
-    const response = yield call(axios.delete, 
-      `https://hastin-container.com/staging/api/vendor/contact/delete/${contactId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const token = localStorage.getItem("authToken");
+
+    const config = {
+      headers: {
+        Authorization: `BslogiKey ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    const url = `https://hastin-container.com/staging/api/vendor/contact/delete/${contactId}/${createdBy}`;
+    console.log("DELETE URL:", url);
+
+    yield call(axios.delete, url, config);
+
     yield put(deleteContactSuccess(contactId));
   } catch (error) {
-    yield put(deleteContactFailure(error.response?.data?.message || error.message));
+    console.error("Delete Contact Error:", error?.response?.data || error.message);
+    yield put(deleteContactFailure(error?.response?.data?.message || "Delete contact failed"));
   }
 }
+
 
 
 
@@ -282,7 +291,6 @@ function* putcontactlist(action) {
 }
 
 
-
 function* createContactSaga(action) {
   try {
     const token = localStorage.getItem("authToken");
@@ -303,8 +311,6 @@ function* createContactSaga(action) {
       createdBy: action.payload.createdBy,
     };
 
-    console.log("Payload for contact create:", JSON.stringify(payload, null, 2));
-
     const response = yield call(
       axios.post,
       "https://hastin-container.com/staging/api/vendor/contact/create",
@@ -312,7 +318,12 @@ function* createContactSaga(action) {
       config
     );
 
-    yield put(createContactSuccess(response.data.data));
+    const newContact = {
+      ...payload,
+      id: response.data.data, // this is the contactId
+    };
+
+    yield put(createContactSuccess(newContact));
   } catch (error) {
     console.error("Contact creation error:", error?.response?.data || error.message);
     yield put(
@@ -322,6 +333,7 @@ function* createContactSaga(action) {
     );
   }
 }
+
 
 
 

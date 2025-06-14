@@ -108,27 +108,32 @@ const vendorReducer = (state = initialState, action) => {
         }
 
 
-     case DELETE_CONTACT_REQUEST:
-      return {
-        ...state,
-        contactDeleteLoading: true,
-        contactDeleteError: null,
-      };
-   case DELETE_CONTACT_SUCCESS:
+   case DELETE_CONTACT_REQUEST:
   return {
     ...state,
+    contactDeleteLoading: true,
+    contactDeleteError: null,
+  };
+
+case DELETE_CONTACT_SUCCESS:
+  return {
+    ...state,
+    contactDeleteLoading: false,
     singleVendor: {
       ...state.singleVendor,
-      contactList: state.singleVendor.contactList.filter(c => c.id !== action.payload),
+      contactList: state.singleVendor.contactList.filter(
+        (c) => c.id !== action.payload
+      ),
     },
   };
 
-    case DELETE_CONTACT_FAILURE:
-      return {
-        ...state,
-        contactDeleteLoading: false,
-        contactDeleteError: action.payload,
-      };
+case DELETE_CONTACT_FAILURE:
+  return {
+    ...state,
+    contactDeleteLoading: false,
+    contactDeleteError: action.payload,
+  };
+
 
       case CREATE_CONTACT_REQUEST:
   return { ...state, loading: true };

@@ -107,10 +107,11 @@ export const putcontactFailure = (error) => ({
 
 
 
-export const deleteContactRequest = (vendorId, contactId) => ({
+export const deleteContactRequest = (payload ) => ({
   type: DELETE_CONTACT_REQUEST,
-  payload: { vendorId, contactId },
+  payload,
 });
+
 
 export const deleteContactSuccess = (contactId) => ({
   type: DELETE_CONTACT_SUCCESS,

@@ -42,7 +42,6 @@ const VendorContacts = ({ contacts, setContacts }) => {
     };
 
     if (!c.id) {
-      console.log("Payload being sent for contact create:", JSON.stringify(payload, null, 2));
       dispatch(createContactRequest(payload));
     } else {
       payload.id = c.id;
@@ -50,14 +49,23 @@ const VendorContacts = ({ contacts, setContacts }) => {
     }
   };
 
-  const handleDelete = (index) => {
-    const c = contacts[index];
-    if (vendorId && c.id) {
-      dispatch(deleteContactRequest(vendorId, c.id));
-    }
-    const updated = contacts.filter((_, i) => i !== index);
-    setContacts(updated);
-  };
+ const handleDelete = (index) => {
+  const c = contacts[index];
+
+  if (vendorId && c?.id) {
+  dispatch(deleteContactRequest({
+  contactId: c.id,
+  createdBy: "adf8906a-cf9a-490f-a233-4df16fc86c58", 
+}));
+
+  } else {
+    console.warn("Missing vendorId or contactId", { contactId: c.id , createdBy});
+  }
+
+  const updated = contacts.filter((_, i) => i !== index);
+  setContacts(updated);
+};
+
 
   const addContact = () => {
     setContacts([
