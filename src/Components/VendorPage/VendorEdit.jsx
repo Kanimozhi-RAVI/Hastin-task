@@ -29,11 +29,11 @@ const VendorEdit = () => {
   const currencies = useSelector(state => state.vendor.currencies || []);
   const cities = useSelector(state => state.vendor.cities || []);
 
-    const [isLoading, setIsLoading] = useState(true); // ✅ State for loader
+    const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsLoading(false); // Stop loader after 2 seconds
+      setIsLoading(false); 
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
