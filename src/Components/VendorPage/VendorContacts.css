@@ -4,45 +4,51 @@
   background-color: #fff;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
-  
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
 }
 
 .contact-section h3 {
   margin-bottom: 1rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
   color: #111827;
 }
 
 .contact-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
 }
 
 .contact-table th,
 .contact-table td {
-  padding: 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 0.85rem;
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
   text-align: left;
+  vertical-align: middle;
 }
 
 .contact-table th {
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: #f9fafb;
   font-weight: 600;
+  color: #374151;
 }
 
-.contact-table td input,
-.contact-table td select {
+.contact-table input,
+.contact-table select {
   width: 100%;
-  padding: 0.25rem 0.5rem;
+  padding: 6px 8px;
   border: 1px solid #d1d5db;
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: 13px;
 }
 
-.contact-table td select {
-  height: 32px;
+.contact-table input:focus,
+.contact-table select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 .text-right {
@@ -51,36 +57,44 @@
 
 .icon {
   cursor: pointer;
-  margin-left: 0.4rem;
-  font-size: 0.8rem;
-  vertical-align: middle;
+  margin: 0 5px;
+  font-size: 1rem;
 }
 
 .icon.tick {
-  color: #2563eb; 
+  color: green;
 }
 
 .icon.delete {
-  color: #ef4444;
+  color: red;
 }
 
-button {
+.icon.cancel {
+  color: gray;
+}
+
+.add-btn-wrapper {
   margin-top: 1rem;
-  padding: 0.4rem 1rem;
-  background-color: #2563eb;
+  text-align: left;
+}
+
+.add-contact-btn {
+  background-color: #6366f1;
   color: white;
   border: none;
+  padding: 8px 16px;
+  font-size: 14px;
   border-radius: 6px;
-  font-size: 0.85rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #1d4ed8;
+.add-contact-btn:hover {
+  background-color: #4f46e5;
 }
-@media screen and (max-width:320px) {
-  .contact-section{
- overflow: scroll; 
- }
 
+.error {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
 }

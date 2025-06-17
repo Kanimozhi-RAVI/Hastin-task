@@ -14,6 +14,9 @@ import { VENDOR_UPDATE_FAILURE, VENDOR_UPDATE_REQUEST, VENDOR_UPDATE_SUCCESS,FET
   CREATE_CONTACT_REQUEST,
   CREATE_CONTACT_SUCCESS,
   CREATE_CONTACT_FAILURE,
+  FETCH_INACTIVE_VENDORS_REQUEST,
+  FETCH_INACTIVE_VENDORS_SUCCESS,
+  FETCH_INACTIVE_VENDORS_FAILURE
  } from "../Type"
 
 export const vendorUpdateRequest = (payload) => ({
@@ -121,4 +124,22 @@ export const deleteContactSuccess = (contactId) => ({
 export const deleteContactFailure = (error) => ({
   type: DELETE_CONTACT_FAILURE,
   payload: error,
+});
+
+
+
+
+export const fetchInactiveVendorsRequest = () => ({
+  type: FETCH_INACTIVE_VENDORS_REQUEST,
+  // payload,
+});
+
+export const fetchInactiveVendorsSuccess = (vendors) => ({
+  type: FETCH_INACTIVE_VENDORS_SUCCESS,
+  payload: vendors
+});
+
+export const fetchInactiveVendorsFailure = (error) => ({
+  type: FETCH_INACTIVE_VENDORS_FAILURE,
+  payload: error
 });

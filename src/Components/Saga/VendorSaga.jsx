@@ -14,6 +14,7 @@ import {
   putcontactFailure,
     createContactSuccess,
   createContactFailure,
+  fetchInactiveVendorsSuccess,
 } from '../Action_file/VendorAction';
 import {
   VENDOR_UPDATE_REQUEST,
@@ -26,8 +27,8 @@ import {
   CREATE_VENDOR_REQUEST,
   PUT_CONTACT_REQUEST,
   CREATE_CONTACT_REQUEST,
-
-
+  FETCH_INACTIVE_VENDORS_REQUEST,
+  FETCH_INACTIVE_VENDORS_FAILURE,
 } from "../Type";
 
 import { takeLatest, put, call } from "redux-saga/effects";
@@ -253,7 +254,7 @@ function* createVendorSaga(action) {
       config
     );
 
-    yield put({ type: 'CREATE_VENDOR_SUCCESS', payload: response.data.data });
+    yield put(createContactSuccess(response?.data?.data))
        toast.success("Vendor Create successfully!", {
       position: "top-right",
       autoClose: 3000,
@@ -270,10 +271,9 @@ function* createVendorSaga(action) {
 }
 
 function* deleteContactSaga(action) {
-  console.log("Saga received payload:", action.payload); // ✅ LOG IT
-
-  const { contactId, createdBy } = action.payload || {};
-  console.log("contactId:", contactId); // check if undefined
+  console.log("Saga received payload:", action.payload); 
+ const { vendorId, contactId, createdBy, onSuccess } = action.payload || {};
+  console.log("contactId:", contactId); 
   console.log("createdBy:", createdBy);
 
   try {
@@ -291,23 +291,16 @@ function* deleteContactSaga(action) {
 
     yield call(axios.delete, url, config);
 
-    yield put(deleteContactSuccess(contactId));
-       toast.success("Contact Deleted successfully!", {
-      position: "top-right",
-      autoClose: 3000,
-      theme: "colored",
-    });
+    yield put(fetchVendorByIdSuccess(contactId)); // ✅ Then refresh vendor data
+
+    if (onSuccess) {
+      onSuccess(); // ✅ Then finally call UI updates (setValues etc.)
+    }
+
   } catch (error) {
-    console.error("Delete Contact Error:", error?.response?.data || error.message);
-    yield put(deleteContactFailure(error?.response?.data?.message || "Delete contact failed"));
-      toast.error("Contact Deleted failed!", {
-      position: "top-right",
-      autoClose: 3000,
-      theme: "colored",
-    });
+    console.error('Delete contact failed', error);
   }
 }
-
 
 
 
@@ -334,7 +327,7 @@ function* putcontactlist(action) {
 
     console.log("Update contact response:", response?.data?.data?.contactList);
     yield put(putcontactSuccess(response?.data?.data?.contactList || []));
-       toast.success(" Contact  Upadted successfully!", {
+       toast.success(" Contact  Update successfully!", {
       position: "top-right",
       autoClose: 3000,
       theme: "colored",
@@ -344,7 +337,7 @@ function* putcontactlist(action) {
     yield put(
       putcontactFailure(error?.response?.data?.message || "Contact Update Error")
     );
-     toast.error(" Contact  Upadted failed!", {
+     toast.error(" Contact  Update failed!", {
       position: "top-right",
       autoClose: 3000,
       theme: "colored",
@@ -406,7 +399,44 @@ function* createContactSaga(action) {
   }
 }
 
+ // update path as needed
 
+function* getInactiveVendorsSaga() {
+  try {
+    const token = localStorage.getItem('authToken');
+    console.log('Auth Token:', token);
+
+    const config = {
+      headers: {
+        Authorization: `BslogiKey ${token}`, // ✅ Fixed prefix
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const payload = {
+      pagination: {
+        index: 1,
+        rowCount: -1,
+        searchObj: null,
+        sortingObj: null,
+      },
+    };
+
+    const response = yield call(() =>
+      axios.put("https://hastin-container.com/staging/api/vendor/search/inactive", payload, config)
+    );
+
+    const tableData = response.data?.data?.tableData || [];
+
+    yield put(fetchInactiveVendorsSuccess(tableData));
+  } catch (error) {
+    console.error("Inactive Vendor Fetch Failed:", error?.response || error);
+    yield put({
+      type: FETCH_INACTIVE_VENDORS_FAILURE,
+      payload: error?.response?.data?.message || "Failed to fetch inactive vendors",
+    });
+  }
+}
 
 
 export default function* vendorSaga() {
@@ -418,6 +448,7 @@ export default function* vendorSaga() {
   yield takeLatest(FETCH_VENDOR_BY_ID_REQUEST, fetchVendorByIdSaga);
   yield takeLatest(CREATE_VENDOR_REQUEST, createVendorSaga);
   yield takeLatest(DELETE_CONTACT_REQUEST, deleteContactSaga);
-  yield takeLatest(PUT_CONTACT_REQUEST,putcontactlist)
-  yield takeLatest(CREATE_CONTACT_REQUEST,createContactSaga)
+  yield takeLatest(PUT_CONTACT_REQUEST,putcontactlist);
+  yield takeLatest(CREATE_CONTACT_REQUEST,createContactSaga);
+  yield takeLatest(FETCH_INACTIVE_VENDORS_REQUEST,getInactiveVendorsSaga);
 }

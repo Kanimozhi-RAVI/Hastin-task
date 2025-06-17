@@ -1,11 +1,16 @@
-
-import { VENDOR_UPDATE_FAILURE, VENDOR_UPDATE_REQUEST, VENDOR_UPDATE_SUCCESS ,  FETCH_COUNTRIES_SUCCESS,
+import {
+  VENDOR_UPDATE_FAILURE,
+  VENDOR_UPDATE_REQUEST,
+  VENDOR_UPDATE_SUCCESS,
+  FETCH_COUNTRIES_SUCCESS,
   FETCH_CURRENCIES_SUCCESS,
-  FETCH_CITIES_SUCCESS,FETCH_VENDOR_BY_ID_REQUEST,
-FETCH_VENDOR_BY_ID_SUCCESS,FETCH_VENDOR_BY_ID_FAILURE,
-UPDATE_VENDOR_BY_ID_REQUEST,
-UPDATE_VENDOR_BY_ID_SUCCESS,
-UPDATE_VENDOR_BY_ID_FAILURE,
+  FETCH_CITIES_SUCCESS,
+  FETCH_VENDOR_BY_ID_REQUEST,
+  FETCH_VENDOR_BY_ID_SUCCESS,
+  FETCH_VENDOR_BY_ID_FAILURE,
+  UPDATE_VENDOR_BY_ID_REQUEST,
+  UPDATE_VENDOR_BY_ID_SUCCESS,
+  UPDATE_VENDOR_BY_ID_FAILURE,
   DELETE_CONTACT_REQUEST,
   DELETE_CONTACT_SUCCESS,
   DELETE_CONTACT_FAILURE,
@@ -15,7 +20,12 @@ UPDATE_VENDOR_BY_ID_FAILURE,
   CREATE_CONTACT_REQUEST,
   CREATE_CONTACT_SUCCESS,
   CREATE_CONTACT_FAILURE,
-} from "../Type"
+  INACTIVE_VENDOR_SUCCESS,
+  INACTIVE_VENDOR_FAILURE,
+  FETCH_INACTIVE_VENDORS_REQUEST,
+  FETCH_INACTIVE_VENDORS_SUCCESS,
+  FETCH_INACTIVE_VENDORS_FAILURE,
+} from "../Type";
 
 const initialState = {
   loading: null,
@@ -26,26 +36,34 @@ const initialState = {
   cities: [],
   singleVendor: null,
   updateSuccess: false,
-  contactlist:[],
   contactDeleteLoading: false,
   contactDeleteError: null,
+  details: [],
+   inactiveVendors: [],
 };
 
 const vendorReducer = (state = initialState, action) => {
   switch (action.type) {
-   case VENDOR_UPDATE_REQUEST:
-        return{
-            ...state,loading:true, error:null
-        }
-        case VENDOR_UPDATE_SUCCESS:
-            return{
-                ...state, loading:false, vendors: action.payload,
-            }
-            case VENDOR_UPDATE_FAILURE:
-                return{
-                    ...state, loading:false, error:action.payload,
-                }
+    case VENDOR_UPDATE_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
 
+    case VENDOR_UPDATE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        vendors: action.payload,
+      };
+
+    case VENDOR_UPDATE_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
 
     case FETCH_COUNTRIES_SUCCESS:
       return { ...state, countries: action.payload };
@@ -56,22 +74,27 @@ const vendorReducer = (state = initialState, action) => {
     case FETCH_CITIES_SUCCESS:
       return { ...state, cities: action.payload };
 
-      
-
     case FETCH_VENDOR_BY_ID_REQUEST:
       return { ...state, loading: true };
 
     case FETCH_VENDOR_BY_ID_SUCCESS:
-      return { ...state, loading: false, singleVendor: action.payload };
+      return {
+        ...state,
+        loading: false,
+        singleVendor: action.payload,
+        details: action.payload,
+      };
 
     case FETCH_VENDOR_BY_ID_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-
-
-
     case UPDATE_VENDOR_BY_ID_REQUEST:
-      return { ...state, loading: true, updateSuccess: false, error: null };
+      return {
+        ...state,
+        loading: true,
+        updateSuccess: false,
+        error: null,
+      };
 
     case UPDATE_VENDOR_BY_ID_SUCCESS:
       return {
@@ -88,68 +111,89 @@ const vendorReducer = (state = initialState, action) => {
         updateSuccess: false,
         error: action.payload,
       };
-   
+
     case PUT_CONTACT_REQUEST:
       return {
         ...state,
         loading: true,
-        contactUpdateError: null,
+        error: null,
       };
 
     case PUT_CONTACT_SUCCESS:
       return {
         ...state,
         loading: false,
-        contactList: action.payload, 
+        singleVendor: {
+          ...state.singleVendor,
+          contactList: state.singleVendor.contactList.map((c) =>
+            c.id === action.payload.id ? action.payload : c
+          ),
+        },
       };
-      case PUT_CONTACT_FAILURE:
-        return {
-          ...state, loading:false,error:action.payload
-        }
+
+    case PUT_CONTACT_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case DELETE_CONTACT_REQUEST:
+      return {
+        ...state,
+        contactDeleteLoading: true,
+        contactDeleteError: null,
+      };
+
+    case DELETE_CONTACT_SUCCESS:
+      return {
+        ...state,
+        contactDeleteLoading: false,
+        singleVendor: {
+          ...state.singleVendor,
+          contactList: state.singleVendor.contactList.filter(
+            (c) => c.id !== action.payload
+          ),
+        },
+      };
+
+    case DELETE_CONTACT_FAILURE:
+      return {
+        ...state,
+        contactDeleteLoading: false,
+        contactDeleteError: action.payload,
+      };
+
+    case CREATE_CONTACT_REQUEST:
+      return { ...state, loading: true };
+
+    case CREATE_CONTACT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        singleVendor: {
+          ...state.singleVendor,
+          contactList: [
+            ...(state.singleVendor?.contactList || []),
+            action.payload,
+          ],
+        },
+      };
+
+    case CREATE_CONTACT_FAILURE:
+      return { ...state, loading: false, error: action.payload };
 
 
-   case DELETE_CONTACT_REQUEST:
-  return {
-    ...state,
-    contactDeleteLoading: true,
-    contactDeleteError: null,
-  };
+    case FETCH_INACTIVE_VENDORS_REQUEST:
+      return { ...state, loading: true, error: null };
 
-case DELETE_CONTACT_SUCCESS:
-  return {
-    ...state,
-    contactDeleteLoading: false,
-    singleVendor: {
-      ...state.singleVendor,
-      contactList: state.singleVendor.contactList.filter(
-        (c) => c.id !== action.payload
-      ),
-    },
-  };
+    case FETCH_INACTIVE_VENDORS_SUCCESS:
+      return { ...state, loading: false, inactiveVendors: action.payload };
 
-case DELETE_CONTACT_FAILURE:
-  return {
-    ...state,
-    contactDeleteLoading: false,
-    contactDeleteError: action.payload,
-  };
+    case FETCH_INACTIVE_VENDORS_FAILURE:
+      return { ...state, loading: false, error: action.payload };
 
-
-      case CREATE_CONTACT_REQUEST:
-  return { ...state, loading: true };
-
-case CREATE_CONTACT_SUCCESS:
-  return {
-    ...state,
-    loading: false,
-    contactList: action.payload,
-  };
-
-case CREATE_CONTACT_FAILURE:
-  return { ...state, loading: false, error: action.payload };
-
-
-    default:
+   default:
       return state;
   }
 };

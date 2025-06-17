@@ -1,42 +1,71 @@
-import React from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import React, { useState } from 'react';
 import { FaCheck, FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
-const ContactRow = ({ contact, index, handleDelete, handleSetDefault, vendorId, createdBy, dispatch, putcontactRequest, createContactRequest }) => {
+const ContactRow = ({
+  contact,
+  index,
+  contacts,
+  setContacts,
+  handleDelete,
+  vendorId,
+  createdBy,
+  dispatch,
+  putcontactRequest,
+  createContactRequest,
+}) => {
+  const [name, setName] = useState(contact.name || '');
+  const [email, setEmail] = useState(contact.email || '');
+  const [mobileNo, setMobileNo] = useState(contact.mobileNo || '');
 
-  const formik = useFormik({
-    initialValues: {
-      name: contact.name || '',
-      email: contact.email || '',
-      mobileNo: contact.mobileNo || '',
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required('Name is required'),
-      email: Yup.string().email('Invalid email').required('Email required'),
-      mobileNo: Yup.string()
-        .matches(/^[0-9]{10}$/, 'Mobile number must be 10 digits')
-        .required('Phone required'),
-    }),
-    onSubmit: (values) => {
-      const payload = {
-        ...values,
-        mobileNo: Number(values.mobileNo),
-        isDefault: contact.isDefault === 'YES',
-        vendorId,
-        createdBy,
-      };
+  const handleSubmit = () => {
+    if (!name.trim() || !email.trim() || !mobileNo.trim()) {
+      toast.error('Please fill all fields');
+      return;
+    }
+const validateContacts = () => {
+  const filled = contacts.filter(c => c.name && c.email && c.mobileNo);
 
-      if (contact.id) {
-        payload.id = contact.id;
-        dispatch(putcontactRequest(payload));
-      } else {
-        dispatch(createContactRequest(payload));
-      }
+  const defaultCount = filled.filter(
+    (c) => c.isDefault === 'YES' || c.isDefault === true
+  ).length;
 
-      alert('Contact saved successfully!');
-    },
-  });
+  if (defaultCount === 0) {
+    toast.error("At least one contact must be marked as default");
+    return false;
+  }
+
+  if (defaultCount > 1) {
+    toast.error("Only one contact can be marked as default");
+    return false;
+  }
+
+  return true;
+};
+
+
+    const con = {
+      name,
+      email,
+      mobileNo,
+      isDefault: contact.isDefault === 'YES' || contact.isDefault === true,
+      vendorId,
+      createdBy,
+    };
+
+    if (contact.id) {
+      dispatch(putcontactRequest({ ...con, id: contact.id }));
+    } else {
+      dispatch(createContactRequest(con));
+    }
+  };
+
+  const handleSelectChange = (e) => {
+    const value = e.target.value;
+    const updated = [...contacts];
+    updated[index].isDefault = value;
+    setContacts(updated);
+  };
 
   return (
     <tr>
@@ -44,50 +73,42 @@ const ContactRow = ({ contact, index, handleDelete, handleSetDefault, vendorId, 
       <td>
         <input
           type="text"
-          name="name"
-          value={formik.values.name}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
         />
-        {formik.touched.name && formik.errors.name && (
-          <div className="error">{formik.errors.name}</div>
-        )}
       </td>
       <td>
         <input
           type="email"
-          name="email"
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
         />
-        {formik.touched.email && formik.errors.email && (
-          <div className="error">{formik.errors.email}</div>
-        )}
       </td>
       <td>
         <input
           type="number"
-          name="mobileNo"
-          value={formik.values.mobileNo}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          value={mobileNo}
+          onChange={(e) => setMobileNo(e.target.value)}
+          placeholder="Phone"
         />
-        {formik.touched.mobileNo && formik.errors.mobileNo && (
-          <div className="error">{formik.errors.mobileNo}</div>
-        )}
       </td>
       <td>
         <select
-          value={contact.isDefault}
-          onChange={() => handleSetDefault(index)}
+          value={
+            contact.isDefault === true || contact.isDefault === 'YES'
+              ? 'YES'
+              : 'NO'
+          }
+          onChange={handleSelectChange}
         >
           <option value="YES">YES</option>
           <option value="NO">NO</option>
         </select>
       </td>
       <td className="text-right">
-        <FaCheck className="icon tick" onClick={formik.handleSubmit} />
+        <FaCheck className="icon tick" onClick={handleSubmit} />
         <FaTrash className="icon delete" onClick={() => handleDelete(index)} />
       </td>
     </tr>

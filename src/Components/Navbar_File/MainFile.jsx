@@ -24,8 +24,8 @@ const MainFile = () => {
     <>
       {isLoading && <Loader />} 
 
-      <nav className="navbar navbar-expand-lg navbar-dark px-4" style={{ backgroundColor: "#812990" }}>
-        <span className="navbar-brand text-white fs-4">🔒 SecureApp</span>
+      <nav className="navbar navbar-expand-lg navbar-dark px-4" style={{ backgroundColor: "white" }}>
+        <span className="navbar-brand fs-4" style={{fontFamily:"algeria", fontWeight:"bold", color:"purple"}}>HASTIN</span>
 
         <div className="ms-auto dropdown">
           <button

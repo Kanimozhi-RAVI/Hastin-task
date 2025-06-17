@@ -5,7 +5,7 @@ import Login from './Components/Login_page/Login';
 import AccessCodeModal from './Components/Login_page/AccessCode';
 import MainFile from './Components/Navbar_File/MainFile';
 import Loader from './Components/Loader_File/Loader';
-import VendorUpdate from './Components/VendorPage/VendorUpdate';
+// import VendorUpdate from './Components/VendorPage/VendorUpdate';
 import VendorTable from './Components/VendorPage/VendorTable';
 import VendorEdit from './Components/VendorPage/VendorEdit';
 import VendorContacts from './Components/VendorPage/VendorContacts';

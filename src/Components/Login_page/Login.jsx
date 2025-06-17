@@ -20,7 +20,7 @@ const Login = () => {
 
   useEffect(() => {
   if (loginData) {
-    toast.success("Login successful! OTP sent.", {
+    toast.success("Login successful!.", {
       position: "top-right",
       autoClose: 3000,
       pauseOnHover: true,

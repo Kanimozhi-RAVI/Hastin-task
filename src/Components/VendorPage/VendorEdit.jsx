@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-
+import { toast } from 'react-toastify';
 import {
   fetchVendorByIdRequest,
   fetchCountriesRequest,
@@ -84,30 +84,32 @@ const VendorEdit = () => {
     bankSwiftCode: Yup.string(),
   });
 
-  const handleSubmit = (values) => {
-    const defaultCount = contacts.filter(c => c.isDefault === 'YES' || c.isDefault === true).length;
-    
+ const handleSubmit = (values) => {
+  // if (contacts.length === 1) {
+  //   toast.error("Please add at least one contact.");
+  //   return;
+  // }
 
-    if (defaultCount !== 1) {
-      alert('One contact must be default.');
-      return;
-    }
+  // const defaultCount = contacts.filter(
+  //   c => c.isDefault === 'YES' || c.isDefault === true
+  // ).length;
 
-    const payload = {
-      id,
-      ...values,
-      contactList: contacts.map(c => ({
-        ...c,
-        isDefault: c.isDefault === 'YES' || c.isDefault === true,
-      })),
-    };
+  // // if (defaultCount !== 1) {
+  // //   toast.error("Exactly one contact must be marked as default.");
+  // //   return;
+  // // }
 
-    if (isEdit) {
-      dispatch(updateVendorByIdRequest(payload));
-    } else {
-      dispatch(createVendorRequest(payload));
-    }
+  const payload = {
+    id,
+    ...values,
+    contactList: contacts.map(c => ({
+      ...c,
+      isDefault: c.isDefault === 'YES' || c.isDefault === true,
+    })),
   };
+
+  dispatch(updateVendorByIdRequest(payload));
+};
 
   const [initialForm, setInitialForm] = useState(initialValues);
 
