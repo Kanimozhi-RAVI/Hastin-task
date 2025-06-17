@@ -79,7 +79,6 @@ const VendorContacts = () => {
   try {
     await contactSchema.fields.contacts.innerType.validate(contact, { abortEarly: false });
   } catch (validationError) {
-    // Do not show toast. Formik will show inline errors
     return;
   }
 

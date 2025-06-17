@@ -192,7 +192,6 @@ const VendorTable = () => {
     return null;
   })}
 
-  {/* Last Page */}
   {currentPage < totalPages - 2 && (
     <>
       {currentPage < totalPages - 3 && <span className="dots">...</span>}

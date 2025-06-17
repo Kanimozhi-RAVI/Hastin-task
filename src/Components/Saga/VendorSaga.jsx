@@ -291,10 +291,10 @@ function* deleteContactSaga(action) {
 
     yield call(axios.delete, url, config);
 
-    yield put(fetchVendorByIdSuccess(contactId)); // ✅ Then refresh vendor data
+    yield put(fetchVendorByIdSuccess(contactId)); 
 
     if (onSuccess) {
-      onSuccess(); // ✅ Then finally call UI updates (setValues etc.)
+      onSuccess(); 
     }
 
   } catch (error) {
@@ -399,7 +399,6 @@ function* createContactSaga(action) {
   }
 }
 
- // update path as needed
 
 function* getInactiveVendorsSaga() {
   try {
@@ -408,7 +407,7 @@ function* getInactiveVendorsSaga() {
 
     const config = {
       headers: {
-        Authorization: `BslogiKey ${token}`, // ✅ Fixed prefix
+        Authorization: `BslogiKey ${token}`, 
         'Content-Type': 'application/json',
       },
     };
