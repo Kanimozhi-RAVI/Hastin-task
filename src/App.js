@@ -23,7 +23,6 @@ function App() {
       <Route path='/access' element ={<AccessCodeModal/>}/>
       <Route path= '/nextpage' element={<MainFile/>}/>
      <Route path='/loader' element={<Loader/>}/>
-     {/* <Route path='/vendor' element={<VendorUpdate/>}/> */}
      <Route path='/tab' element={<VendorTable/>}/>
     <Route path="/vendoredit/:id" element={<VendorEdit />} />
     <Route path="/vendorcreate" element={<VendorEdit />} />

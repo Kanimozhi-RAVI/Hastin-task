@@ -3,14 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { toast } from 'react-toastify';
 import {
   fetchVendorByIdRequest,
   fetchCountriesRequest,
   fetchCurrenciesRequest,
   fetchCitiesRequest,
   updateVendorByIdRequest,
-  createVendorRequest,
 } from '../Action_file/VendorAction';
 import VendorContacts from './VendorContacts';
 import './VendorEdit.css';
@@ -85,20 +83,7 @@ const VendorEdit = () => {
   });
 
  const handleSubmit = (values) => {
-  // if (contacts.length === 1) {
-  //   toast.error("Please add at least one contact.");
-  //   return;
-  // }
-
-  // const defaultCount = contacts.filter(
-  //   c => c.isDefault === 'YES' || c.isDefault === true
-  // ).length;
-
-  // // if (defaultCount !== 1) {
-  // //   toast.error("Exactly one contact must be marked as default.");
-  // //   return;
-  // // }
-
+ 
   const payload = {
     id,
     ...values,
@@ -249,7 +234,7 @@ const VendorEdit = () => {
             </div>
 
             <div className="form-actions">
-              <button type="submit">{isEdit ? 'Update' : 'Save'}</button>
+              <button type="submit" onClick={() =>navigate('/nextpage') }>{isEdit ? 'Update' : 'Save'}</button>
             </div>
           </Form>
         )}

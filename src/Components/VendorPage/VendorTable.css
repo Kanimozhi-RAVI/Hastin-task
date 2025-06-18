@@ -111,11 +111,11 @@ tr:nth-child(even){background-color: #f2f2f2;}
   position: absolute;
   right: 0;
   top: 30px;
-  background: white;
+  background: transparent;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  z-index: 1000;
+  /* border: 1px solid #ddd; */
+  /* border-radius: 5px; */
+  z-index: 999;
 }
 
 .action-dropdown div {

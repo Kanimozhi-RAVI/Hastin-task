@@ -33,14 +33,17 @@
 .extra-left {
   flex: 1;
    background-image: url('../Assets/login\ img.jpg');
-   object-fit: cover;
-  color: #fff;
+   /* object-fit: cover; */
+  color: black;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 50px;
   text-align: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 .extra-left h2 {
@@ -70,7 +73,7 @@
 
 .extra-right h3 {
   font-size: 26px;
-  color: #812990;
+  color: #6c63ff;
   margin-bottom: 30px;
   text-align: center;
   font-weight: bold;
@@ -88,14 +91,14 @@
 }
 
 .extra-right form input:focus {
-  border-color: #812990;
+  border-color: #6c63ff;
   box-shadow: 0 0 5px rgba(129, 41, 144, 0.5);
 }
 
 .extra-login-btn {
   width: 100%;
   padding: 14px;
-  background-color: #812990;
+  background-color: #6c63ff;
   color: white;
   border: none;
   border-radius: 12px;
@@ -110,7 +113,7 @@
   align-items: center;
 }
 .extra-login-btn:hover {
-  background-color: #5b146a;
+  background-color: #5a51fa;
 }
 .logo{
 	font-size: 50px;

@@ -8,11 +8,11 @@ import {
   fetchVendorByIdSuccess,
   fetchVendorByIdFailure,
   updateVendorByIdSuccess,
-  updateVendorByIdFailure,  deleteContactSuccess,
+  updateVendorByIdFailure,  
   deleteContactFailure,
   putcontactSuccess,
   putcontactFailure,
-    createContactSuccess,
+  createContactSuccess,
   createContactFailure,
   fetchInactiveVendorsSuccess,
   markInactiveSuccess,
@@ -278,7 +278,7 @@ function* createVendorSaga(action) {
 
 function* deleteContactSaga(action) {
   console.log("Saga received payload:", action.payload); 
- const { vendorId, contactId, createdBy, onSuccess } = action.payload || {};
+ const { contactId, createdBy, onSuccess } = action.payload || {};
   console.log("contactId:", contactId); 
   console.log("createdBy:", createdBy);
 
@@ -298,13 +298,25 @@ function* deleteContactSaga(action) {
     yield call(axios.delete, url, config);
 
     yield put(fetchVendorByIdSuccess(contactId)); 
+     toast.success("Contact deleted successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
 
     if (onSuccess) {
       onSuccess(); 
     }
+    
 
   } catch (error) {
     console.error('Delete contact failed', error);
+    yield put(deleteContactFailure(error?.response?.data?.message || 'contact delete failed'))
+     toast.success("Contact deleted Failed!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   }
 }
 

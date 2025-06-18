@@ -163,13 +163,14 @@ const VendorTable = () => {
                         <div className="action-dropdown">
                           <div
                             onClick={() => navigate(`/vendoredit/${vendor.id}`)}
-                            style={{ backgroundColor: "indigo", color: "white", fontSize: "18px" }}
+                            style={{ backgroundColor: "goldenrod", color: "black", fontSize: "14px", borderRadius:"10px" , fontWeight:"500"}}
                           >
                             Edit
                           </div>
 
-                          <button
-                            style={{ border: "0", width: "100%" }}
+                          <div
+                            style={{ backgroundColor:'lightgoldenrodyellow',fontSize: "14px", color: "black", borderRadius:"10px", fontWeight:"500" }}
+                            
                             onClick={() => {
                               setSelectedVendorId(vendor.id);
                               setConfirmAction(vendor.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE');
@@ -177,11 +178,10 @@ const VendorTable = () => {
                               setActionMenu(null);
                             }}
                           >
-                            <div style={{ backgroundColor: "blue", color: "white" }}>
                               {vendor.status === 'ACTIVE' ? 'Mark as Inactive' : 'Mark as Active'}
                             </div>
-                          </button>
-                        </div>
+                          </div>
+                        
                       )}
                     </td>
                   </tr>
@@ -195,9 +195,9 @@ const VendorTable = () => {
       {confirmModal && (
         <div className="modalcon-overlay">
           <div className="modalcon">
-            <h3>
+            <h5>
               Are you sure you want to mark this vendor as {confirmAction === 'INACTIVE' ? 'inactive' : 'active'}?
-            </h3>
+            </h5>
             <div className="modalcon-buttons">
               <button className="button-confirm" onClick={handleConfirmAction}>Yes</button>
               <button className="button-cancel" onClick={() => setConfirmModal(false)}>Cancel</button>

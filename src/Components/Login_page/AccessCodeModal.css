@@ -65,18 +65,18 @@
 }
 
 .otp-box:focus {
-  border-color:#812990;
+  border-color:#6c63ff;
   box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
 }
 .btn-purple {
-  background-color: #812990 !important;
+  background-color: #6c63ff !important;
   border-color: #6f42c1 !important;
   color: white !important;
 }
 
 .btn-purple:hover,
 .btn-purple:focus {
-  background-color: #812990 !important;
+  background-color: #6c63ff !important;
   border-color: #5a3490 !important;
   color: white !important;
 }
