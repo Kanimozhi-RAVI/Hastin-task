@@ -19,6 +19,8 @@ import {
   markInactiveFilure,
   markActiveSuccess,
   markActiveFilure,
+  createVendorSuccess,
+  createVendorFailure,
 } from '../Action_file/VendorAction';
 import {
   VENDOR_UPDATE_REQUEST,
@@ -241,39 +243,52 @@ function* updateVendorSaga(action) {
 }
 
 
-
-
 function* createVendorSaga(action) {
   try {
     const token = localStorage.getItem('authToken');
+    const payload = action.payload || {};
     const config = {
       headers: {
         Authorization: `BslogiKey ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     };
 
     const response = yield call(
       axios.post,
-      "https://hastin-container.com/staging/api/vendor/create",
-      action.payload,
+      'https://hastin-container.com/staging/api/vendor/create',
+      payload,
       config
     );
 
-    yield put(createContactSuccess(response?.data?.data))
-       toast.success("Vendor Create successfully!", {
-      position: "top-right",
+    const vendorId = response?.data?.data?.id || response?.data?.data;
+
+    yield put(createVendorSuccess(response.data));
+
+    toast.success('Vendor created successfully!', {
+      position: 'top-right',
       autoClose: 3000,
-      theme: "colored",
+      theme: 'colored',
     });
   } catch (error) {
-    yield put({ type: 'CREATE_VENDOR_FAILURE', payload: error.message });
-  }
-   toast.error("Vendor Create Failed!", {
-      position: "top-right",
+    const errMsg =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error.message ||
+      'Something went wrong';
+
+    yield put(createVendorFailure(errMsg));
+
+    toast.error(`Vendor creation failed already exist!}`, {
+      position: 'top-right',
       autoClose: 3000,
-      theme: "colored",
+      theme: 'colored',
     });
+
+    if (action?.callback?.onError) {
+      action.callback.onError(errMsg);
+    }
+  }
 }
 
 function* deleteContactSaga(action) {
@@ -446,11 +461,21 @@ function* getInactiveVendorsSaga() {
     const tableData = response.data?.data?.tableData || [];
 
     yield put(fetchInactiveVendorsSuccess(tableData));
+     toast.success(" Inactive Vendor fetched successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   } catch (error) {
     console.error("Inactive Vendor Fetch Failed:", error?.response || error);
     yield put({
       type: FETCH_INACTIVE_VENDORS_FAILURE,
       payload: error?.response?.data?.message || "Failed to fetch inactive vendors",
+    });
+     toast.error("Inactive vendor fetched successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
     });
   }
 }

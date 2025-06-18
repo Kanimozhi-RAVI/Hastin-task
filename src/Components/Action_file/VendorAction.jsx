@@ -22,7 +22,9 @@ import { VENDOR_UPDATE_FAILURE, VENDOR_UPDATE_REQUEST, VENDOR_UPDATE_SUCCESS,FET
   MARK_INACTIVE_FAILURE,
   MARK_ACTIVE_REQUEST,
   MARK_ACTIVE_SUCCESS,
-  MARK_ACTIVE_FAILURE
+  MARK_ACTIVE_FAILURE,
+  CREATE_VENDOR_SUCESSS,
+  CREATE_VENDOR_FAILURE
  } from "../Type"
 
 export const vendorUpdateRequest = (payload) => ({
@@ -77,9 +79,18 @@ export const updateVendorByIdFailure = (error) => ({
   type: UPDATE_VENDOR_BY_ID_FAILURE,
   payload: error,
 });
-export const createVendorRequest = (payload) => ({
+export const createVendorRequest = (payload,callback) => ({
   type: CREATE_VENDOR_REQUEST,
-  payload
+  payload,
+  callback,
+});
+export const createVendorSuccess = (data) => ({
+  type:CREATE_VENDOR_SUCESSS,
+  payload:data,
+});
+export const createVendorFailure = (error) => ({
+  type: CREATE_VENDOR_FAILURE,
+  payload:error,
 });
 // export const updateVendorByIdRequest = (id) => ({
 //   type: UPDATE_VENDOR_BY_ID_REQUEST,

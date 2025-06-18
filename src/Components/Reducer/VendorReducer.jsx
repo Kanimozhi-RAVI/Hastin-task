@@ -20,14 +20,15 @@ import {
   CREATE_CONTACT_REQUEST,
   CREATE_CONTACT_SUCCESS,
   CREATE_CONTACT_FAILURE,
-  INACTIVE_VENDOR_SUCCESS,
-  INACTIVE_VENDOR_FAILURE,
   FETCH_INACTIVE_VENDORS_REQUEST,
   FETCH_INACTIVE_VENDORS_SUCCESS,
   FETCH_INACTIVE_VENDORS_FAILURE,
   MARK_INACTIVE_REQUEST,
   MARK_INACTIVE_SUCCESS,
   MARK_INACTIVE_FAILURE,
+  CREATE_VENDOR_REQUEST,
+  CREATE_VENDOR_SUCESSS,
+  CREATE_VENDOR_FAILURE,
 } from "../Type";
 
 const initialState = {
@@ -90,6 +91,26 @@ const vendorReducer = (state = initialState, action) => {
 
     case FETCH_VENDOR_BY_ID_FAILURE:
       return { ...state, loading: false, error: action.payload };
+
+
+
+
+
+      case CREATE_VENDOR_REQUEST:
+        return{
+          ...state, loading :true, error:null 
+        }
+        case CREATE_VENDOR_SUCESSS:
+          return{
+            ...state, loading:false,  vendor: action.payload,
+          }
+          case CREATE_VENDOR_FAILURE:
+            return{
+              ...state, loading:false, error:action.payload,
+            }
+ 
+
+
 
     case UPDATE_VENDOR_BY_ID_REQUEST:
       return {

@@ -10,12 +10,11 @@ import {
   createContactRequest,
   putcontactRequest,
   deleteContactRequest,
-  // fetchVendorByIdRequest,
 } from '../Action_file/VendorAction';
 
 import '../VendorPage/VendorContacts.css';
 
-const VendorContacts = () => {
+const VendorContacts = ({ contacts, setContacts }) => {
   const { id: vendorId } = useParams();
   const dispatch = useDispatch();
   const createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
@@ -48,17 +47,15 @@ const VendorContacts = () => {
     onSubmit: () => {},
   });
 
-  const { values, errors, touched, handleChange, handleBlur, setValues } = formik;
+  const { values, errors, touched, handleBlur, setValues } = formik;
 
   useEffect(() => {
-    if (contactList.length > 0) {
-      const formatted = contactList.map((c) => ({
-        ...c,
-        isDefault: c.isDefault ? 'YES' : 'NO',
-      }));
-      setValues({ contacts: formatted });
-    }
-  }, [contactList]);
+    const formatted = contacts.map((c) => ({
+      ...c,
+      isDefault: c.isDefault === true ? 'YES' : c.isDefault === false ? 'NO' : c.isDefault,
+    }));
+    setValues({ contacts: formatted });
+  }, [contacts]);
 
   const validateDefaultContact = (contacts) => {
     const count = contacts.filter((c) => c.isDefault === 'YES').length;
@@ -73,31 +70,46 @@ const VendorContacts = () => {
     return true;
   };
 
- const handleSave = async (index) => {
-  const contact = values.contacts[index];
-
-  try {
-    await contactSchema.fields.contacts.innerType.validate(contact, { abortEarly: false });
-  } catch (validationError) {
-    return;
-  }
-
-  if (!validateDefaultContact(values.contacts)) return;
-
-  const finalPayload = {
-    ...contact,
-    isDefault: contact.isDefault === 'YES',
-    vendorId,
-    createdBy,
+  const handleInputChange = (e, index, field) => {
+    const value = e.target.value;
+    const updated = [...values.contacts];
+    updated[index][field] = value;
+    setValues({ contacts: updated });
+    setContacts(updated);
   };
 
-  if (contact.id) {
-    dispatch(putcontactRequest({ ...finalPayload, id: contact.id }));
-  } else {
-    dispatch(createContactRequest(finalPayload));
-  }
-};
+  const handleSave = async (index) => {
+    const contact = values.contacts[index];
 
+    try {
+      await contactSchema.fields.contacts.innerType.validate(contact, { abortEarly: false });
+    } catch (validationError) {
+      return;
+    }
+
+    if (!validateDefaultContact(values.contacts)) return;
+
+    const finalPayload = {
+      ...contact,
+      isDefault: contact.isDefault === 'YES',
+      vendorId,
+      createdBy,
+    };
+
+    const updatedContacts = [...values.contacts];
+    updatedContacts[index] = { ...finalPayload };
+
+    if (vendorId) {
+      if (contact.id) {
+        dispatch(putcontactRequest({ ...finalPayload, id: contact.id }));
+      } else {
+        dispatch(createContactRequest(finalPayload));
+      }
+    }
+
+    setValues({ contacts: updatedContacts });
+    setContacts(updatedContacts);
+  };
 
   const handleDelete = (index) => {
     const contact = values.contacts[index];
@@ -109,8 +121,9 @@ const VendorContacts = () => {
     }
 
     setValues({ contacts: newContacts });
+    setContacts(newContacts);
 
-    if (contact?.id) {
+    if (contact?.id && vendorId) {
       dispatch(
         deleteContactRequest({
           contactId: contact.id,
@@ -144,9 +157,8 @@ const VendorContacts = () => {
                     <td>
                       <input
                         type="text"
-                        name={`contacts[${index}].name`}
                         value={contact.name}
-                        onChange={handleChange}
+                        onChange={(e) => handleInputChange(e, index, 'name')}
                         onBlur={handleBlur}
                         placeholder="Name"
                       />
@@ -157,9 +169,8 @@ const VendorContacts = () => {
                     <td>
                       <input
                         type="email"
-                        name={`contacts[${index}].email`}
                         value={contact.email}
-                        onChange={handleChange}
+                        onChange={(e) => handleInputChange(e, index, 'email')}
                         onBlur={handleBlur}
                         placeholder="Email"
                       />
@@ -170,9 +181,8 @@ const VendorContacts = () => {
                     <td>
                       <input
                         type="text"
-                        name={`contacts[${index}].mobileNo`}
                         value={contact.mobileNo}
-                        onChange={handleChange}
+                        onChange={(e) => handleInputChange(e, index, 'mobileNo')}
                         onBlur={handleBlur}
                         placeholder="Phone number"
                       />
@@ -182,12 +192,13 @@ const VendorContacts = () => {
                     </td>
                     <td>
                       <select
-                        name={`contacts[${index}].isDefault`}
                         value={contact.isDefault}
-                        onChange={handleChange}
+                        onChange={(e) => handleInputChange(e, index, 'isDefault')}
                         onBlur={handleBlur}
                       >
-                        <option value="" disabled>isDefault</option>
+                        <option value="" disabled>
+                          isDefault
+                        </option>
                         <option value="YES">YES</option>
                         <option value="NO">NO</option>
                       </select>
@@ -197,7 +208,9 @@ const VendorContacts = () => {
                         )}
                     </td>
                     <td className="text-right">
-                      <FaCheck className="icon tick" onClick={() => handleSave(index)} />
+                      {vendorId && (
+                        <FaCheck className="icon tick" onClick={() => handleSave(index)} />
+                      )}
                       <FaTrash className="icon delete" onClick={() => handleDelete(index)} />
                     </td>
                   </tr>
@@ -216,7 +229,10 @@ const VendorContacts = () => {
                   ...values.contacts,
                   { name: '', email: '', mobileNo: '', isDefault: '' },
                 ],
-              })
+              }) || setContacts([
+                ...values.contacts,
+                { name: '', email: '', mobileNo: '', isDefault: '' },
+              ])
             }
             className="add-contact-btn"
           >
