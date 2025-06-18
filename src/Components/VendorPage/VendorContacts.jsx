@@ -19,8 +19,6 @@ const VendorContacts = ({ contacts, setContacts }) => {
   const dispatch = useDispatch();
   const createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
 
-  const contactList = useSelector((state) => state.vendor.details?.contactList || []);
-
   const initialValues = {
     contacts: [],
   };
@@ -32,7 +30,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
           name: Yup.string().required('Name is required'),
           email: Yup.string().email('Invalid email').required('Email is required'),
           mobileNo: Yup.string()
-            .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits')
+            .matches(/^\d{10}$/, 'Phone number must be exactly 10 digits')
             .required('Phone is required'),
           isDefault: Yup.string().oneOf(['YES', 'NO'], 'Select YES or NO').required('Required'),
         })
@@ -47,7 +45,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
     onSubmit: () => {},
   });
 
-  const { values, errors, touched, handleBlur, setValues } = formik;
+  const { values, errors, touched, handleBlur, setValues, setTouched } = formik;
 
   useEffect(() => {
     const formatted = contacts.map((c) => ({
@@ -82,8 +80,26 @@ const VendorContacts = ({ contacts, setContacts }) => {
     const contact = values.contacts[index];
 
     try {
-      await contactSchema.fields.contacts.innerType.validate(contact, { abortEarly: false });
+      await contactSchema.fields.contacts.innerType.validate(contact, {
+        abortEarly: false,
+      });
     } catch (validationError) {
+      const touchedFields = {};
+      const errorMessages = [];
+
+      validationError.inner.forEach((err) => {
+        touchedFields[`contacts[${index}].${err.path}`] = true;
+        errorMessages.push(err.message);
+      });
+
+      setTouched(touchedFields);
+
+      toast.error(errorMessages.join(', '), {
+        position: 'top-right',
+        autoClose: 3000,
+        theme: 'colored',
+      });
+
       return;
     }
 
@@ -97,7 +113,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
     };
 
     const updatedContacts = [...values.contacts];
-    updatedContacts[index] = { ...finalPayload };
+    updatedContacts[index] = { ...contact };
 
     if (vendorId) {
       if (contact.id) {
@@ -105,6 +121,12 @@ const VendorContacts = ({ contacts, setContacts }) => {
       } else {
         dispatch(createContactRequest(finalPayload));
       }
+
+      // toast.success('Contact saved successfully', {
+      //   position: 'top-right',
+      //   autoClose: 3000,
+      //   theme: 'colored',
+      // });
     }
 
     setValues({ contacts: updatedContacts });
@@ -162,7 +184,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
                         onBlur={handleBlur}
                         placeholder="Name"
                       />
-                      {errors.contacts?.[index]?.name && touched.contacts?.[index]?.name && (
+                      {errors.contacts?.[index]?.name && (
                         <div className="error">{errors.contacts[index].name}</div>
                       )}
                     </td>
@@ -174,7 +196,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
                         onBlur={handleBlur}
                         placeholder="Email"
                       />
-                      {errors.contacts?.[index]?.email && touched.contacts?.[index]?.email && (
+                      {errors.contacts?.[index]?.email && (
                         <div className="error">{errors.contacts[index].email}</div>
                       )}
                     </td>
@@ -186,7 +208,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
                         onBlur={handleBlur}
                         placeholder="Phone number"
                       />
-                      {errors.contacts?.[index]?.mobileNo && touched.contacts?.[index]?.mobileNo && (
+                      {errors.contacts?.[index]?.mobileNo && (
                         <div className="error">{errors.contacts[index].mobileNo}</div>
                       )}
                     </td>
@@ -202,10 +224,9 @@ const VendorContacts = ({ contacts, setContacts }) => {
                         <option value="YES">YES</option>
                         <option value="NO">NO</option>
                       </select>
-                      {errors.contacts?.[index]?.isDefault &&
-                        touched.contacts?.[index]?.isDefault && (
-                          <div className="error">{errors.contacts[index].isDefault}</div>
-                        )}
+                      {errors.contacts?.[index]?.isDefault && (
+                        <div className="error">{errors.contacts[index].isDefault}</div>
+                      )}
                     </td>
                     <td className="text-right">
                       {vendorId && (
@@ -223,17 +244,12 @@ const VendorContacts = ({ contacts, setContacts }) => {
         <div className="add-btn-wrapper">
           <button
             type="button"
-            onClick={() =>
-              setValues({
-                contacts: [
-                  ...values.contacts,
-                  { name: '', email: '', mobileNo: '', isDefault: '' },
-                ],
-              }) || setContacts([
-                ...values.contacts,
-                { name: '', email: '', mobileNo: '', isDefault: '' },
-              ])
-            }
+            onClick={() => {
+              const newContact = { name: '', email: '', mobileNo: '', isDefault: '' };
+              const updatedList = [...values.contacts, newContact];
+              setValues({ contacts: updatedList });
+              setContacts(updatedList);
+            }}
             className="add-contact-btn"
           >
             + Add Contact
