@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { vendorUpdateRequest, fetchInactiveVendorsRequest } from '../Action_file/VendorAction';
+import {
+  vendorUpdateRequest,
+  fetchInactiveVendorsRequest,
+  markInactiveRequest,
+  markActiveRequest
+} from '../Action_file/VendorAction';
 import { useNavigate } from 'react-router';
 import { Tooltip } from 'react-tooltip';
 import '../VendorPage/VendorTable.css';
@@ -16,8 +21,10 @@ const VendorTable = () => {
   const [activeTab, setActiveTab] = useState('ACTIVE');
   const [actionMenu, setActionMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [selectedVendorId, setSelectedVendorId] = useState(null);
+  const [confirmAction, setConfirmAction] = useState(null); // 'ACTIVE' or 'INACTIVE'
 
-  // Fetch vendors based on tab
   useEffect(() => {
     if (activeTab === 'INACTIVE') {
       dispatch(fetchInactiveVendorsRequest());
@@ -52,6 +59,18 @@ const VendorTable = () => {
     document.addEventListener('click', handleOutsideClick);
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
+
+  const handleConfirmAction = () => {
+    if (!selectedVendorId) return;
+
+    if (confirmAction === 'INACTIVE') {
+      dispatch(markInactiveRequest( selectedVendorId ));
+    } else {
+      dispatch(markActiveRequest(selectedVendorId ));
+    }
+
+    setConfirmModal(false);
+  };
 
   return (
     <div className="vendor-container">
@@ -144,13 +163,24 @@ const VendorTable = () => {
                         <div className="action-dropdown">
                           <div
                             onClick={() => navigate(`/vendoredit/${vendor.id}`)}
-                            style={{ backgroundColor: "seagreen", color: "white" }}
+                            style={{ backgroundColor: "indigo", color: "white", fontSize: "18px" }}
                           >
                             Edit
                           </div>
-                          <div style={{ backgroundColor: "ActiveCaption", color: "white" }}>
-                            {vendor.status === 'ACTIVE' ? 'Mark as Inactive' : 'Mark as Active'}
-                          </div>
+
+                          <button
+                            style={{ border: "0", width: "100%" }}
+                            onClick={() => {
+                              setSelectedVendorId(vendor.id);
+                              setConfirmAction(vendor.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE');
+                              setConfirmModal(true);
+                              setActionMenu(null);
+                            }}
+                          >
+                            <div style={{ backgroundColor: "blue", color: "white" }}>
+                              {vendor.status === 'ACTIVE' ? 'Mark as Inactive' : 'Mark as Active'}
+                            </div>
+                          </button>
                         </div>
                       )}
                     </td>
@@ -162,48 +192,59 @@ const VendorTable = () => {
         )}
       </div>
 
-<div className="pagination">
-  <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-    &lt;
-  </button>
+      {confirmModal && (
+        <div className="modalcon-overlay">
+          <div className="modalcon">
+            <h3>
+              Are you sure you want to mark this vendor as {confirmAction === 'INACTIVE' ? 'inactive' : 'active'}?
+            </h3>
+            <div className="modalcon-buttons">
+              <button className="button-confirm" onClick={handleConfirmAction}>Yes</button>
+              <button className="button-cancel" onClick={() => setConfirmModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-  {/* First Page */}
-  {currentPage > 3 && (
-    <>
-      <button onClick={() => setCurrentPage(1)}>1</button>
-      {currentPage > 4 && <span className="dots">...</span>}
-    </>
-  )}
-
-  {/* Middle Pages (current ±2) */}
-  {[...Array(5)].map((_, i) => {
-    const page = currentPage - 2 + i;
-    if (page > 0 && page <= totalPages) {
-      return (
-        <button
-          key={page}
-          className={page === currentPage ? 'active' : ''}
-          onClick={() => setCurrentPage(page)}
-        >
-          {page}
+      <div className="pagination">
+        <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+          &lt;
         </button>
-      );
-    }
-    return null;
-  })}
 
-  {currentPage < totalPages - 2 && (
-    <>
-      {currentPage < totalPages - 3 && <span className="dots">...</span>}
-      <button onClick={() => setCurrentPage(totalPages)}>{totalPages}</button>
-    </>
-  )}
+        {currentPage > 3 && (
+          <>
+            <button onClick={() => setCurrentPage(1)}>1</button>
+            {currentPage > 4 && <span className="dots">...</span>}
+          </>
+        )}
 
-  <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-    &gt;
-  </button>
-</div>
+        {[...Array(5)].map((_, i) => {
+          const page = currentPage - 2 + i;
+          if (page > 0 && page <= totalPages) {
+            return (
+              <button
+                key={page}
+                className={page === currentPage ? 'active' : ''}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            );
+          }
+          return null;
+        })}
 
+        {currentPage < totalPages - 2 && (
+          <>
+            {currentPage < totalPages - 3 && <span className="dots">...</span>}
+            <button onClick={() => setCurrentPage(totalPages)}>{totalPages}</button>
+          </>
+        )}
+
+        <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+          &gt;
+        </button>
+      </div>
     </div>
   );
 };

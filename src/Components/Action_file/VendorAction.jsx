@@ -16,7 +16,13 @@ import { VENDOR_UPDATE_FAILURE, VENDOR_UPDATE_REQUEST, VENDOR_UPDATE_SUCCESS,FET
   CREATE_CONTACT_FAILURE,
   FETCH_INACTIVE_VENDORS_REQUEST,
   FETCH_INACTIVE_VENDORS_SUCCESS,
-  FETCH_INACTIVE_VENDORS_FAILURE
+  FETCH_INACTIVE_VENDORS_FAILURE,
+  MARK_INACTIVE_REQUEST,
+  MARK_INACTIVE_SUCCESS,
+  MARK_INACTIVE_FAILURE,
+  MARK_ACTIVE_REQUEST,
+  MARK_ACTIVE_SUCCESS,
+  MARK_ACTIVE_FAILURE
  } from "../Type"
 
 export const vendorUpdateRequest = (payload) => ({
@@ -143,3 +149,31 @@ export const fetchInactiveVendorsFailure = (error) => ({
   type: FETCH_INACTIVE_VENDORS_FAILURE,
   payload: error
 });
+
+export const markInactiveRequest = (payload) => ({
+  type: MARK_INACTIVE_REQUEST,
+   payload,
+});
+export const markInactiveSuccess = (data) => ({
+  type: MARK_INACTIVE_SUCCESS,
+  payload:data,
+});
+export const markInactiveFilure = (error) => ({
+  type: MARK_INACTIVE_FAILURE,
+  payload: error,
+});
+
+
+export const markActiveRequest = (payload) => ({
+  type: MARK_ACTIVE_REQUEST,
+  payload,
+});
+export const markActiveSuccess = (data) => ({
+  type: MARK_ACTIVE_SUCCESS,
+  payload:data,
+});
+export const markActiveFilure = (error) => ({
+  type: MARK_ACTIVE_FAILURE,
+  payload: error,
+});
+

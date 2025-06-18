@@ -15,6 +15,10 @@ import {
     createContactSuccess,
   createContactFailure,
   fetchInactiveVendorsSuccess,
+  markInactiveSuccess,
+  markInactiveFilure,
+  markActiveSuccess,
+  markActiveFilure,
 } from '../Action_file/VendorAction';
 import {
   VENDOR_UPDATE_REQUEST,
@@ -29,6 +33,8 @@ import {
   CREATE_CONTACT_REQUEST,
   FETCH_INACTIVE_VENDORS_REQUEST,
   FETCH_INACTIVE_VENDORS_FAILURE,
+  MARK_INACTIVE_REQUEST,
+  MARK_ACTIVE_REQUEST,
 } from "../Type";
 
 import { takeLatest, put, call } from "redux-saga/effects";
@@ -437,6 +443,65 @@ function* getInactiveVendorsSaga() {
   }
 }
 
+export function* markInactiveSaga(action) {
+  try {
+    const token = localStorage.getItem('authToken');
+    const vendorId = action.payload;
+
+    const config = {
+      headers: {
+        Authorization: `BslogiKey ${token}`, // or Bearer
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const response = yield call(
+      axios.put,
+      `https://hastin-container.com/staging/api/vendor/inactive/${vendorId}`,
+      {},
+      config
+    );
+
+    const tableData = response?.data?.data || [];
+    yield put(markInactiveSuccess(tableData));
+    console.log('Marked Inactive:', tableData);
+  } catch (error) {
+    yield put(
+      markInactiveFilure(error.response?.data?.message || 'Mark inactive failed')
+    );
+  }
+}
+
+export function* markActiveSaga(action) {
+  try {
+    const token = localStorage.getItem('authToken');
+    const vendorId = action.payload;
+
+    const config = {
+      headers: {
+        Authorization: `BslogiKey ${token}`, // or Bearer
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const response = yield call(
+      axios.put,
+      `https://hastin-container.com/staging/api/vendor/active/${vendorId}`,
+      {},
+      config
+    );
+
+    const tableData = response?.data?.data || [];
+    yield put(markActiveSuccess(tableData));
+    console.log('Marked Active:', tableData);
+  } catch (error) {
+    yield put(
+      markActiveFilure(error.response?.data?.message || 'Mark active failed')
+    );
+  }
+}
+
+
 
 export default function* vendorSaga() {
   yield takeLatest(VENDOR_UPDATE_REQUEST, handleVendor);
@@ -450,4 +515,8 @@ export default function* vendorSaga() {
   yield takeLatest(PUT_CONTACT_REQUEST,putcontactlist);
   yield takeLatest(CREATE_CONTACT_REQUEST,createContactSaga);
   yield takeLatest(FETCH_INACTIVE_VENDORS_REQUEST,getInactiveVendorsSaga);
+  yield takeLatest(MARK_INACTIVE_REQUEST,markInactiveSaga)
+  yield takeLatest(MARK_ACTIVE_REQUEST,markActiveSaga)
+
+
 }

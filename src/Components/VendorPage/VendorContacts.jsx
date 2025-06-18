@@ -10,7 +10,7 @@ import {
   createContactRequest,
   putcontactRequest,
   deleteContactRequest,
-  fetchVendorByIdRequest,
+  // fetchVendorByIdRequest,
 } from '../Action_file/VendorAction';
 
 import '../VendorPage/VendorContacts.css';

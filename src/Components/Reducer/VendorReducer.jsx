@@ -25,6 +25,9 @@ import {
   FETCH_INACTIVE_VENDORS_REQUEST,
   FETCH_INACTIVE_VENDORS_SUCCESS,
   FETCH_INACTIVE_VENDORS_FAILURE,
+  MARK_INACTIVE_REQUEST,
+  MARK_INACTIVE_SUCCESS,
+  MARK_INACTIVE_FAILURE,
 } from "../Type";
 
 const initialState = {
@@ -191,6 +194,16 @@ const vendorReducer = (state = initialState, action) => {
       return { ...state, loading: false, inactiveVendors: action.payload };
 
     case FETCH_INACTIVE_VENDORS_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+
+
+       case MARK_INACTIVE_REQUEST:
+      return { ...state, loading: true, error: null };
+
+    case MARK_INACTIVE_SUCCESS:
+      return { ...state, loading: false, inactiveVendors: action.payload };
+
+    case MARK_INACTIVE_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
    default:
