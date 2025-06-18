@@ -106,13 +106,11 @@ const VendorEdit = () => {
     if (isEdit) {
       payload.id = id;
       dispatch(updateVendorByIdRequest(payload));
-      toast.success('Vendor updated successfully');
-      // Stay on same page
+     
     } else {
       payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
       dispatch(createVendorRequest(payload, {
         onSuccess: (newVendorId) => {
-          toast.success('Vendor created successfully');
           navigate(`/vendoredit/${newVendorId}`);
         },
         
@@ -167,19 +165,26 @@ const VendorEdit = () => {
                     <Field name="taxRegNo" />
                     <ErrorMessage name="taxRegNo" component="div" className="error" />
                   </label>
-                  <label>Company Registration No
-                    <Field name="companyRegNo" />
-                    <ErrorMessage name="companyRegNo" component="div" className="error" />
-                  </label>
-                  <label>Currency
-                    <Field as="select" name="defaultCurrencyId">
-                      <option value="">Select Currency</option>
-                      {currencies.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </Field>
-                    <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
-                  </label>
+                                <label>Default Currency
+               <Field
+                as="select"
+                name="defaultCurrencyId"
+                onChange={(e) => {
+                const selectedId = e.target.value;
+                setFieldValue("defaultCurrencyId", selectedId);
+                setFieldValue("companyRegNo", selectedId); 
+                 }}
+                 >
+               <option value="">Select Currency</option>
+                 {currencies.map((c) => (
+                 <option key={c.id} value={c.id}>
+                 {c.name}
+                </option>
+                ))}
+              </Field>
+              <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
+             </label>
+
                 </div>
 
                 <div className="form-card">
