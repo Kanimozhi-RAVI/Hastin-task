@@ -139,7 +139,7 @@ const VendorEdit = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ setFieldValue }) => (
+          {({ setFieldValue , values}) => (
             <Form>
               <div className="form-sections">
 
@@ -165,25 +165,30 @@ const VendorEdit = () => {
                     <Field name="taxRegNo" />
                     <ErrorMessage name="taxRegNo" component="div" className="error" />
                   </label>
-                                <label>Default Currency
-               <Field
-                as="select"
-                name="defaultCurrencyId"
-                onChange={(e) => {
-                const selectedId = e.target.value;
-                setFieldValue("defaultCurrencyId", selectedId);
-                setFieldValue("companyRegNo", selectedId); 
-                 }}
-                 >
-               <option value="">Select Currency</option>
-                 {currencies.map((c) => (
-                 <option key={c.id} value={c.id}>
-                 {c.name}
-                </option>
-                ))}
-              </Field>
-              <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
-             </label>
+              <label>Company Registration No
+                  <Field name="companyRegNo" />
+                  <ErrorMessage name="companyRegNo" component="div" className="error" />
+               </label>
+
+             <label>Default Currency
+                   <Field
+                      as="select"
+                      name="defaultCurrencyId"
+                      onChange={(e) => {
+                      const selectedId = e.target.value;
+                      setFieldValue("defaultCurrencyId", selectedId); 
+                      setFieldValue("companyRegNo", selectedId);     
+                      }}
+                       >
+                      <option value="">Select Currency</option>
+                    {currencies.map((c) => (
+                    <option key={c.id} value={c.id}>
+                        {c.name}
+                    </option>
+                       ))}
+                  </Field>
+                      <ErrorMessage name="defaultCurrencyId" component="div" className="error" />       
+                  </label>
 
                 </div>
 
@@ -201,23 +206,34 @@ const VendorEdit = () => {
                     <Field name="postalCode" />
                   </label>
                   <label>Country
-                    <Field as="select" name="country">
+                        <Field
+                           as="select"
+                           name="country"
+                           onChange={(e) => {
+                           const selectedCountry = e.target.value;
+                           setFieldValue("country", selectedCountry);
+                           setFieldValue("cityId", ""); // reset city
+                          }}
+                          >
                       <option value="">Select Country</option>
-                      {countries.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </Field>
-                    <ErrorMessage name="country" component="div" className="error" />
-                  </label>
-                  <label>City
-                    <Field as="select" name="cityId">
-                      <option value="">Select City</option>
-                      {cities.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </Field>
-                    <ErrorMessage name="cityId" component="div" className="error" />
-                  </label>
+                            {countries.map((c) => (
+                              <option key={c.id} value={c.id}>{c.name}</option>
+                           ))}
+                       </Field>
+                      <ErrorMessage name="country" component="div" className="error" />
+                           </label>
+
+                          <label>City
+                         <Field as="select" name="cityId">
+                               <option value="">Select City</option>
+                                  {cities
+                               .filter((city) => city.countryId === values.country)  
+                               .map((c) => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                              ))}
+                           </Field>
+                            <ErrorMessage name="cityId" component="div" className="error" />
+                         </label>
                 </div>
 
                 <div className="form-card">
