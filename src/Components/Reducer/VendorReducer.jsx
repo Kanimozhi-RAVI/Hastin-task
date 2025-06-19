@@ -143,17 +143,16 @@ const vendorReducer = (state = initialState, action) => {
         error: null,
       };
 
-    case PUT_CONTACT_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        singleVendor: {
-          ...state.singleVendor,
-          contactList: state.singleVendor.contactList.map((c) =>
-            c.id === action.payload.id ? action.payload : c
-          ),
-        },
-      };
+   // In reducer (example)
+case PUT_CONTACT_SUCCESS:
+  return {
+    ...state,
+    contactList: (state.contactList || []).map((c) =>
+      c.id === action.payload.id ? action.payload : c
+    ),
+  };
+
+
 
     case PUT_CONTACT_FAILURE:
       return {

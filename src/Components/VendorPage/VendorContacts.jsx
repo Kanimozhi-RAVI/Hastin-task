@@ -1,5 +1,6 @@
+// VendorContacts.js
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useFormik, FieldArray, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 import { FaCheck, FaTrash } from 'react-icons/fa';
@@ -35,7 +36,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
           isDefault: Yup.string().oneOf(['YES', 'NO'], 'Select YES or NO').required('Required'),
         })
       )
-      // .min(1, 'At least one contact is required'),
+      .min(1, 'At least one contact is required'),
   });
 
   const formik = useFormik({
@@ -47,6 +48,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
 
   const { values, errors, touched, handleBlur, setValues, setTouched } = formik;
 
+  // Fill Formik from parent contact list
   useEffect(() => {
     const formatted = contacts.map((c) => ({
       ...c,
@@ -76,62 +78,59 @@ const VendorContacts = ({ contacts, setContacts }) => {
     setContacts(updated);
   };
 
-  const handleSave = async (index) => {
-    const contact = values.contacts[index];
+ const handleSave = async (index) => {
+  const contact = values.contacts[index];
 
-    try {
-      await contactSchema.fields.contacts.innerType.validate(contact, {
-        abortEarly: false,
-      });
-    } catch (validationError) {
-      const touchedFields = {};
-      const errorMessages = [];
+  try {
+    await contactSchema.fields.contacts.innerType.validate(contact, {
+      abortEarly: false,
+    });
+  } catch (validationError) {
+    const touchedFields = {};
+    const errorMessages = [];
 
-      validationError.inner.forEach((err) => {
-        touchedFields[`contacts[${index}].${err.path}`] = true;
-        errorMessages.push(err.message);
-      });
+    validationError.inner.forEach((err) => {
+      touchedFields[`contacts[${index}].${err.path}`] = true;
+      errorMessages.push(err.message);
+    });
 
-      setTouched(touchedFields);
+    setTouched(touchedFields);
+    toast.error(errorMessages.join(', '));
+    return;
+  }
 
-      toast.error(errorMessages.join(', '), {
-        position: 'top-right',
-        autoClose: 3000,
-        theme: 'colored',
-      });
+  if (!validateDefaultContact(values.contacts)) return;
 
-      return;
-    }
-
-    if (!validateDefaultContact(values.contacts)) return;
-
-    const finalPayload = {
-      ...contact,
-      isDefault: contact.isDefault === 'YES',
-      vendorId,
-      createdBy,
-    };
-
-    const updatedContacts = [...values.contacts];
-    updatedContacts[index] = { ...contact };
-
-    if (vendorId) {
-      if (contact.id) {
-        dispatch(putcontactRequest({ ...finalPayload, id: contact.id }));
-      } else {
-        dispatch(createContactRequest(finalPayload));
-      }
-
-      // toast.success('Contact saved successfully', {
-      //   position: 'top-right',
-      //   autoClose: 3000,
-      //   theme: 'colored',
-      // });
-    }
-
-    setValues({ contacts: updatedContacts });
-    setContacts(updatedContacts);
+  const finalPayload = {
+    ...contact,
+    isDefault: contact.isDefault === 'YES',
+    vendorId,
+    createdBy,
   };
+
+  if (vendorId) {
+    if (contact.id) {
+      dispatch(putcontactRequest({ ...finalPayload, id: contact.id }));
+      // toast.success('Contact updated');
+    } else {
+      dispatch(createContactRequest(finalPayload));
+      // toast.success('Contact created');
+    }
+  }
+
+  // 🛠 Update UI immediately
+  const updatedContacts = [...values.contacts];
+  if (contact.isDefault === 'YES') {
+    updatedContacts.forEach((c, i) => {
+      if (i !== index) updatedContacts[i].isDefault = 'NO';
+    });
+  }
+  updatedContacts[index] = { ...contact };
+
+  setContacts(updatedContacts);
+  setValues({ contacts: updatedContacts });
+};
+
 
   const handleDelete = (index) => {
     const contact = values.contacts[index];
@@ -152,6 +151,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
           createdBy,
         })
       );
+      // toast.success('Contact deleted');
     }
   };
 

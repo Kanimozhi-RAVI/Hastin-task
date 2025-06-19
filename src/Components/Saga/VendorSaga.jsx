@@ -353,8 +353,8 @@ function* putcontactlist(action) {
     const payload = {
       name: action.payload.name,
       email: action.payload.email,
-      id:action.payload.id,
-      mobileNo: Number(action.payload.mobileNo),
+      id: action.payload.id,
+      mobileNo: action.payload.mobileNo, // ✅ keep as-is if already a string
       isDefault: action.payload.isDefault,
       vendorId: action.payload.vendorId,
       createdBy: action.payload.createdBy,
@@ -367,25 +367,31 @@ function* putcontactlist(action) {
       config
     );
 
-    console.log("Update contact response:", response?.data);
-    yield put(putcontactSuccess(response?.data || []));
-       toast.success(" Contact  Update successfully!", {
+   yield put(putcontactSuccess(response?.data?.data || {}));
+   console.log('put contact response data:', response?.data?.data);
+
+    toast.success("Contact updated successfully!", {
       position: "top-right",
       autoClose: 3000,
       theme: "colored",
     });
+
   } catch (error) {
     console.error("Contact update error:", error);
     yield put(
       putcontactFailure(error?.response?.data?.message || "Contact Update Error")
     );
-     toast.error(" Contact  Update failed!", {
+
+
+    toast.error("Contact update failed!", {
       position: "top-right",
       autoClose: 3000,
       theme: "colored",
     });
   }
 }
+
+
 
 
 function* createContactSaga(action) {
