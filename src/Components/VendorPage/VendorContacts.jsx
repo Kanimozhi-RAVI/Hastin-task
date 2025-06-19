@@ -35,7 +35,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
           isDefault: Yup.string().oneOf(['YES', 'NO'], 'Select YES or NO').required('Required'),
         })
       )
-      .min(1, 'At least one contact is required'),
+      // .min(1, 'At least one contact is required'),
   });
 
   const formik = useFormik({
