@@ -263,7 +263,7 @@ function* createVendorSaga(action) {
 
     const vendorId = response?.data?.data?.id || response?.data?.data;
 
-    yield put(createVendorSuccess(response.data));
+    yield put(createVendorSuccess(vendorId));
 
     toast.success('Vendor created successfully!', {
       position: 'top-right',
@@ -277,19 +277,20 @@ function* createVendorSaga(action) {
       error.message ||
       'Something went wrong';
 
-    yield put(createVendorFailure(errMsg));
+    yield put(createVendorFailure(error));
 
-    toast.error(`Vendor creation failed already exist!}`, {
+    toast.error(`Vendor creation failed: ${error}`, {
       position: 'top-right',
       autoClose: 3000,
       theme: 'colored',
     });
 
     if (action?.callback?.onError) {
-      action.callback.onError(errMsg);
+      action.callback.onError(error);
     }
   }
 }
+
 
 function* deleteContactSaga(action) {
   console.log("Saga received payload:", action.payload); 
