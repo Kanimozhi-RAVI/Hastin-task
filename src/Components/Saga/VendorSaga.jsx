@@ -350,7 +350,15 @@ function* putcontactlist(action) {
       },
     };
 
-  const payload = action.payload;
+    const payload = {
+      name: action.payload.name,
+      email: action.payload.email,
+      id:action.payload.id,
+      mobileNo: Number(action.payload.mobileNo),
+      isDefault: action.payload.isDefault,
+      vendorId: action.payload.vendorId,
+      createdBy: action.payload.createdBy,
+    };
 
     const response = yield call(
       axios.put,
@@ -359,8 +367,8 @@ function* putcontactlist(action) {
       config
     );
 
-    console.log("Update contact response:", response?.data?.data?.contactList);
-    yield put(putcontactSuccess(response?.data?.data?.contactList || []));
+    console.log("Update contact response:", response?.data);
+    yield put(putcontactSuccess(response?.data || []));
        toast.success(" Contact  Update successfully!", {
       position: "top-right",
       autoClose: 3000,
