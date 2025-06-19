@@ -355,7 +355,7 @@ function* putcontactlist(action) {
       email: action.payload.email,
       id:action.payload.id,
       mobileNo: Number(action.payload.mobileNo),
-      isDefault: action.payload.isDefault === "YES" ? true : false,
+      isDefault: action.payload.isDefault,
       vendorId: action.payload.vendorId,
       createdBy: action.payload.createdBy,
     };
