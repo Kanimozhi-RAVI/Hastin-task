@@ -1,9 +1,9 @@
 import React from 'react';
-import '../Loader_File/Loader.css'
+import '../Loader_File/Loader.css';
 
-const Loader = () => {
+const Loader = ({ inline = false }) => {
   return (
-    <div className="loader-overlay">
+    <div className={inline ? 'inline-loader' : 'loader-overlay'}>
       <div className="ring-loader">
         <span></span>
         <span></span>
@@ -14,4 +14,4 @@ const Loader = () => {
   );
 };
 
-export default Loader
+export default Loader;
