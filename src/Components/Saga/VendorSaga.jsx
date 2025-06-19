@@ -76,11 +76,7 @@ function* handleVendor() {
     yield put(vendorUpdateSuccess(vendorlist));
   
     console.log(response.data)
-      toast.success("Vendor Table fetched successfully!", {
-      position: "top-right",
-      autoClose: 3000,
-      theme: "colored",
-    });
+      toast.success("Vendor Table fetched successfully!");
   } catch (error) {
     console.error("Vendor Fetch Error:", error);
     yield put(

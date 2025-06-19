@@ -70,14 +70,14 @@ useEffect(() => {
         <div className="extra-container glass">
 
           <div className="extra-left">
-            <h2>Welcome Back!</h2>
-            <p>Sign in to your account and manage your tasks easily.</p>
+            {/* <h2>Welcome Back!</h2>
+            <p>Sign in to your account and manage your tasks easily.</p> */}
           </div>
 
           <div className="extra-right">
             <div className='right-header'> 
               <FaUserCircle style={{fontSize:"50px"}} />
-            <h3>Sign In</h3>
+            <h3>LOGIN</h3>
             </div>
             <form onSubmit={handleSubmit}>
               <input

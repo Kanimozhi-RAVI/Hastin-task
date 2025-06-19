@@ -26,12 +26,14 @@ const VendorEdit = () => {
 
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [defaultContactError, setDefaultContactError] = useState('');
 
   const vendor = useSelector(state => state.vendor.singleVendor || {});
   const countries = useSelector(state => state.vendor.countries || []);
   const currencies = useSelector(state => state.vendor.currencies || []);
   const cities = useSelector(state => state.vendor.cities || []);
 
+  // Simulated loader
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 1000);
   }, []);
@@ -70,7 +72,7 @@ const VendorEdit = () => {
     companyRegNo: Yup.string(),
     defaultCurrencyId: Yup.string().required('Currency is required'),
     address1: Yup.string().required('Address 1 is required'),
-    address2: Yup.string().required('Address 2 is required'),
+    address2: Yup.string(),
     postalCode: Yup.string(),
     country: Yup.string().required('Country is required'),
     cityId: Yup.string().required('City is required'),
@@ -95,6 +97,17 @@ const VendorEdit = () => {
   }, [vendor, isEdit]);
 
   const handleSubmit = (values) => {
+    const defaultCount = contacts.filter(c => c.isDefault === 'YES' || c.isDefault === true).length;
+
+    if (defaultCount !== 1) {
+      const msg = 'Exactly one contact must be marked as default';
+      setDefaultContactError(msg);
+      toast.error(msg);
+      return;
+    }
+
+    setDefaultContactError('');
+
     const payload = {
       ...values,
       contactList: contacts.map(c => ({
@@ -106,14 +119,10 @@ const VendorEdit = () => {
     if (isEdit) {
       payload.id = id;
       dispatch(updateVendorByIdRequest(payload));
-     
     } else {
       payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
       dispatch(createVendorRequest(payload, {
-        onSuccess: (newVendorId) => {
-          navigate(`/vendoredit/${newVendorId}`);
-        },
-        
+        onSuccess: (newVendorId) => navigate(`/vendoredit/${newVendorId}`),
       }));
     }
   };
@@ -121,16 +130,14 @@ const VendorEdit = () => {
   return (
     <>
       {isLoading && <Loader />}
+
       <div className="vendor-edit-container">
         <h2>{isEdit ? 'Edit Vendor' : 'Create Vendor'}</h2>
-        <div style={{textAlign:"right"}}>
-           <button
-                  type="button"
-                  onClick={() => navigate('/nextpage')}
-                  className="back-btn mb-3"
-                >
-                  ← Back
-                </button>
+
+        <div style={{ textAlign: 'right' }}>
+          <button type="button" onClick={() => navigate('/nextpage')} className="back-btn mb-3">
+            ← Back
+          </button>
         </div>
 
         <Formik
@@ -139,10 +146,10 @@ const VendorEdit = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ setFieldValue , values}) => (
+          {({ setFieldValue, values }) => (
             <Form>
               <div className="form-sections">
-
+                {/* Basic Info */}
                 <div className="form-card">
                   <h3>Basic Info</h3>
                   <label>Vendor Name
@@ -165,33 +172,32 @@ const VendorEdit = () => {
                     <Field name="taxRegNo" />
                     <ErrorMessage name="taxRegNo" component="div" className="error" />
                   </label>
-              <label>Company Registration No
-                  <Field name="companyRegNo" />
-                  <ErrorMessage name="companyRegNo" component="div" className="error" />
-               </label>
-
-             <label>Default Currency
-                   <Field
-                      as="select"
-                      name="defaultCurrencyId"
-                      onChange={(e) => {
-                      const selectedId = e.target.value;
-                      setFieldValue("defaultCurrencyId", selectedId); 
-                      setFieldValue("companyRegNo", selectedId);     
-                      }}
-                       >
-                      <option value="">Select Currency</option>
-                    {currencies.map((c) => (
-                    <option key={c.id} value={c.id}>
-                        {c.name}
-                    </option>
-                       ))}
-                  </Field>
-                      <ErrorMessage name="defaultCurrencyId" component="div" className="error" />       
+                  <label>Company Registration No
+                    <Field name="companyRegNo" />
                   </label>
+                  <label>Default Currency
+               <Field
+                as="select"
+                name="defaultCurrencyId"
+                onChange={(e) => {
+                const selectedId = e.target.value;
+                setFieldValue("defaultCurrencyId", selectedId);
+                setFieldValue("companyRegNo", selectedId); 
+                 }}
+                 >
+               <option value="">Select Currency</option>
+                 {currencies.map((c) => (
+                 <option key={c.id} value={c.id}>
+                 {c.name}
+                </option>
+                ))}
+              </Field>
+              <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
+             </label>
 
                 </div>
 
+                {/* Address */}
                 <div className="form-card">
                   <h3>Address</h3>
                   <label>Address 1
@@ -206,36 +212,35 @@ const VendorEdit = () => {
                     <Field name="postalCode" />
                   </label>
                   <label>Country
-                        <Field
-                           as="select"
-                           name="country"
-                           onChange={(e) => {
-                           const selectedCountry = e.target.value;
-                           setFieldValue("country", selectedCountry);
-                           setFieldValue("cityId", ""); // reset city
-                          }}
-                          >
+                    <Field
+                      as="select"
+                      name="country"
+                      onChange={(e) => {
+                        setFieldValue("country", e.target.value);
+                        setFieldValue("cityId", ""); // reset city
+                      }}
+                    >
                       <option value="">Select Country</option>
-                            {countries.map((c) => (
-                              <option key={c.id} value={c.id}>{c.name}</option>
-                           ))}
-                       </Field>
-                      <ErrorMessage name="country" component="div" className="error" />
-                           </label>
-
-                          <label>City
-                         <Field as="select" name="cityId">
-                               <option value="">Select City</option>
-                                  {cities
-                               .filter((city) => city.countryId === values.country)  
-                               .map((c) => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
-                              ))}
-                           </Field>
-                            <ErrorMessage name="cityId" component="div" className="error" />
-                         </label>
+                      {countries.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </Field>
+                    <ErrorMessage name="country" component="div" className="error" />
+                  </label>
+                  <label>City
+                    <Field as="select" name="cityId">
+                      <option value="">Select City</option>
+                      {cities
+                        .filter(city => city.countryId === values.country)
+                        .map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                    </Field>
+                    <ErrorMessage name="cityId" component="div" className="error" />
+                  </label>
                 </div>
 
+                {/* Bank Info */}
                 <div className="form-card">
                   <h3>Bank Info</h3>
                   <label>Account Name
@@ -256,14 +261,34 @@ const VendorEdit = () => {
                 </div>
               </div>
 
+              {/* Contact Info */}
               <div className="contact-design">
                 <h3 style={{ marginLeft: '20px', marginTop: '10px' }}>Contact Info</h3>
+                {defaultContactError && (
+  <div
+    style={{
+      margin: '15px 20px',
+      padding: '10px 20px',
+      backgroundColor: '#fdecea',
+      color: '#b71c1c',
+      border: '1px solid #f44336',
+      borderRadius: '4px',
+      fontWeight: 'bold',
+      textAlign:"center",
+    }}
+  >
+    {defaultContactError}
+  </div>
+)}
+
                 <VendorContacts contacts={contacts} setContacts={setContacts} />
               </div>
 
+              {/* Submit */}
               <div className="form-actions">
-               
-                <button type="submit">{isEdit ? 'Update Vendor' : 'Save Vendor'}</button>
+                <button type="submit">
+                  {isEdit ? 'Update Vendor' : 'Save Vendor'}
+                </button>
               </div>
             </Form>
           )}

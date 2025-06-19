@@ -107,25 +107,8 @@ tr:nth-child(even){background-color: #f2f2f2;}
   color: #555;
 }
 
-.action-dropdown {
-  position: absolute;
-  right: 0;
-  top: 30px;
-  background: transparent;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
-  /* border: 1px solid #ddd; */
-  /* border-radius: 5px; */
-  z-index: 999;
-}
 
-.action-dropdown div {
-  padding: 8px 12px;
-  cursor: pointer;
-}
 
-.action-dropdown div:hover {
-  background-color: #f0f0f0;
-}
 
 .pagination {
   display: flex;
@@ -181,16 +164,16 @@ tr:nth-child(even){background-color: #f2f2f2;}
   background-color: white;
   padding: 2rem;
   border-radius: 12px;
-  width: 500px;
+  width: 400px;
   height: 200px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(245, 243, 243, 0.2);
 }
 
 .modalcon-buttons {
-  margin-top: 1rem;
+  margin-top: 3rem;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .button-confirm,
@@ -198,11 +181,11 @@ tr:nth-child(even){background-color: #f2f2f2;}
   padding: 10px 18px;
   border: none;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .button-confirm {
-  background-color: #051df0;
+  background-color: #4657ee;
   color: white;
   
 }
@@ -210,6 +193,57 @@ tr:nth-child(even){background-color: #f2f2f2;}
 .button-cancel {
   background-color: #fbdf0e;
   color: #111827;
+}
+/* Dropdown container */
+.action-dropdown {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 10px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 160px;
+}
+
+/* Common button style */
+.dropdown-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+/* Edit button style */
+.edit-btn {
+  background-color: #fff8e1;
+  color: #b26a00;
+}
+
+.edit-btn:hover {
+  background-color: #ffe0b2;
+}
+
+/* Mark active/inactive button style */
+.mark-btn {
+  background-color: #e1f5fe;
+  color: #0277bd;
+}
+
+.mark-btn:hover {
+  background-color: #b3e5fc;
+}
+
+/* Add hover scale for nice UX */
+.dropdown-btn:hover {
+  transform: scale(1.03);
 }
 
 

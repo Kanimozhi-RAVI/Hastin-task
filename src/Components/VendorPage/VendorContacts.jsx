@@ -1,18 +1,15 @@
-// VendorContacts.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useFormik, FieldArray, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 import { FaCheck, FaTrash } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
 import {
   createContactRequest,
   putcontactRequest,
   deleteContactRequest,
 } from '../Action_file/VendorAction';
-
 import '../VendorPage/VendorContacts.css';
 
 const VendorContacts = ({ contacts, setContacts }) => {
@@ -20,23 +17,21 @@ const VendorContacts = ({ contacts, setContacts }) => {
   const dispatch = useDispatch();
   const createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
 
-  const initialValues = {
-    contacts: [],
-  };
+  const [defaultContactError, setDefaultContactError] = useState('');
+
+  const initialValues = { contacts: [] };
 
   const contactSchema = Yup.object().shape({
-    contacts: Yup.array()
-      .of(
-        Yup.object().shape({
-          name: Yup.string().required('Name is required'),
-          email: Yup.string().email('Invalid email').required('Email is required'),
-          mobileNo: Yup.string()
-            .matches(/^\d{10}$/, 'Phone number must be exactly 10 digits')
-            .required('Phone is required'),
-          isDefault: Yup.string().oneOf(['YES', 'NO'], 'Select YES or NO').required('Required'),
-        })
-      )
-      .min(1, 'At least one contact is required'),
+    contacts: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.string().required('Name is required'),
+        email: Yup.string().email('Invalid email').required('Email is required'),
+        mobileNo: Yup.string()
+          .matches(/^\d{10}$/, 'Phone number must be exactly 10 digits')
+          .required('Phone is required'),
+        isDefault: Yup.string().oneOf(['YES', 'NO'], 'Select YES or NO').required('Required'),
+      })
+    ).min(1, 'At least one contact is required'),
   });
 
   const formik = useFormik({
@@ -48,7 +43,6 @@ const VendorContacts = ({ contacts, setContacts }) => {
 
   const { values, errors, touched, handleBlur, setValues, setTouched } = formik;
 
-  // Fill Formik from parent contact list
   useEffect(() => {
     const formatted = contacts.map((c) => ({
       ...c,
@@ -57,16 +51,21 @@ const VendorContacts = ({ contacts, setContacts }) => {
     setValues({ contacts: formatted });
   }, [contacts]);
 
-  const validateDefaultContact = (contacts) => {
-    const count = contacts.filter((c) => c.isDefault === 'YES').length;
+  const validateDefaultContact = (list) => {
+    const count = list.filter(c => c.isDefault === 'YES').length;
     if (count === 0) {
-      toast.error('At least one contact must be marked as default');
+      const msg = 'At least one contact must be marked as default';
+      setDefaultContactError(msg);
+      // toast.error(msg);
       return false;
     }
     if (count > 1) {
-      toast.error('Only one contact can be default');
+      const msg = 'Only one contact can be default';
+      setDefaultContactError(msg);
+      // toast.error(msg);
       return false;
     }
+    setDefaultContactError('');
     return true;
   };
 
@@ -78,86 +77,101 @@ const VendorContacts = ({ contacts, setContacts }) => {
     setContacts(updated);
   };
 
- const handleSave = async (index) => {
-  const contact = values.contacts[index];
+  const handleSave = async (index) => {
+    const contact = values.contacts[index];
 
-  try {
-    await contactSchema.fields.contacts.innerType.validate(contact, {
-      abortEarly: false,
-    });
-  } catch (validationError) {
-    const touchedFields = {};
-    const errorMessages = [];
-
-    validationError.inner.forEach((err) => {
-      touchedFields[`contacts[${index}].${err.path}`] = true;
-      errorMessages.push(err.message);
-    });
-
-    setTouched(touchedFields);
-    toast.error(errorMessages.join(', '));
-    return;
-  }
-
-  if (!validateDefaultContact(values.contacts)) return;
-
-  const finalPayload = {
-    ...contact,
-    isDefault: contact.isDefault === 'YES',
-    vendorId,
-    createdBy,
-  };
-
-  if (vendorId) {
-    if (contact.id) {
-      dispatch(putcontactRequest({ ...finalPayload, id: contact.id }));
-      // toast.success('Contact updated');
-    } else {
-      dispatch(createContactRequest(finalPayload));
-      // toast.success('Contact created');
+    try {
+      await contactSchema.fields.contacts.innerType.validate(contact, {
+        abortEarly: false,
+      });
+    } catch (err) {
+      const touchedFields = {};
+      const msgs = [];
+      err.inner.forEach((e) => {
+        touchedFields[`contacts[${index}].${e.path}`] = true;
+        msgs.push(e.message);
+      });
+      setTouched(touchedFields);
+      toast.error(msgs.join(', '));
+      return;
     }
-  }
 
-  // 🛠 Update UI immediately
-  const updatedContacts = [...values.contacts];
-  if (contact.isDefault === 'YES') {
-    updatedContacts.forEach((c, i) => {
-      if (i !== index) updatedContacts[i].isDefault = 'NO';
-    });
-  }
-  updatedContacts[index] = { ...contact };
+    if (!validateDefaultContact(values.contacts)) return;
 
-  setContacts(updatedContacts);
-  setValues({ contacts: updatedContacts });
-};
+    const finalPayload = {
+      ...contact,
+      isDefault: contact.isDefault === 'YES',
+      vendorId,
+      createdBy,
+    };
 
+    if (vendorId) {
+      if (contact.id) {
+        dispatch(putcontactRequest({ ...finalPayload, id: contact.id }));
+        // toast.success('Contact updated');
+      } else {
+        dispatch(createContactRequest(finalPayload));
+        // toast.success('Contact created');
+      }
+    }
+
+    const updated = [...values.contacts];
+    if (contact.isDefault === 'YES') {
+      updated.forEach((c, i) => {
+        if (i !== index) updated[i].isDefault = 'NO';
+      });
+    }
+    updated[index] = { ...contact };
+    setValues({ contacts: updated });
+    setContacts(updated);
+  };
 
   const handleDelete = (index) => {
     const contact = values.contacts[index];
-    let newContacts = [...values.contacts];
-    newContacts.splice(index, 1);
+    const isEmpty = !contact.name?.trim() && !contact.email?.trim() && !contact.mobileNo?.trim() && !contact.isDefault;
 
-    if (newContacts.length === 0) {
-      newContacts = [{ name: '', email: '', mobileNo: '', isDefault: '' }];
+    const updatedList = [...values.contacts];
+    updatedList.splice(index, 1);
+
+    if (updatedList.length === 0) {
+      updatedList.push({ name: '', email: '', mobileNo: '', isDefault: '' });
+      toast.info('At least one empty contact row must remain');
+    } else if (isEmpty) {
+      toast.info('Empty contact row deleted');
     }
 
-    setValues({ contacts: newContacts });
-    setContacts(newContacts);
+    setValues({ contacts: updatedList });
+    setContacts(updatedList);
 
-    if (contact?.id && vendorId) {
-      dispatch(
-        deleteContactRequest({
-          contactId: contact.id,
-          createdBy,
-        })
-      );
-      // toast.success('Contact deleted');
+    if (!isEmpty && contact?.id && vendorId) {
+      dispatch(deleteContactRequest({ contactId: contact.id, createdBy }));
+      toast.success('Contact deleted');
     }
+
+    validateDefaultContact(updatedList); // show warning again after delete
   };
 
   return (
     <FormikProvider value={formik}>
       <div className="contact-section">
+        {/* ⚠️ Default Contact Warning UI */}
+        {defaultContactError && (
+          <div
+            style={{
+              margin: '15px 20px',
+              padding: '10px 20px',
+              backgroundColor: '#fdecea',
+              color: '#b71c1c',
+              border: '1px solid #f44336',
+              borderRadius: '4px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+            }}
+          >
+            {defaultContactError}
+          </div>
+        )}
+
         <table className="contact-table">
           <thead>
             <tr>
@@ -206,7 +220,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
                         value={contact.mobileNo}
                         onChange={(e) => handleInputChange(e, index, 'mobileNo')}
                         onBlur={handleBlur}
-                        placeholder="Phone number"
+                        placeholder="Phone"
                       />
                       {errors.contacts?.[index]?.mobileNo && (
                         <div className="error">{errors.contacts[index].mobileNo}</div>
@@ -218,9 +232,7 @@ const VendorContacts = ({ contacts, setContacts }) => {
                         onChange={(e) => handleInputChange(e, index, 'isDefault')}
                         onBlur={handleBlur}
                       >
-                        <option value="" disabled>
-                          isDefault
-                        </option>
+                        <option value="" disabled>isDefault</option>
                         <option value="YES">YES</option>
                         <option value="NO">NO</option>
                       </select>
@@ -243,17 +255,25 @@ const VendorContacts = ({ contacts, setContacts }) => {
 
         <div className="add-btn-wrapper">
           <button
-            type="button"
-            onClick={() => {
-              const newContact = { name: '', email: '', mobileNo: '', isDefault: '' };
-              const updatedList = [...values.contacts, newContact];
-              setValues({ contacts: updatedList });
-              setContacts(updatedList);
-            }}
-            className="add-contact-btn"
-          >
-            + Add Contact
-          </button>
+  type="button"
+  onClick={() => {
+    const newContact = {
+      name: '',
+      email: '',
+      mobileNo: '',
+      isDefault: '', // always empty, force user to choose
+    };
+    const updatedList = [...values.contacts, newContact];
+    setValues({ contacts: updatedList });
+    setContacts(updatedList);
+    setTouched({});
+    validateDefaultContact(updatedList); // re-validate after adding
+  }}
+  className="add-contact-btn"
+>
+  + Add Contact
+</button>
+
         </div>
       </div>
     </FormikProvider>

@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router';
 import { Tooltip } from 'react-tooltip';
 import '../VendorPage/VendorTable.css';
 
+
 const ROWS_PER_PAGE = 15;
 
 const VendorTable = () => {
@@ -23,21 +24,26 @@ const VendorTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [confirmModal, setConfirmModal] = useState(false);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
-  const [confirmAction, setConfirmAction] = useState(null); // 'ACTIVE' or 'INACTIVE'
+  const [confirmAction, setConfirmAction] = useState(null); 
 
   useEffect(() => {
-    if (activeTab === 'INACTIVE') {
-      dispatch(fetchInactiveVendorsRequest());
-    } else {
+    if (activeTab !== 'INACTIVE') {
       dispatch(vendorUpdateRequest());
+    } else {
+       dispatch(fetchInactiveVendorsRequest());
     }
   }, [activeTab, dispatch]);
 
-  const dataToDisplay = activeTab === 'ACTIVE' ? vendors : inactiveVendors;
+// const { vendors = [], inactiveVendors = [], loading, error } = useSelector(state => state.vendor || {});
 
-  const filteredVendors = dataToDisplay.filter(v =>
-    v.vendorName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+const dataToDisplay = Array.isArray(activeTab === 'ACTIVE' ? vendors : inactiveVendors)
+  ? (activeTab === 'ACTIVE' ? vendors : inactiveVendors)
+  : [];
+
+const filteredVendors = dataToDisplay.filter(v =>
+  v.vendorName?.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
 
   const totalPages = Math.ceil(filteredVendors.length / ROWS_PER_PAGE);
   const paginatedVendors = filteredVendors.slice(
@@ -159,30 +165,29 @@ const VendorTable = () => {
                       <button className="btn-action" onClick={() => toggleActionMenu(vendor.id)}>
                         &#8942;
                       </button>
-                      {actionMenu === vendor.id && (
-                        <div className="action-dropdown">
-                          <div
-                            onClick={() => navigate(`/vendoredit/${vendor.id}`)}
-                            style={{ backgroundColor: "goldenrod", color: "black", fontSize: "14px", borderRadius:"10px" , fontWeight:"500"}}
-                          >
-                            Edit
-                          </div>
+                     {actionMenu === vendor.id && (
+  <div className="action-dropdown">
+    <button
+      className="dropdown-btn edit-btn"
+      onClick={() => navigate(`/vendoredit/${vendor.id}`)}
+    >
+      ✏️ Edit
+    </button>
 
-                          <div
-                            style={{ backgroundColor:'lightgoldenrodyellow',fontSize: "14px", color: "black", borderRadius:"10px", fontWeight:"500" }}
-                            
-                            onClick={() => {
-                              setSelectedVendorId(vendor.id);
-                              setConfirmAction(vendor.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE');
-                              setConfirmModal(true);
-                              setActionMenu(null);
-                            }}
-                          >
-                              {vendor.status === 'ACTIVE' ? 'Mark as Inactive' : 'Mark as Active'}
-                            </div>
-                          </div>
-                        
-                      )}
+    <button
+      className="dropdown-btn mark-btn"
+      onClick={() => {
+        setSelectedVendorId(vendor.id);
+        setConfirmAction(vendor.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE');
+        setConfirmModal(true);
+        setActionMenu(null);
+      }}
+    >
+      {vendor.status === 'ACTIVE' ? '🛑 Mark  Inactive' : '✅ Mark Active'}
+    </button>
+  </div>
+)}
+
                     </td>
                   </tr>
                 ))

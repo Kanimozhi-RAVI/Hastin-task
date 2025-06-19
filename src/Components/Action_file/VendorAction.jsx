@@ -149,7 +149,7 @@ export const deleteContactFailure = (error) => ({
 export const fetchInactiveVendorsRequest = () => ({
   type: FETCH_INACTIVE_VENDORS_REQUEST,
   // payload,
-});
+})
 
 export const fetchInactiveVendorsSuccess = (vendors) => ({
   type: FETCH_INACTIVE_VENDORS_SUCCESS,

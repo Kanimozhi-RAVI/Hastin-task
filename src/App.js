@@ -17,7 +17,6 @@ function App() {
   return (
     <>
     <BrowserRouter>
-     <ToastContainer /> 
     <Routes>
       <Route path='/' element={<Login/>}/>
       <Route path='/access' element ={<AccessCodeModal/>}/>
@@ -31,6 +30,17 @@ function App() {
     <Route path='/exam' element={<ExamFile/>}/>
     </Routes>
     </BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   );
 }
