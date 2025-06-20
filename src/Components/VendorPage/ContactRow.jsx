@@ -1,116 +1,87 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaCheck, FaTrash } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+import Loader from '../Loader_File/Loader'; // ✅ import your loader component
 
 const ContactRow = ({
   contact,
   index,
-  contacts,
-  setContacts,
+  errors,
+  touched,
+  setFieldValue,
+  setFieldTouched,
+  handleSave,
   handleDelete,
   vendorId,
-  createdBy,
-  dispatch,
-  putcontactRequest,
-  createContactRequest,
+  savingContactIndex,
 }) => {
-  const [name, setName] = useState(contact.name || '');
-  const [email, setEmail] = useState(contact.email || '');
-  const [mobileNo, setMobileNo] = useState(contact.mobileNo || '');
-
-  const handleSubmit = () => {
-    if (!name.trim() || !email.trim() || !mobileNo.trim()) {
-      toast.error('Please fill all fields');
-      return;
-    }
-const validateContacts = () => {
-  const filled = contacts.filter(c => c.name && c.email && c.mobileNo);
-
-  const defaultCount = filled.filter(
-    (c) => c.isDefault === 'YES' || c.isDefault === true
-  ).length;
-
-  if (defaultCount === 0) {
-    toast.error("At least one contact must be marked as default");
-    return false;
-  }
-
-  if (defaultCount > 1) {
-    toast.error("Only one contact can be marked as default");
-    return false;
-  }
-
-  return true;
-};
-
-
-    const con = {
-      name,
-      email,
-      mobileNo,
-      isDefault: contact.isDefault === 'YES' || contact.isDefault === true,
-      vendorId,
-      createdBy,
-    };
-
-    if (contact.id) {
-      dispatch(putcontactRequest({ ...con, id: contact.id }));
-    } else {
-      dispatch(createContactRequest(con));
-    }
-  };
-
-  const handleSelectChange = (e) => {
-    const value = e.target.value;
-    const updated = [...contacts];
-    updated[index].isDefault = value;
-    setContacts(updated);
-  };
-
   return (
-    <tr>
+    <tr key={index}>
       <td>{index + 1}</td>
+
       <td>
         <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={contact.name}
+          onChange={(e) => setFieldValue(`contacts[${index}].name`, e.target.value)}
+          onBlur={() => setFieldTouched(`contacts[${index}].name`, true)}
           placeholder="Name"
         />
+        {touched.contacts?.[index]?.name && errors.contacts?.[index]?.name && (
+          <div className="error">{errors.contacts[index].name}</div>
+        )}
       </td>
+
       <td>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={contact.email}
+          onChange={(e) => setFieldValue(`contacts[${index}].email`, e.target.value)}
+          onBlur={() => setFieldTouched(`contacts[${index}].email`, true)}
           placeholder="Email"
         />
+        {touched.contacts?.[index]?.email && errors.contacts?.[index]?.email && (
+          <div className="error">{errors.contacts[index].email}</div>
+        )}
       </td>
+
       <td>
         <input
-          type="number"
-          value={mobileNo}
-          onChange={(e) => setMobileNo(e.target.value)}
+          value={contact.mobileNo}
+          onChange={(e) => setFieldValue(`contacts[${index}].mobileNo`, e.target.value)}
+          onBlur={() => setFieldTouched(`contacts[${index}].mobileNo`, true)}
           placeholder="Phone"
         />
+        {touched.contacts?.[index]?.mobileNo && errors.contacts?.[index]?.mobileNo && (
+          <div className="error">{errors.contacts[index].mobileNo}</div>
+        )}
       </td>
+
       <td>
         <select
-          value={
-            contact.isDefault === true || contact.isDefault === 'YES'
-              ? 'YES'
-              : 'NO'
-          }
-          onChange={handleSelectChange}
+          value={contact.isDefault}
+          onChange={(e) => setFieldValue(`contacts[${index}].isDefault`, e.target.value)}
+          onBlur={() => setFieldTouched(`contacts[${index}].isDefault`, true)}
         >
+          <option value="" disabled>
+            isDefault
+          </option>
           <option value="YES">YES</option>
           <option value="NO">NO</option>
         </select>
+        {touched.contacts?.[index]?.isDefault && errors.contacts?.[index]?.isDefault && (
+          <div className="error">{errors.contacts[index].isDefault}</div>
+        )}
       </td>
-      <td className="text-right">
-        <FaCheck className="icon tick" onClick={handleSubmit} />
-        <FaTrash className="icon delete" onClick={() => handleDelete(index)} />
-      </td>
+
+        <td className="text-right">
+  {vendorId && (
+    savingContactIndex === index ? (
+      <Loader inline />
+    ) : (
+      <FaCheck className="icon tick" onClick={handleSave} />
+    )
+  )}
+  <FaTrash className="icon delete" onClick={handleDelete} />
+</td>
+
     </tr>
   );
 };

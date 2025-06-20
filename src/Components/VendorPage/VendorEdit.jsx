@@ -33,18 +33,6 @@ const VendorEdit = () => {
   const currencies = useSelector(state => state.vendor.currencies || []);
   const cities = useSelector(state => state.vendor.cities || []);
 
-  // Simulated loader
-  useEffect(() => {
-    setTimeout(() => setIsLoading(false), 1000);
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchCountriesRequest());
-    dispatch(fetchCurrenciesRequest());
-    dispatch(fetchCitiesRequest());
-    if (isEdit) dispatch(fetchVendorByIdRequest(id));
-  }, [dispatch, id, isEdit]);
-
   const initialValues = {
     vendorName: '',
     vendorCode: '',
@@ -62,78 +50,74 @@ const VendorEdit = () => {
     bankName: '',
     bankBranchName: '',
     bankSwiftCode: '',
+    contacts: [{ name: '', email: '', mobileNo: '', isDefault: '' }], // important
   };
 
-  const validationSchema = Yup.object().shape({
-    vendorName: Yup.string().required('Vendor name is required'),
-    vendorCode: Yup.string().required('Vendor code is required'),
-    vendorType: Yup.string().required('Vendor type is required'),
-    taxRegNo: Yup.string().required('Tax Registration Number is required'),
-    companyRegNo: Yup.string(),
-    defaultCurrencyId: Yup.string().required('Currency is required'),
-    address1: Yup.string().required('Address 1 is required'),
-    address2: Yup.string(),
-    postalCode: Yup.string(),
-    country: Yup.string().required('Country is required'),
-    cityId: Yup.string().required('City is required'),
-    bankAcctName: Yup.string(),
-    bankAccountNum: Yup.string(),
-    bankName: Yup.string(),
-    bankBranchName: Yup.string(),
-    bankSwiftCode: Yup.string(),
-  });
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 1000);
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchCountriesRequest());
+    dispatch(fetchCurrenciesRequest());
+    dispatch(fetchCitiesRequest());
+    if (isEdit) dispatch(fetchVendorByIdRequest(id));
+  }, [dispatch, id, isEdit]);
 
   const [initialForm, setInitialForm] = useState(initialValues);
 
   useEffect(() => {
     if (isEdit && vendor?.id) {
       const { contactList, ...vendorDetails } = vendor;
-      setInitialForm({
-        ...initialValues,
-        ...vendorDetails,
-      });
-      setContacts(JSON.parse(JSON.stringify(contactList || [])));
+      const safeContacts =
+        contactList?.length > 0
+          ? contactList.map((c) => ({
+              ...c,
+              isDefault: c.isDefault === true ? 'YES' : 'NO',
+            }))
+          : [{ name: '', email: '', mobileNo: '', isDefault: '' }];
+
+      setInitialForm({ ...initialValues, ...vendorDetails, contacts: safeContacts });
+      setContacts(safeContacts);
     }
   }, [vendor, isEdit]);
 
- const handleSubmit = (values) => {
-  const validContacts = contacts.filter(c =>
-    c.name?.trim() && c.email?.trim() && c.mobileNo?.trim() && c.isDefault
-  );
-
-  const defaultCount = validContacts.filter(
-    (c) => c.isDefault === 'YES' || c.isDefault === true
-  ).length;
-
-  if (defaultCount !== 1) {
-    const msg = 'Exactly one contact must be marked as default';
-    setDefaultContactError(msg);
-    return;
-  }
-
-  setDefaultContactError('');
-
-  const payload = {
-    ...values,
-    contactList: validContacts.map((c) => ({
-      ...c,
-      isDefault: c.isDefault === 'YES' || c.isDefault === true,
-    })),
-  };
-
-  if (isEdit) {
-    payload.id = id;
-    dispatch(updateVendorByIdRequest(payload));
-  } else {
-    payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
-    dispatch(
-      createVendorRequest(payload, {
-        onSuccess: (newVendorId) => navigate(`/vendoredit/${newVendorId}`),
-      })
+  const handleSubmit = (values) => {
+    const validContacts = values.contacts.filter(
+      (c) => c.name?.trim() && c.email?.trim() && c.mobileNo?.trim() && c.isDefault
     );
-  }
-};
 
+    const defaultCount = validContacts.filter(
+      (c) => c.isDefault === 'YES' || c.isDefault === true
+    ).length;
+
+    if (defaultCount !== 1) {
+      setDefaultContactError('Exactly one contact must be marked as default');
+      return;
+    }
+
+    setDefaultContactError('');
+
+    const payload = {
+      ...values,
+      contactList: validContacts.map((c) => ({
+        ...c,
+        isDefault: c.isDefault === 'YES' || c.isDefault === true,
+      })),
+    };
+
+    if (isEdit) {
+      payload.id = id;
+      dispatch(updateVendorByIdRequest(payload));
+    } else {
+      payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
+      dispatch(
+        createVendorRequest(payload, {
+          onSuccess: (newVendorId) => navigate(`/vendoredit/${newVendorId}`),
+        })
+      );
+    }
+  };
 
   return (
     <>
@@ -142,19 +126,24 @@ const VendorEdit = () => {
       <div className="vendor-edit-container">
         <h2>{isEdit ? 'Edit Vendor' : 'Create Vendor'}</h2>
 
-        <div style={{ textAlign: 'right' }}>
-          <button type="button" onClick={() => navigate('/nextpage')} className="back-btn mb-3">
-            ← Back
-          </button>
-        </div>
-
         <Formik
           enableReinitialize
           initialValues={initialForm}
-          validationSchema={validationSchema}
+          validationSchema={Yup.object().shape({
+            vendorName: Yup.string().required('Vendor name is required'),
+            vendorCode: Yup.string().required('Vendor code is required'),
+            vendorType: Yup.string().required('Vendor type is required'),
+            taxRegNo: Yup.string().required('Tax Registration Number is required'),
+            defaultCurrencyId: Yup.string().required('Currency is required'),
+            address1: Yup.string().required('Address 1 is required'),
+            country: Yup.string().required('Country is required'),
+            cityId: Yup.string().required('City is required'),
+            
+          })}
+          
           onSubmit={handleSubmit}
         >
-          {({ setFieldValue, values }) => (
+          {({ values, setFieldValue, setFieldTouched, errors, touched }) => (
             <Form>
               <div className="form-sections">
                 {/* Basic Info */}
@@ -272,27 +261,22 @@ const VendorEdit = () => {
               {/* Contact Info */}
               <div className="contact-design">
                 <h3 style={{ marginLeft: '20px', marginTop: '10px' }}>Contact Info</h3>
+
                 {defaultContactError && (
-  <div
-    style={{
-      margin: '15px 20px',
-      padding: '10px 20px',
-      backgroundColor: '#fdecea',
-      color: '#b71c1c',
-      border: '1px solid #f44336',
-      borderRadius: '4px',
-      fontWeight: 'bold',
-      textAlign:"center",
-    }}
-  >
-    {defaultContactError}
+                  <div className="default-error-msg">
+                    {defaultContactError}
+                  </div>
+                )}
+
+<VendorContacts
+      contacts={values.contacts}
+      setContacts={(newList) => setFieldValue('contacts', newList)}
+      vendorId={id}
+      createdBy="adf8906a-cf9a-490f-a233-4df16fc86c58"
+    />
+
   </div>
-)}
 
-                <VendorContacts contacts={contacts} setContacts={setContacts} />
-              </div>
-
-              {/* Submit */}
               <div className="form-actions">
                 <button type="submit">
                   {isEdit ? 'Update Vendor' : 'Save Vendor'}
