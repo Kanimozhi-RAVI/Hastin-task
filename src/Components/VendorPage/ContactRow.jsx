@@ -71,8 +71,8 @@ const ContactRow = ({
         )}
       </td>
 
-        <td className="text-right">
-  {vendorId && (
+    <td className="text-right">
+  {vendorId && contact.id && (
     savingContactIndex === index ? (
       <Loader inline />
     ) : (
@@ -81,6 +81,7 @@ const ContactRow = ({
   )}
   <FaTrash className="icon delete" onClick={handleDelete} />
 </td>
+
 
     </tr>
   );
