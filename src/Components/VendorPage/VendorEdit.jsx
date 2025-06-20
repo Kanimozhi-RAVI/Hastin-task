@@ -96,36 +96,44 @@ const VendorEdit = () => {
     }
   }, [vendor, isEdit]);
 
-  const handleSubmit = (values) => {
-    const defaultCount = contacts.filter(c => c.isDefault === 'YES' || c.isDefault === true).length;
+ const handleSubmit = (values) => {
+  const validContacts = contacts.filter(c =>
+    c.name?.trim() && c.email?.trim() && c.mobileNo?.trim() && c.isDefault
+  );
 
-    if (defaultCount !== 1) {
-      const msg = 'Exactly one contact must be marked as default';
-      setDefaultContactError(msg);
-      toast.error(msg);
-      return;
-    }
+  const defaultCount = validContacts.filter(
+    (c) => c.isDefault === 'YES' || c.isDefault === true
+  ).length;
 
-    setDefaultContactError('');
+  if (defaultCount !== 1) {
+    const msg = 'Exactly one contact must be marked as default';
+    setDefaultContactError(msg);
+    return;
+  }
 
-    const payload = {
-      ...values,
-      contactList: contacts.map(c => ({
-        ...c,
-        isDefault: c.isDefault === 'YES' || c.isDefault === true,
-      })),
-    };
+  setDefaultContactError('');
 
-    if (isEdit) {
-      payload.id = id;
-      dispatch(updateVendorByIdRequest(payload));
-    } else {
-      payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
-      dispatch(createVendorRequest(payload, {
-        onSuccess: (newVendorId) => navigate(`/vendoredit/${newVendorId}`),
-      }));
-    }
+  const payload = {
+    ...values,
+    contactList: validContacts.map((c) => ({
+      ...c,
+      isDefault: c.isDefault === 'YES' || c.isDefault === true,
+    })),
   };
+
+  if (isEdit) {
+    payload.id = id;
+    dispatch(updateVendorByIdRequest(payload));
+  } else {
+    payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
+    dispatch(
+      createVendorRequest(payload, {
+        onSuccess: (newVendorId) => navigate(`/vendoredit/${newVendorId}`),
+      })
+    );
+  }
+};
+
 
   return (
     <>
