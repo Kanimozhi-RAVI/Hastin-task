@@ -1,16 +1,19 @@
 import React, { useEffect } from 'react';
-import { Field, ErrorMessage } from 'formik';
+import { Field, ErrorMessage, useFormikContext } from 'formik';
 import { toast } from 'react-toastify';
 import { FaTrash } from 'react-icons/fa';
 import './VendorContacts.css';
 
-const VendorContactsCreate = ({ values, setFieldValue, defaultContactError, setDefaultContactError }) => {
+const VendorContactsCreate = ({ values, setFieldValue }) => {
+  const { errors, touched } = useFormikContext();
+
   useEffect(() => {
     const count = values.contactList.filter(c => c.isDefault === 'YES').length;
-    if (count === 1) {
-      setDefaultContactError('');
+    if (count === 1 && errors.contactList) {
+      // Remove global error if one default is selected
+      errors.contactList = undefined;
     }
-  }, [values.contactList, setDefaultContactError]);
+  }, [values.contactList]);
 
   const handleDelete = (index) => {
     const contact = values.contactList[index];
@@ -23,7 +26,7 @@ const VendorContactsCreate = ({ values, setFieldValue, defaultContactError, setD
       !contact.mobileNo?.trim();
 
     if (updatedList.length === 0) {
-      toast.info('At least one empty contact row must remain');
+      toast.info('At least one contact row must remain');
       updatedList.push({ name: '', email: '', mobileNo: '', isDefault: '' });
     } else {
       if (isEmpty) toast.info('Empty contact row deleted');
@@ -41,6 +44,13 @@ const VendorContactsCreate = ({ values, setFieldValue, defaultContactError, setD
 
   return (
     <div className="contact-section">
+      {/* Global error message for contactList (like: "Choose one contact as default.") */}
+      {typeof errors.contactList === 'string' && touched.contactList && (
+        <div className="default-error-msg" style={{ color: 'red', marginBottom: '10px' }}>
+          {errors.contactList}
+        </div>
+      )}
+
       <table className="contact-table">
         <thead>
           <tr>

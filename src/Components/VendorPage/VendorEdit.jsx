@@ -113,10 +113,21 @@ const VendorEdit = () => {
         (contacts) => contacts?.filter(c => c.isDefault === 'YES').length === 1
       ),
   });
-
 const handleSubmit = (values) => {
-  const contactList = values.contactList.map((c) => ({
-    ...(c.id && { id: c.id }), // Include id if exists (for update)
+  const contactList = values.contactList || [];
+  const defaultCount = contactList.filter(c => c.isDefault === 'YES').length;
+
+  // ✅ Show error if not exactly one default contact
+  if (defaultCount !== 1) {
+    setDefaultContactError('Choose one contact as default.');
+    return;
+  }
+
+  setDefaultContactError('');
+
+  // ✅ Format contactList with id (if exists) and convert isDefault to boolean
+  const formattedContacts = contactList.map(c => ({
+    ...(c.id && { id: c.id }),
     name: c.name,
     email: c.email,
     mobileNo: c.mobileNo,
@@ -140,31 +151,28 @@ const handleSubmit = (values) => {
     bankName: values.bankName,
     bankBranchName: values.bankBranchName,
     bankSwiftCode: values.bankSwiftCode,
-    contactList,
+    contactList: formattedContacts,
     createdBy: 'adf8906a-cf9a-490f-a233-4df16fc86c58',
     notes: null,
     documentList: []
   };
 
-if (isEdit) {
-  dispatch(updateVendorByIdRequest(
-    {
-      ...payload, // Send full vendor object directly
-      id,
-    },
-    {
-      onSuccess: () => toast.success("Vendor updated successfully"),
-      onError: () => toast.error("Vendor update failed"),
-    }
-  ));
-}else{
-
-
-
+  if (isEdit) {
+    dispatch(updateVendorByIdRequest(
+      {
+        ...payload,
+        id,
+      },
+      {
+        onSuccess: () => toast.success("Vendor updated successfully"),
+        onError: () => toast.error("Vendor update failed"),
+      }
+    ));
+  } else {
     dispatch(createVendorRequest(payload, {
       onSuccess: (newVendorId) => {
         toast.success("Vendor created successfully");
-        navigate(`/vendoredit/${newVendorId}`); // ✅ go to edit screen
+        navigate(`/vendoredit/${newVendorId}`);
       },
       onError: () => {
         toast.error("Vendor creation failed");
@@ -172,6 +180,7 @@ if (isEdit) {
     }));
   }
 };
+
 
 
   return (
