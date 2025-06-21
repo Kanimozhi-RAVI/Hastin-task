@@ -69,7 +69,6 @@ const ContactRow = ({
       </td>
 
       <td className="text-right">
-        {/* ✔️ Tick icon only in EDIT mode */}
         {vendorId && (
           savingContactIndex === index ? (
             <Loader inline />

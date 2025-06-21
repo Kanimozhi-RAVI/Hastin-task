@@ -14,9 +14,10 @@ import {
   createVendorRequest,
 } from '../Action_file/VendorAction';
 
+import VendorContactsCreate from './VendorContactsCreate';
 import VendorContacts from './VendorContacts';
-import './VendorEdit.css';
 import Loader from '../Loader_File/Loader';
+import './VendorEdit.css';
 
 const VendorEdit = () => {
   const { id } = useParams();
@@ -24,24 +25,14 @@ const VendorEdit = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [contacts, setContacts] = useState([{ name: '', email: '', mobileNo: '', isDefault: '' }]);
+  const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [defaultContactError, setDefaultContactError] = useState('');
 
   const vendor = useSelector(state => state.vendor.singleVendor || {});
   const countries = useSelector(state => state.vendor.countries || []);
   const currencies = useSelector(state => state.vendor.currencies || []);
   const cities = useSelector(state => state.vendor.cities || []);
-
-  useEffect(() => {
-    setTimeout(() => setIsLoading(false), 1000);
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchCountriesRequest());
-    dispatch(fetchCurrenciesRequest());
-    dispatch(fetchCitiesRequest());
-    if (isEdit) dispatch(fetchVendorByIdRequest(id));
-  }, [dispatch, id, isEdit]);
 
   const initialValues = {
     vendorName: '',
@@ -60,38 +51,32 @@ const VendorEdit = () => {
     bankName: '',
     bankBranchName: '',
     bankSwiftCode: '',
-    contactList: contacts, // ✅ Formik's controlled field
+    contactList: [],
   };
 
   const [initialForm, setInitialForm] = useState(initialValues);
 
   useEffect(() => {
+    dispatch(fetchCountriesRequest());
+    dispatch(fetchCurrenciesRequest());
+    dispatch(fetchCitiesRequest());
+    if (isEdit) dispatch(fetchVendorByIdRequest(id));
+    setTimeout(() => setIsLoading(false), 1000);
+  }, [dispatch, id, isEdit]);
+
+  useEffect(() => {
     if (isEdit && vendor?.id) {
       const { contactList, ...vendorDetails } = vendor;
-
-      const cleanedVendorDetails = {};
-      Object.keys(initialValues).forEach((key) => {
-        cleanedVendorDetails[key] =
-          vendorDetails[key] !== null && vendorDetails[key] !== undefined
-            ? vendorDetails[key]
-            : '';
-      });
-
-      const updatedContacts = (contactList || []).map((c) => ({
+      const formattedContacts = (contactList || []).map(c => ({
         ...c,
-        isDefault: c.isDefault === true ? 'YES' : 'NO',
-        name: c.name || '',
-        email: c.email || '',
-        mobileNo: c.mobileNo || '',
+        isDefault: c.isDefault ? 'YES' : 'NO',
       }));
-
-      setContacts(updatedContacts);
-
       setInitialForm({
         ...initialValues,
-        ...cleanedVendorDetails,
-        contactList: updatedContacts, // ✅ sync Formik values
+        ...vendorDetails,
+        contactList: formattedContacts,
       });
+      setContacts(JSON.parse(JSON.stringify(formattedContacts)));
     }
   }, [vendor, isEdit]);
 
@@ -112,72 +97,99 @@ const VendorEdit = () => {
     bankName: Yup.string(),
     bankBranchName: Yup.string(),
     bankSwiftCode: Yup.string(),
+    contactList: Yup.array()
+      .of(
+        Yup.object().shape({
+          name: Yup.string().required('Required'),
+          email: Yup.string().email('Invalid email').required('Required'),
+          mobileNo: Yup.string().matches(/^\d{10}$/, 'Phone must be 10 digits').required('Required'),
+          isDefault: Yup.string().oneOf(['YES', 'NO'], 'Required'),
+        })
+      )
+      .min(1, 'At least one contact is required')
+      .test(
+        'one-default',
+        'Choose one contact as default.',
+        (contacts) => contacts?.filter(c => c.isDefault === 'YES').length === 1
+      ),
   });
 
-  const handleSubmit = (values) => {
-    const contactListFromFormik = values.contactList || [];
+const handleSubmit = (values) => {
+  const contactList = values.contactList.map((c) => ({
+    ...(c.id && { id: c.id }), // Include id if exists (for update)
+    name: c.name,
+    email: c.email,
+    mobileNo: c.mobileNo,
+    isDefault: c.isDefault === 'YES',
+  }));
 
-    const cleanedList = contactListFromFormik
-      .filter(c => c.name && c.email && c.mobileNo)
-      .map(c => ({
-        id: c.id,
-        name: c.name,
-        email: c.email,
-        mobileNo: c.mobileNo,
-        isDefault: c.isDefault === 'YES',
-        createdBy: 'adf8906a-cf9a-490f-a233-4df16fc86c58',
-        vendorId: id || undefined,
-      }));
-
-    const defaultCount = cleanedList.filter(c => c.isDefault).length;
-    if (defaultCount !== 1) {
-      toast.error('Exactly one contact must be marked as default');
-      return;
-    }
-
-    const payload = {
-      ...values,
-      contactList: cleanedList,
-    };
-
-    if (isEdit) {
-      dispatch(updateVendorByIdRequest({
-        payload: { ...payload, id },
-        meta: {
-          onSuccess: () => toast.success("Vendor updated successfully"),
-          onError: () => toast.error("Update failed"),
-        },
-      }));
-    } else {
-      payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
-      dispatch(createVendorRequest(payload, {
-        onSuccess: (newVendorId) => {
-          toast.success('Vendor created successfully');
-          navigate(`/vendoredit/${newVendorId}`);
-        },
-        onError: () => {
-          toast.error('Vendor creation failed');
-        },
-      }));
-    }
+  const payload = {
+    vendorName: values.vendorName,
+    vendorCode: values.vendorCode,
+    vendorType: values.vendorType,
+    taxRegNo: values.taxRegNo,
+    companyRegNo: values.companyRegNo,
+    defaultCurrencyId: values.defaultCurrencyId,
+    address1: values.address1,
+    address2: values.address2,
+    postalCode: values.postalCode,
+    country: values.country,
+    cityId: values.cityId,
+    bankAcctName: values.bankAcctName,
+    bankAccountNum: values.bankAccountNum,
+    bankName: values.bankName,
+    bankBranchName: values.bankBranchName,
+    bankSwiftCode: values.bankSwiftCode,
+    contactList,
+    createdBy: 'adf8906a-cf9a-490f-a233-4df16fc86c58',
+    notes: null,
+    documentList: []
   };
+
+if (isEdit) {
+  dispatch(updateVendorByIdRequest(
+    {
+      ...payload, // Send full vendor object directly
+      id,
+    },
+    {
+      onSuccess: () => toast.success("Vendor updated successfully"),
+      onError: () => toast.error("Vendor update failed"),
+    }
+  ));
+}else{
+
+
+
+    dispatch(createVendorRequest(payload, {
+      onSuccess: (newVendorId) => {
+        toast.success("Vendor created successfully");
+        navigate(`/vendoredit/${newVendorId}`); // ✅ go to edit screen
+      },
+      onError: () => {
+        toast.error("Vendor creation failed");
+      },
+    }));
+  }
+};
+
 
   return (
     <>
       {isLoading && <Loader />}
       <div className="vendor-edit-container">
         <h2>{isEdit ? 'Edit Vendor' : 'Create Vendor'}</h2>
-
         <Formik
           enableReinitialize
           initialValues={initialForm}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values,setFieldValue }) => (
+          {({ values, setFieldValue }) => (
             <Form>
+             {/* <Form> */}
               <div className="form-sections">
-                {/* --- Basic Info --- */}
+                {/* Basic Info */}
                 <div className="form-card">
                   <h3>Basic Info</h3>
                   <label>Vendor Name
@@ -202,11 +214,12 @@ const VendorEdit = () => {
                   </label>
                   <label>Company Registration No
                     <Field name="companyRegNo" />
+                    <ErrorMessage name="companyRegNo" component="div" className="error" />
                   </label>
                   <label>Currency
                     <Field as="select" name="defaultCurrencyId">
                       <option value="">Select Currency</option>
-                      {currencies.map(c => (
+                      {currencies.map((c) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
                     </Field>
@@ -214,7 +227,7 @@ const VendorEdit = () => {
                   </label>
                 </div>
 
-                {/* --- Address --- */}
+                {/* Address */}
                 <div className="form-card">
                   <h3>Address</h3>
                   <label>Address 1
@@ -248,7 +261,7 @@ const VendorEdit = () => {
                   </label>
                 </div>
 
-                {/* --- Bank Info --- */}
+                {/* Bank Info */}
                 <div className="form-card">
                   <h3>Bank Info</h3>
                   <label>Account Name
@@ -269,26 +282,31 @@ const VendorEdit = () => {
                 </div>
               </div>
 
-              {/* --- Contacts Section --- */}
-              <div className="contact-design">
-                <h3 style={{ marginLeft: '20px', marginTop: '10px' }}>Contact Info</h3>
-              <VendorContacts
-  contacts={values.contactList}
-  setContacts={(list) => setFieldValue('contactList', list)}
-  vendorId={id}
-  createdBy="adf8906a-cf9a-490f-a233-4df16fc86c58"
-/>
+              <div className="form-card">
+                <h3>Contact Info</h3>
+                {defaultContactError && (
+                  <div className="error" style={{ color: 'red', marginBottom: '10px' }}>
+                    {defaultContactError}
+                  </div>
+                )}
 
+                {!isEdit ? (
+                  <VendorContactsCreate
+                    values={values}
+                    setFieldValue={setFieldValue}
+                    defaultContactError={defaultContactError}
+                    setDefaultContactError={setDefaultContactError}
+                  />
+                ) : (
+                  <VendorContacts
+                    contacts={contacts}
+                    setContacts={setContacts}
+                    vendorId={id}
+                  />
+                )}
               </div>
 
               <div className="form-actions">
-                <button
-                  type="button"
-                  onClick={() => navigate('/vendorlist')}
-                  className="back-btn"
-                >
-                  ← Back
-                </button>
                 <button type="submit">{isEdit ? 'Update Vendor' : 'Save Vendor'}</button>
               </div>
             </Form>

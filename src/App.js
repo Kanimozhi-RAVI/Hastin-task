@@ -12,6 +12,7 @@ import VendorContacts from './Components/VendorPage/VendorContacts';
 import ExamFile from './Components/ExamFile';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import VendorContactsCreate from './Components/VendorPage/VendorContactsCreate';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
     <Route path="/vendor/update/:id" element={<VendorEdit />} />
     <Route path='/vendorcontact'element={<VendorContacts/>}/>
     <Route path='/exam' element={<ExamFile/>}/>
+    <Route path='contact' element={<VendorContactsCreate/>}/>
     </Routes>
     </BrowserRouter>
       <ToastContainer

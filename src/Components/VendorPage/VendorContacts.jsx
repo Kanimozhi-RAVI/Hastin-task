@@ -84,9 +84,9 @@ const VendorContacts = ({ contacts, setContacts, vendorId, createdBy }) => {
         };
         
 
-    const handleSaveContact = async (index) => {
+  const handleSaveContact = async (index) => {
   setHasClickedTick(true);
-  setSavingContactIndex(index); // Start loader
+  setSavingContactIndex(index);
 
   try {
     await contactSchema.fields.contacts.innerType.validate(values.contacts[index], {
@@ -116,19 +116,25 @@ const VendorContacts = ({ contacts, setContacts, vendorId, createdBy }) => {
     createdBy,
   };
 
-  if (contact.id) {
-    await dispatch(putcontactRequest({ ...payload, id: contact.id }));
-    toast.success('Contact updated');
-  } else {
-    await dispatch(createContactRequest(payload));
-    toast.success('Contact created');
+  try {
+    if (contact.id) {
+      await dispatch(putcontactRequest({ ...payload, id: contact.id }));
+      toast.success('Contact updated');
+    } else {
+      await dispatch(createContactRequest(payload));
+      toast.success('Contact created');
+    }
+  } catch (error) {
+    console.error('API error:', error);
+    toast.error(error?.message || 'Something went wrong');
   }
 
   const updated = [...values.contacts];
   updated[index] = { ...contact };
   setContacts(updated);
-  setSavingContactIndex(null); // Stop loader
+  setSavingContactIndex(null);
 };
+
 
 
 
