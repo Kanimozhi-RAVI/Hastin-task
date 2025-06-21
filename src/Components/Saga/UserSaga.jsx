@@ -107,9 +107,9 @@ function* handleGetUserDetails() {
       headers: { Authorization: `BslogiKey ${token}` },
     };
     const response = yield call(api.get, '/user-details', config);
-    yield put(getUserDetailsSuccess(response.data.data));  // <-- pass payload here!
+    yield put(getUserDetailsSuccess(response.data.data));  
   } catch (error) {
-    yield put(getUserDetailsFailure(error.message));      // <-- pass error message here!
+    yield put(getUserDetailsFailure(error.message));
   }
 }
 

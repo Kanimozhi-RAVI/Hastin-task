@@ -9,6 +9,7 @@ import {
 import { useNavigate } from 'react-router';
 import { Tooltip } from 'react-tooltip';
 import '../VendorPage/VendorTable.css';
+import { toast } from 'react-toastify';
 
 
 const ROWS_PER_PAGE = 15;
@@ -29,6 +30,7 @@ const VendorTable = () => {
   useEffect(() => {
     if (activeTab !== 'INACTIVE') {
       dispatch(vendorUpdateRequest());
+      
     } else {
        dispatch(fetchInactiveVendorsRequest());
     }
@@ -71,8 +73,12 @@ const filteredVendors = dataToDisplay.filter(v =>
 
     if (confirmAction === 'INACTIVE') {
       dispatch(markInactiveRequest( selectedVendorId ));
+           toast.success("Mark as Inactive assuccessfully!")
+      
     } else {
       dispatch(markActiveRequest(selectedVendorId ));
+           toast.success("Mark as Active  successfully!")
+
     }
 
     setConfirmModal(false);

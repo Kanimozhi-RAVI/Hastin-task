@@ -478,17 +478,25 @@ function* getInactiveVendorsSaga() {
       autoClose: 3000,
       theme: "colored",
     });
+    return tableData;
+    
   } catch (error) {
     console.error("Inactive Vendor Fetch Failed:", error?.response || error);
     yield put({
       type: FETCH_INACTIVE_VENDORS_FAILURE,
       payload: error?.response?.data?.message || "Failed to fetch inactive vendors",
     });
-     toast.error("Inactive vendor fetched successfully!", {
-      position: "top-right",
-      autoClose: 3000,
-      theme: "colored",
-    });
+     const errorMsg =
+  error?.response?.data?.message ||
+  error?.response?.data?.error ||
+  error.message ||
+  'Something went wrong';
+
+toast.error(`Vendor creation failed: ${errorMsg}`, {
+  position: 'top-right',
+  autoClose: 3000,
+  theme: 'colored',
+});
   }
 }
 
