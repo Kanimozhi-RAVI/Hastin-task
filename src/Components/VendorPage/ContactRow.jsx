@@ -12,6 +12,7 @@ const ContactRow = ({
   handleDelete,
   vendorId,
   savingContactIndex,
+  createdId,
 }) => {
   return (
     <tr>
@@ -23,6 +24,7 @@ const ContactRow = ({
           value={contact.name}
           onChange={(e) => setFieldValue(`contacts[${index}].name`, e.target.value)}
           onBlur={() => setFieldTouched(`contacts[${index}].name`, true)}
+          placeholder='Name'
         />
         {touched.contacts?.[index]?.name && errors.contacts?.[index]?.name && (
           <div className="error">{errors.contacts[index].name}</div>
@@ -35,6 +37,7 @@ const ContactRow = ({
           value={contact.email}
           onChange={(e) => setFieldValue(`contacts[${index}].email`, e.target.value)}
           onBlur={() => setFieldTouched(`contacts[${index}].email`, true)}
+          placeholder='Email'
         />
         {touched.contacts?.[index]?.email && errors.contacts?.[index]?.email && (
           <div className="error">{errors.contacts[index].email}</div>
@@ -47,6 +50,7 @@ const ContactRow = ({
           value={contact.mobileNo}
           onChange={(e) => setFieldValue(`contacts[${index}].mobileNo`, e.target.value)}
           onBlur={() => setFieldTouched(`contacts[${index}].mobileNo`, true)}
+          placeholder='Phone Number'
         />
         {touched.contacts?.[index]?.mobileNo && errors.contacts?.[index]?.mobileNo && (
           <div className="error">{errors.contacts[index].mobileNo}</div>

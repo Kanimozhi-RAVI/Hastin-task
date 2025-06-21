@@ -10,31 +10,42 @@ const VendorContactsCreate = ({ values, setFieldValue }) => {
   useEffect(() => {
     const count = values.contactList.filter(c => c.isDefault === 'YES').length;
     if (count === 1 && errors.contactList) {
-      // Remove global error if one default is selected
       errors.contactList = undefined;
     }
   }, [values.contactList]);
 
-  const handleDelete = (index) => {
-    const contact = values.contactList[index];
-    const updatedList = [...values.contactList];
-    updatedList.splice(index, 1);
+const handleDelete = (index) => {
+  const contact = values.contactList[index];
+  const updatedList = [...values.contactList];
 
-    const isEmpty =
-      !contact.name?.trim() &&
-      !contact.email?.trim() &&
-      !contact.mobileNo?.trim();
+  const isEmpty =
+    !contact.name?.trim() &&
+    !contact.email?.trim() &&
+    !contact.mobileNo?.trim() &&
+    !contact.isDefault;
 
-    if (updatedList.length === 0) {
-      toast.info('At least one contact row must remain');
-      updatedList.push({ name: '', email: '', mobileNo: '', isDefault: '' });
-    } else {
-      if (isEmpty) toast.info('Empty contact row deleted');
-      else toast.success('Contact row deleted');
-    }
+  if (
+    values.contactList.length === 1 &&
+    !isEmpty
+  ) {
+    toast.warning('Cannot delete the only filled contact');
+    return;
+  }
 
-    setFieldValue('contactList', updatedList);
-  };
+  updatedList.splice(index, 1);
+
+  if (updatedList.length === 0) {
+    toast.info('Empty row deleted. Re-adding empty row...');
+    updatedList.push({ name: '', email: '', mobileNo: '', isDefault: '' });
+  } else if (isEmpty) {
+    toast.info('Empty contact row deleted');
+  } else {
+    toast.success('Contact row deleted');
+  }
+
+  setFieldValue('contactList', updatedList);
+};
+
 
   const handleAdd = () => {
     const newRow = { name: '', email: '', mobileNo: '', isDefault: '' };
@@ -44,7 +55,6 @@ const VendorContactsCreate = ({ values, setFieldValue }) => {
 
   return (
     <div className="contact-section">
-      {/* Global error message for contactList (like: "Choose one contact as default.") */}
       {typeof errors.contactList === 'string' && touched.contactList && (
         <div className="default-error-msg" style={{ color: 'red', marginBottom: '10px' }}>
           {errors.contactList}

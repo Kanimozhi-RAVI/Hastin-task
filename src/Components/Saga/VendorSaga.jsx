@@ -405,7 +405,8 @@ function* createContactSaga(action) {
       name: action.payload.name,
       email: action.payload.email,
       mobileNo: Number(action.payload.mobileNo),
-      isDefault: action.payload.isDefault === "YES" ? true : false,
+      id: null,
+      isDefault: action.payload.isDefault,
       vendorId: action.payload.vendorId,
       createdBy: action.payload.createdBy,
     };

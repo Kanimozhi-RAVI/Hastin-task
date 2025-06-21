@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { toast } from 'react-toastify';
 
 import {
   fetchVendorByIdRequest,
@@ -33,6 +32,10 @@ const VendorEdit = () => {
   const countries = useSelector(state => state.vendor.countries || []);
   const currencies = useSelector(state => state.vendor.currencies || []);
   const cities = useSelector(state => state.vendor.cities || []);
+  const [contactList, setContactList] = useState([
+  { name: '', email: '', mobileNo: '', isDefault: '' },
+]);
+
 
   const initialValues = {
     vendorName: '',
@@ -81,17 +84,17 @@ const VendorEdit = () => {
   }, [vendor, isEdit]);
 
   const validationSchema = Yup.object().shape({
-    vendorName: Yup.string().required('Vendor name is required'),
-    vendorCode: Yup.string().required('Vendor code is required'),
-    vendorType: Yup.string().required('Vendor type is required'),
-    taxRegNo: Yup.string().required('Tax Registration Number is required'),
-    companyRegNo: Yup.string(),
-    defaultCurrencyId: Yup.string().required('Currency is required'),
-    address1: Yup.string().required('Address 1 is required'),
-    address2: Yup.string().required('Address 2 is required'),
+    vendorName: Yup.string().required('required'),
+    vendorCode: Yup.string().required('required'),
+    vendorType: Yup.string().required(' required'),
+    taxRegNo: Yup.string().required('required'),
+    companyRegNo: Yup.string().required('required'),
+    defaultCurrencyId: Yup.string().required(' required'),
+    address1: Yup.string().required('required'),
+    address2: Yup.string(),
     postalCode: Yup.string(),
-    country: Yup.string().required('Country is required'),
-    cityId: Yup.string().required('City is required'),
+    country: Yup.string().required('required'),
+    cityId: Yup.string().required('required'),
     bankAcctName: Yup.string(),
     bankAccountNum: Yup.string(),
     bankName: Yup.string(),
@@ -117,7 +120,6 @@ const handleSubmit = (values) => {
   const contactList = values.contactList || [];
   const defaultCount = contactList.filter(c => c.isDefault === 'YES').length;
 
-  // ✅ Show error if not exactly one default contact
   if (defaultCount !== 1) {
     setDefaultContactError('Choose one contact as default.');
     return;
@@ -125,7 +127,6 @@ const handleSubmit = (values) => {
 
   setDefaultContactError('');
 
-  // ✅ Format contactList with id (if exists) and convert isDefault to boolean
   const formattedContacts = contactList.map(c => ({
     ...(c.id && { id: c.id }),
     name: c.name,
@@ -163,20 +164,20 @@ const handleSubmit = (values) => {
         ...payload,
         id,
       },
-      {
-        onSuccess: () => toast.success("Vendor updated successfully"),
-        onError: () => toast.error("Vendor update failed"),
-      }
+      // {
+      //   onSuccess: () => toast.success("Vendor updated successfully"),
+      //   onError: () => toast.error("Vendor update failed"),
+      // }
     ));
   } else {
     dispatch(createVendorRequest(payload, {
       onSuccess: (newVendorId) => {
-        toast.success("Vendor created successfully");
+        // toast.success("Vendor created successfully");
         navigate(`/vendoredit/${newVendorId}`);
       },
-      onError: () => {
-        toast.error("Vendor creation failed");
-      },
+      // onError: () => {
+      //   toast.error("Vendor creation failed");
+      // },
     }));
   }
 };
@@ -221,19 +222,31 @@ const handleSubmit = (values) => {
                     <Field name="taxRegNo" />
                     <ErrorMessage name="taxRegNo" component="div" className="error" />
                   </label>
-                  <label>Company Registration No
+                 <label>Company Registration No
                     <Field name="companyRegNo" />
                     <ErrorMessage name="companyRegNo" component="div" className="error" />
+
                   </label>
-                  <label>Currency
-                    <Field as="select" name="defaultCurrencyId">
-                      <option value="">Select Currency</option>
-                      {currencies.map((c) => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </Field>
-                    <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
-                  </label>
+                  <label>Default Currency
+               <Field
+                as="select"
+                name="defaultCurrencyId"
+                onChange={(e) => {
+                const selectedId = e.target.value;
+                setFieldValue("defaultCurrencyId", selectedId);
+                setFieldValue("companyRegNo", selectedId); 
+                 }}
+                 >
+               <option value="">Select Currency</option>
+                 {currencies.map((c) => (
+                 <option key={c.id} value={c.id}>
+                 {c.name}
+                </option>
+                ))}
+              </Field>
+              <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
+             </label>
+
                 </div>
 
                 {/* Address */}
@@ -251,9 +264,16 @@ const handleSubmit = (values) => {
                     <Field name="postalCode" />
                   </label>
                   <label>Country
-                    <Field as="select" name="country">
+                    <Field
+                      as="select"
+                      name="country"
+                      onChange={(e) => {
+                        setFieldValue("country", e.target.value);
+                        setFieldValue("cityId", ""); // reset city
+                      }}
+                    >
                       <option value="">Select Country</option>
-                      {countries.map(c => (
+                      {countries.map((c) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
                     </Field>
@@ -262,12 +282,16 @@ const handleSubmit = (values) => {
                   <label>City
                     <Field as="select" name="cityId">
                       <option value="">Select City</option>
-                      {cities.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
+                      {cities
+                        .filter(city => city.countryId === values.country)
+                        .map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
                     </Field>
                     <ErrorMessage name="cityId" component="div" className="error" />
                   </label>
+
+
                 </div>
 
                 {/* Bank Info */}
@@ -307,11 +331,16 @@ const handleSubmit = (values) => {
                     setDefaultContactError={setDefaultContactError}
                   />
                 ) : (
-                  <VendorContacts
-                    contacts={contacts}
-                    setContacts={setContacts}
-                    vendorId={id}
-                  />
+                <VendorContacts
+  contacts={values.contactList}
+  setContacts={(updated) => {
+    setFieldValue('contactList', updated);
+    setContactList(updated);
+  }}
+  vendorId={id} 
+  createdBy="adf8906a-cf9a-490f-a233-4df16fc86c58"
+/>
+
                 )}
               </div>
 
