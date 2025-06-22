@@ -17,6 +17,7 @@ import VendorContactsCreate from './VendorContactsCreate';
 import VendorContacts from './VendorContacts';
 import Loader from '../Loader_File/Loader';
 import './VendorEdit.css';
+import { toast } from 'react-toastify';
 
 const VendorEdit = () => {
   const { id } = useParams();
@@ -117,70 +118,47 @@ const VendorEdit = () => {
       ),
   });
 const handleSubmit = (values) => {
-  const contactList = values.contactList || [];
-  const defaultCount = contactList.filter(c => c.isDefault === 'YES').length;
+  const cleanedList = (values.contactList || [])
+    .filter(c => c.name && c.email && c.mobileNo)
+    .map(c => ({
+      name: c.name,
+      email: c.email,
+      id: c.id,
+      isDefault: c.isDefault === 'YES',
+      mobileNo: c.mobileNo,
+      // vendorId: id || undefined,
+    }));
 
+  const defaultCount = cleanedList.filter(c => c.isDefault).length;
+  
   if (defaultCount !== 1) {
-    setDefaultContactError('Choose one contact as default.');
+    toast.error('Exactly one contact must be marked as default');
     return;
   }
 
-  setDefaultContactError('');
-
-  const formattedContacts = contactList.map(c => ({
-    ...(c.id && { id: c.id }),
-    name: c.name,
-    email: c.email,
-    mobileNo: c.mobileNo,
-    isDefault: c.isDefault === 'YES',
-  }));
-
   const payload = {
-    vendorName: values.vendorName,
-    vendorCode: values.vendorCode,
-    vendorType: values.vendorType,
-    taxRegNo: values.taxRegNo,
-    companyRegNo: values.companyRegNo,
-    defaultCurrencyId: values.defaultCurrencyId,
-    address1: values.address1,
-    address2: values.address2,
-    postalCode: values.postalCode,
-    country: values.country,
-    cityId: values.cityId,
-    bankAcctName: values.bankAcctName,
-    bankAccountNum: values.bankAccountNum,
-    bankName: values.bankName,
-    bankBranchName: values.bankBranchName,
-    bankSwiftCode: values.bankSwiftCode,
-    contactList: formattedContacts,
+    ...values,
+    contactList: cleanedList, 
     createdBy: 'adf8906a-cf9a-490f-a233-4df16fc86c58',
-    notes: null,
-    documentList: []
+
   };
 
   if (isEdit) {
-    dispatch(updateVendorByIdRequest(
-      {
-        ...payload,
-        id,
-      },
-      // {
-      //   onSuccess: () => toast.success("Vendor updated successfully"),
-      //   onError: () => toast.error("Vendor update failed"),
-      // }
-    ));
+    dispatch(updateVendorByIdRequest(payload, id))
   } else {
+    payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
     dispatch(createVendorRequest(payload, {
       onSuccess: (newVendorId) => {
-        // toast.success("Vendor created successfully");
+        toast.success('Vendor created successfully');
         navigate(`/vendoredit/${newVendorId}`);
       },
-      // onError: () => {
-      //   toast.error("Vendor creation failed");
-      // },
+      onError: () => {
+        toast.error('Vendor creation failed');
+      },
     }));
   }
 };
+
 
 
 
