@@ -194,10 +194,9 @@ tr:nth-child(even){background-color: #f2f2f2;}
   background-color: #fbdf0e;
   color: #111827;
 }
-/* Dropdown container */
 .action-dropdown {
   position: absolute;
-  top: 35px;
+  top: 0;
   right: 0;
   background-color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -210,7 +209,6 @@ tr:nth-child(even){background-color: #f2f2f2;}
   min-width: 160px;
 }
 
-/* Common button style */
 .dropdown-btn {
   padding: 8px 12px;
   border: none;
@@ -221,7 +219,6 @@ tr:nth-child(even){background-color: #f2f2f2;}
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
-/* Edit button style */
 .edit-btn {
   background-color: #fff8e1;
   color: #b26a00;
@@ -231,7 +228,6 @@ tr:nth-child(even){background-color: #f2f2f2;}
   background-color: #ffe0b2;
 }
 
-/* Mark active/inactive button style */
 .mark-btn {
   background-color: #e1f5fe;
   color: #0277bd;
@@ -241,7 +237,6 @@ tr:nth-child(even){background-color: #f2f2f2;}
   background-color: #b3e5fc;
 }
 
-/* Add hover scale for nice UX */
 .dropdown-btn:hover {
   transform: scale(1.03);
 }

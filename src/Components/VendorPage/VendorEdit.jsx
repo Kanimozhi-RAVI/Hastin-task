@@ -110,55 +110,60 @@ const VendorEdit = () => {
           isDefault: Yup.string().oneOf(['YES', 'NO'], 'Required'),
         })
       )
-      .min(1, 'At least one contact is required')
-      .test(
-        'one-default',
-        'Choose one contact as default.',
-        (contacts) => contacts?.filter(c => c.isDefault === 'YES').length === 1
-      ),
+    
   });
 const handleSubmit = (values) => {
-  const cleanedList = (values.contactList || [])
-    .filter(c => c.name && c.email && c.mobileNo)
-    .map(c => ({
-      name: c.name,
-      email: c.email,
-      id: c.id,
-      isDefault: c.isDefault === 'YES',
-      mobileNo: c.mobileNo,
-      // vendorId: id || undefined,
-    }));
+  if (!values.contactList || values.contactList.length === 0) {
+    toast.error("Missing contacts");
+    return;
+  }
+
+  const hasIncomplete = values.contactList.some(c => !c.name || !c.email || !c.mobileNo || !c.isDefault);
+  if (hasIncomplete) {
+    toast.error("Please save all contact rows before submitting.");
+    return;
+  }
+
+ const cleanedList = (values.contactList || [])
+  .filter(c => c.name && c.email && c.mobileNo)
+  .map(c => ({
+    name: c.name,
+    email: c.email,
+    id: c.id,
+    isDefault: c.isDefault === 'YES',
+    mobileNo: c.mobileNo,
+  }));
+
+// ✅ Fix here: check cleanedList, not values.contactList
+if (cleanedList.length === 0) {
+  toast.error("Missing contacts");
+  return;
+}
+
 
   const defaultCount = cleanedList.filter(c => c.isDefault).length;
-  
   if (defaultCount !== 1) {
-    toast.error('Exactly one contact must be marked as default');
+    toast.error("Exactly one contact must be marked as default");
     return;
   }
 
   const payload = {
     ...values,
-    contactList: cleanedList, 
+    contactList: cleanedList,
     createdBy: 'adf8906a-cf9a-490f-a233-4df16fc86c58',
-
   };
 
   if (isEdit) {
-    dispatch(updateVendorByIdRequest(payload, id))
+    dispatch(updateVendorByIdRequest(payload, id));
   } else {
-    payload.createdBy = 'adf8906a-cf9a-490f-a233-4df16fc86c58';
     dispatch(createVendorRequest(payload, {
       onSuccess: (newVendorId) => {
         toast.success('Vendor created successfully');
         navigate(`/vendoredit/${newVendorId}`);
-      },
-      onError: () => {
-        toast.error('Vendor creation failed');
-      },
+      }
     }));
   }
 };
-
 
 
 
@@ -167,6 +172,11 @@ const handleSubmit = (values) => {
       {isLoading && <Loader />}
       <div className="vendor-edit-container">
         <h2>{isEdit ? 'Edit Vendor' : 'Create Vendor'}</h2>
+       <div style={{textAlign:"right"}}>
+        <button type="button" onClick={() => navigate('/nextpage')} className="back-button">
+        ← Back
+        </button>
+       </div>
         <Formik
           enableReinitialize
           initialValues={initialForm}
@@ -175,9 +185,7 @@ const handleSubmit = (values) => {
         >
           {({ values, setFieldValue }) => (
             <Form>
-             {/* <Form> */}
               <div className="form-sections">
-                {/* Basic Info */}
                 <div className="form-card">
                   <h3>Basic Info</h3>
                   <label>Vendor Name
@@ -203,7 +211,6 @@ const handleSubmit = (values) => {
                  <label>Company Registration No
                     <Field name="companyRegNo" />
                     <ErrorMessage name="companyRegNo" component="div" className="error" />
-
                   </label>
                   <label>Default Currency
                <Field
@@ -224,10 +231,7 @@ const handleSubmit = (values) => {
               </Field>
               <ErrorMessage name="defaultCurrencyId" component="div" className="error" />
              </label>
-
                 </div>
-
-                {/* Address */}
                 <div className="form-card">
                   <h3>Address</h3>
                   <label>Address 1
@@ -247,7 +251,7 @@ const handleSubmit = (values) => {
                       name="country"
                       onChange={(e) => {
                         setFieldValue("country", e.target.value);
-                        setFieldValue("cityId", ""); // reset city
+                        setFieldValue("cityId", ""); 
                       }}
                     >
                       <option value="">Select Country</option>
@@ -272,7 +276,6 @@ const handleSubmit = (values) => {
 
                 </div>
 
-                {/* Bank Info */}
                 <div className="form-card">
                   <h3>Bank Info</h3>
                   <label>Account Name
@@ -292,16 +295,17 @@ const handleSubmit = (values) => {
                   </label>
                 </div>
               </div>
-
-              <div className="form-card">
+                <br/>
+                <br/>
+              <div className="form-card ">
                 <h3>Contact Info</h3>
                 {defaultContactError && (
                   <div className="error" style={{ color: 'red', marginBottom: '10px' }}>
                     {defaultContactError}
                   </div>
                 )}
-
-                {!isEdit ? (
+                <div className='contact-design'> 
+                 {!isEdit ? (
                   <VendorContactsCreate
                     values={values}
                     setFieldValue={setFieldValue}
@@ -310,16 +314,18 @@ const handleSubmit = (values) => {
                   />
                 ) : (
                 <VendorContacts
-  contacts={values.contactList}
-  setContacts={(updated) => {
-    setFieldValue('contactList', updated);
-    setContactList(updated);
-  }}
-  vendorId={id} 
-  createdBy="adf8906a-cf9a-490f-a233-4df16fc86c58"
-/>
-
+                  contacts={values.contactList}
+                  setContacts={(updated) => {
+                  setFieldValue('contactList', updated, true);
+                  setContactList(updated);
+                  }}
+                vendorId={id} 
+                createdBy="adf8906a-cf9a-490f-a233-4df16fc86c58"
+                />
                 )}
+               </div>
+
+               
               </div>
 
               <div className="form-actions">

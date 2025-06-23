@@ -21,6 +21,7 @@ import {
   markActiveFilure,
   createVendorSuccess,
   createVendorFailure,
+  vendorUpdateRequest,
 } from '../Action_file/VendorAction';
 import {
   VENDOR_UPDATE_REQUEST,
@@ -76,7 +77,7 @@ function* handleVendor() {
     yield put(vendorUpdateSuccess(vendorlist));
   
     console.log(response.data)
-      toast.success("Vendor Table fetched successfully!");
+      toast.success("Vendor  fetched successfully!");
   } catch (error) {
     console.error("Vendor Fetch Error:", error);
     yield put(
@@ -226,7 +227,7 @@ function* updateVendorSaga(action) {
       theme: "colored",
     });
   } catch (error) {
-    // console.error("Update saga error:", error);
+    console.error("Update saga error:", error);
     yield put(updateVendorByIdFailure(
       error?.response?.data?.message || error.message || 'Update failed'
     ));
@@ -350,7 +351,7 @@ function* putcontactlist(action) {
       name: action.payload.name,
       email: action.payload.email,
       id: action.payload.id,
-      mobileNo: action.payload.mobileNo, // ✅ keep as-is if already a string
+      mobileNo: action.payload.mobileNo, 
       isDefault: action.payload.isDefault,
       vendorId: action.payload.vendorId,
       createdBy: action.payload.createdBy,
@@ -507,7 +508,7 @@ export function* markInactiveSaga(action) {
 
     const config = {
       headers: {
-        Authorization: `BslogiKey ${token}`, // or Bearer
+        Authorization: `BslogiKey ${token}`, 
         'Content-Type': 'application/json',
       },
     };
@@ -522,6 +523,8 @@ export function* markInactiveSaga(action) {
     const tableData = response?.data?.data || [];
     yield put(markInactiveSuccess(tableData));
     console.log('Marked Inactive:', tableData);
+    yield put(vendorUpdateRequest())
+
   } catch (error) {
     yield put(
       markInactiveFilure(error.response?.data?.message || 'Mark inactive failed')
@@ -551,6 +554,8 @@ export function* markActiveSaga(action) {
     const tableData = response?.data?.data || [];
     yield put(markActiveSuccess(tableData));
     console.log('Marked Active:', tableData);
+    yield put(vendorUpdateRequest())
+
   } catch (error) {
     yield put(
       markActiveFilure(error.response?.data?.message || 'Mark active failed')
@@ -574,6 +579,4 @@ export default function* vendorSaga() {
   yield takeLatest(FETCH_INACTIVE_VENDORS_REQUEST,getInactiveVendorsSaga);
   yield takeLatest(MARK_INACTIVE_REQUEST,markInactiveSaga)
   yield takeLatest(MARK_ACTIVE_REQUEST,markActiveSaga)
-
-
 }

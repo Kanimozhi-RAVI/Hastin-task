@@ -64,23 +64,20 @@ const VendorContacts = ({ contacts, setContacts, vendorId }) => {
       onSubmit={() => {}}
     >
       {({ values, errors, touched, setFieldValue, setFieldTouched }) => {
-       const handleDeleteContact = (index) => {
+  const handleDeleteContact = (index) => {
   const updatedList = [...values.contacts];
   const toDelete = updatedList[index];
   const isSaved = toDelete?.id && vendorId;
 
   updatedList.splice(index, 1); 
-
-  if (isSaved) {
+  if(isSaved) {
     dispatch(deleteContactRequest({ contactId: toDelete.id, createdBy }));
-    toast.success('Contact deleted from server');
-  } else {
+  
+  }else if(updatedList.length === 0) {
+    updatedList.push({ name: '', email: '', mobileNo: '', isDefault: 'select' });
+    toast.error('At least one empty contact row must remain');
+  } else  {
     toast.success('Row deleted successfully');
-  }
-
-  if (updatedList.length === 0) {
-    updatedList.push({ name: '', email: '', mobileNo: '', isDefault: '' });
-    toast.info('At least one empty contact row must remain');
   }
 
   setContacts(updatedList);

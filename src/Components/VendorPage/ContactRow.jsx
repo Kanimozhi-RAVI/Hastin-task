@@ -1,5 +1,4 @@
 import { FaCheck, FaTrash } from 'react-icons/fa';
-import Loader from '../Loader_File/Loader';
 
 const ContactRow = ({
   index,
@@ -10,9 +9,6 @@ const ContactRow = ({
   setFieldTouched,
   handleSave,
   handleDelete,
-  vendorId,
-  savingContactIndex,
-  createdId,
 }) => {
   return (
     <tr>
@@ -56,7 +52,6 @@ const ContactRow = ({
           <div className="error">{errors.contacts[index].mobileNo}</div>
         )}
       </td>
-
       <td>
         <select
           value={contact.isDefault}
@@ -73,14 +68,8 @@ const ContactRow = ({
       </td>
 
       <td className="text-right">
-        {vendorId && (
-          savingContactIndex === index ? (
-            <Loader inline />
-          ) : (
-            <FaCheck className="icon tick" onClick={handleSave} />
-          )
-        )}
-        <FaTrash className="icon trash" onClick={handleDelete} />
+        <FaCheck className="icon tick" onClick={handleSave} />
+        <FaTrash className="icon trash text-danger" onClick={handleDelete} />
       </td>
     </tr>
   );
