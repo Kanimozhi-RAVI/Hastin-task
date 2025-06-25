@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux';
 import userReducer from './Reducer/UserReducer';
 import vendorReducer from './Reducer/VendorReducer';
-import hclReducer from './Reducer/HclReducer';
+import userlistReducer from './Reducer/HclReducer'
 
 
 const rootReducer = combineReducers({
   user: userReducer,
   vendor:vendorReducer,
-  booking:hclReducer,
+  bookinguser:userlistReducer,
 
 });
 
