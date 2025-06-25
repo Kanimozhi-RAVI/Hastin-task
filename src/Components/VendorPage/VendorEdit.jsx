@@ -107,7 +107,9 @@ const VendorEdit = () => {
           name: Yup.string().required('Required'),
           email: Yup.string().email('Invalid email').required('Required'),
           mobileNo: Yup.string().matches(/^\d{10}$/, 'Phone must be 10 digits').required('Required'),
-          isDefault: Yup.string().oneOf(['YES', 'NO'], 'Required'),
+          isDefault: Yup.string()
+      .oneOf(['YES', 'NO'], 'Select YES or NO')
+      .required('Required'),
         })
       )
     
@@ -134,7 +136,6 @@ const handleSubmit = (values) => {
     mobileNo: c.mobileNo,
   }));
 
-// ✅ Fix here: check cleanedList, not values.contactList
 if (cleanedList.length === 0) {
   toast.error("Missing contacts");
   return;
@@ -142,10 +143,13 @@ if (cleanedList.length === 0) {
 
 
   const defaultCount = cleanedList.filter(c => c.isDefault).length;
-  if (defaultCount !== 1) {
-    toast.error("Exactly one contact must be marked as default");
-    return;
-  }
+ if (defaultCount !== 1) {
+  setDefaultContactError("Exactly one contact must be marked as default");
+  return;
+} else {
+  setDefaultContactError("");
+}
+
 
   const payload = {
     ...values,
@@ -299,11 +303,11 @@ if (cleanedList.length === 0) {
                 <br/>
               <div className="form-card ">
                 <h3>Contact Info</h3>
-                {defaultContactError && (
+                {/* {defaultContactError && (
                   <div className="error" style={{ color: 'red', marginBottom: '10px' }}>
                     {defaultContactError}
                   </div>
-                )}
+                )} */}
                 <div className='contact-design'> 
                  {!isEdit ? (
                   <VendorContactsCreate

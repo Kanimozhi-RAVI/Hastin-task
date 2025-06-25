@@ -70,17 +70,13 @@ const filteredVendors = dataToDisplay.filter(v =>
 
   const handleConfirmAction = () => {
     if (!selectedVendorId) return;
-
     if (confirmAction === 'INACTIVE') {
       dispatch(markInactiveRequest( selectedVendorId ));
            toast.success("Mark as Inactive assuccessfully!")
-      
     } else {
       dispatch(markActiveRequest(selectedVendorId ));
            toast.success("Mark as Active  successfully!")
-
     }
-
     setConfirmModal(false);
   };
 

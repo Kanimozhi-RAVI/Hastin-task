@@ -20,6 +20,7 @@ import {
   getUserDetailsRequest
  
 } from '../Action_file/Action';
+import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: 'https://hastin-container.com/staging/app/auth',
@@ -61,6 +62,7 @@ function* handleAccessCode(action) {
     const response = yield call(api.post, '/access-code/validate', { opaque, accessCode }, config);
 
     yield put(accesscodeSuccess(response.data));
+    toast.success('accecode success')
 
     if (response.data?.data?.message === "Access code successfully verified.") {
       yield put(getUserDetailsRequest()); 

@@ -32,12 +32,12 @@ const Login = () => {
 
 useEffect(() => {
   if (accessCodeStatus?.data?.isValidAccessCode) {
-    toast.success("Access code verified!", {
-      position: "top-right",
-      autoClose: 3000,
-      pauseOnHover: true,
-      theme: "colored",
-    });
+    // toast.success("Access code verified!", {
+    //   position: "top-right",
+    //   autoClose: 3000,
+    //   pauseOnHover: true,
+    //   theme: "colored",
+    // });
     setIsModalOpen(false);
     navigate('/nextpage');
   }

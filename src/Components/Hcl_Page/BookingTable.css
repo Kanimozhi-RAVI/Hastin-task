@@ -1,0 +1,37 @@
+:root {
+  --theme-color: #6796c5; /* your theme color */
+}
+
+/* Heading style */
+.booking-heading {
+  color: var(--theme-color);
+  font-weight: 600;
+}
+
+/* Table styling */
+.booking-table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+/* Header style */
+.theme-header th {
+  background-color: var(--theme-color);
+  color: white;
+  text-align: center;
+}
+
+/* Row hover effect */
+.booking-table tbody tr:hover {
+  background-color: #f7f7f7;
+}
+
+/* Status badge */
+.badge-active {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+}

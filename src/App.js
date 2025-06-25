@@ -11,6 +11,7 @@ import ExamFile from './Components/ExamFile';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VendorContactsCreate from './Components/VendorPage/VendorContactsCreate';
+import BookingTable from './Components/Hcl_Page/BookingTable';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path='/vendorcontact' element={<VendorContacts />} />
           <Route path='/exam' element={<ExamFile />} />
           <Route path='/contact' element={<VendorContactsCreate />} />
+          <Route path='/hcl-booking' element={<BookingTable/>}/>
         </Routes>
 
         <ToastContainer
