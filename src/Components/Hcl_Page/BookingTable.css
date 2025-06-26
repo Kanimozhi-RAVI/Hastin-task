@@ -1,11 +1,24 @@
 :root {
-  --theme-color: #6796c5; 
+  --theme-color: #6c63ff; 
+
 }
 
 .booking-heading {
   color: var(--theme-color);
-  /* font-weight: 400px; */
+  background: none;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 10px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  
 }
+.booking-heading.active{
+  border-bottom: 2px solid #6c63ff;
+  color: #6c63ff;
+}
+
 
 .booking-table {
   border-radius: 8px;
@@ -13,8 +26,13 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
-.theme-header th,td {
+.theme-header th {
   background-color: var(--theme-color);
+  color: white;
+  text-align: center;
+  font-size: 12px;
+}
+.theme-header td{
   color: white;
   text-align: center;
   font-size: 12px;
@@ -31,3 +49,4 @@
   border-radius: 12px;
   font-size: 12px;
 }
+

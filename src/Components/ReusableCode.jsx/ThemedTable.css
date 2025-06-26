@@ -1,0 +1,121 @@
+:root {
+  --theme-color: #6c63ff;
+  --border-color: #ddd;
+  --header-color: #fff;
+  --hover-color: #f7f7f7;
+  --text-color: #333;
+}
+
+.themed-table-wrapper {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.booking-heading {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--theme-color);
+  border-bottom: 2px solid var(--theme-color);
+}
+
+.search-container {
+  position: relative;
+  width: 250px;
+}
+
+.search-input-icon {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #605e5e;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.booking-table thead.theme-header th {
+  background-color: var(--theme-color);
+  color: var(--header-color);
+  font-size: 13px;
+  text-align: center;
+  padding: 10px;
+}
+
+.booking-table td {
+  font-size: 13px;
+  text-align: center;
+  padding: 10px;
+  color: var(--text-color);
+  border-top: 1px solid var(--border-color);
+}
+
+.booking-table tbody tr:hover {
+  background-color: var(--hover-color);
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: 0.2s all ease;
+}
+
+.pagination button:hover {
+  background-color: #eee;
+}
+
+.pagination button.active {
+  background-color: var(--theme-color);
+  color: white;
+  font-weight: bold;
+  border-color: var(--theme-color);
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination .dots {
+  padding: 6px 8px;
+  color: #888;
+  font-size: 14px;
+}

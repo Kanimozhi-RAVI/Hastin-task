@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router';
 import { Tooltip } from 'react-tooltip';
 import '../VendorPage/VendorTable.css';
 import { toast } from 'react-toastify';
+import { FaSearch } from 'react-icons/fa';
 
 
 const ROWS_PER_PAGE = 15;
@@ -102,15 +103,22 @@ const filteredVendors = dataToDisplay.filter(v =>
         </button>
       </div>
 
-      <div className="vendor-toolbar">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="search-input"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+     <div className="vendor-toolbar mb-3 mt-3">
+  <div className="search-container">
+    <input
+      type="text"
+      placeholder="Search..."
+      className="search-input-icon"
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+      }}
+    />
+    <FaSearch className="search-icon" />
+  </div>
+</div>
+
 
       <div className="table-scroll">
         {loading ? (

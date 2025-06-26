@@ -1,4 +1,21 @@
-/* ul{
-     text-decoration:none!important;
-     list-style-type: none !important;
-} */
+.second-navbar a {
+  text-decoration: none !important;
+  color: darkblue !important;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: 0.3s;
+}
+
+.second-navbar a:hover {
+  color: #343a40;
+  background-color: #f2f2f2;
+  text-decoration: none;
+}
+
+.second-navbar .active {
+  font-weight: bold;
+  color: #6c63ff !important;
+  border-bottom: 2px solid #6c63ff;
+  background-color: #f8f9fa;
+}

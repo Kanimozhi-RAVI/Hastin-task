@@ -1,70 +1,48 @@
-import React, { useEffect } from 'react';
-import './BookingTable.css';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBookinglistRequest } from '../Action_file/HclBookingAction';
+import ThemedTable from '../ReusableCode.jsx/ThemedTable';
+import '../Hcl_Page/BookingTable.css'
 
-function BookingTable() {
+const BookingTable = () => {
   const dispatch = useDispatch();
-  const Data = useSelector((state) => state.bookinguser?.bookinguser || []);
-  // console.log("Redux Booking Data:", Data);
-    // const [searchTerm, setSearchTerm] = useState('');
-  
+  const bookingData = useSelector(state => state.bookinguser?.bookinguser || []);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     dispatch(getBookinglistRequest());
   }, [dispatch]);
 
+  const columns = [
+    { label: 'BOOKING NO', accessor: 'bookingNo' },
+    { label: 'REF NO', accessor: 'shipperAgentRefNo' },
+    { label: 'BOL', accessor: 'blNo' },
+    { label: 'VOLUME', accessor: 'volume' },
+    { label: 'SHIPPER', accessor: 'forwarderCode' },
+    { label: 'POL', accessor: 'polCode' },
+    { label: 'FPOD', accessor: 'fdCode' },
+    { label: 'PRE-CARR', accessor: 'preCarriageVsl' },
+    { label: 'SOB', accessor: 'preCarriageSob' },
+    { label: 'MOV', accessor: 'movCarriageVsl' },
+    { label: 'SOB', accessor: 'motherVesselSob' },
+    { label: 'ON-CARR', accessor: 'onCarriageVsl' },
+    { label: 'SOB', accessor: 'onCarriageSob' },
+    { label: 'STATUS', accessor: 'bookingStatus' },
+  ];
+
   return (
-    <div className="p-5 mt-5">
-      <h3 className="booking-heading ">Booking List</h3>
-      <div className="table-responsive">
-        <table className="table table-bordered table-striped align-middle shadow booking-table">
-          <thead className="theme-header">
-            <tr>
-              <th>BOOKING NO</th>
-              <th>REF NO</th>
-              <th>BOL</th>
-              <th>VOLUME</th>
-              <th>SHIPPER</th>
-              <th>POL</th>
-              <th>FPOD</th>
-              <th>PRE-CARR</th>
-              <th>PRE-CARR SOB</th>
-              <th>MOV</th>
-              <th>ON-CARR VSL</th>
-              <th>ON-CARR SOB</th>
-              <th>STATUS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Data?.length > 0 ? (
-              Data.map(userlist => (
-                <tr key={userlist.id}>
-                  <td>{userlist.bookingNo}</td>
-                  <td>{userlist.shipperAgentRefNo}</td>
-                  <td>{userlist.blNo}</td>
-                  <td>{userlist.volume}</td>
-                  <td>{userlist.forwarderCode}</td>
-                  <td>{userlist.polCode}</td>
-                  <td>{userlist.fdCode}</td>
-                  <td>{userlist.preCarriageVsl}</td>
-                  <td>{userlist.preCarriageSob}</td>
-                  <td>{userlist.movCarriageVsl}</td>
-                  <td>{userlist.onCarriageVsl}</td>
-                  <td>{userlist.onCarriageSob}</td>
-                  <td>{userlist.bookingStatus}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="13" className="text-center">No bookings found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <ThemedTable
+      heading="BOOKING LIST"
+      columns={columns}
+      data={bookingData}
+      searchTerm={searchTerm}
+      setSearchTerm={setSearchTerm}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+      rowsPerPage={15}
+    />
   );
-}
+};
 
 export default BookingTable;

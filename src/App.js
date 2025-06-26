@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'; // ✅ use react-router-dom
 import Login from './Components/Login_page/Login';
 import AccessCodeModal from './Components/Login_page/AccessCode';
 import MainFile from './Components/Navbar_File/MainFile';
@@ -18,18 +18,23 @@ function App() {
     <BrowserRouter>
       <>
         <Routes>
+          {/* Public login routes */}
           <Route path='/' element={<Login />} />
           <Route path='/access' element={<AccessCodeModal />} />
-          <Route path='/nextpage' element={<MainFile />} />
           <Route path='/loader' element={<Loader />} />
-          <Route path='/tab' element={<VendorTable />} />
-          <Route path='/vendoredit/:id' element={<VendorEdit />} />
-          <Route path='/vendorcreate' element={<VendorEdit />} />
-          <Route path='/vendor/update/:id' element={<VendorEdit />} />
-          <Route path='/vendorcontact' element={<VendorContacts />} />
-          <Route path='/exam' element={<ExamFile />} />
-          <Route path='/contact' element={<VendorContactsCreate />} />
-          <Route path='/hcl-booking' element={<BookingTable/>}/>
+
+          {/* Protected Main Layout Route */}
+          <Route path='/nextpage' element={<MainFile />}>
+            <Route index element={<VendorTable />} /> {/* default route under MainFile */}
+            <Route path='tab' element={<VendorTable />} />
+            <Route path='vendoredit/:id' element={<VendorEdit />} />
+            <Route path='vendorcreate' element={<VendorEdit />} />
+            <Route path='vendor/update/:id' element={<VendorEdit />} />
+            <Route path='vendorcontact' element={<VendorContacts />} />
+            <Route path='exam' element={<ExamFile />} />
+            <Route path='contact' element={<VendorContactsCreate />} />
+            <Route path='hcl-booking' element={<BookingTable />} />
+          </Route>
         </Routes>
 
         <ToastContainer
@@ -47,6 +52,5 @@ function App() {
     </BrowserRouter>
   );
 }
-
 
 export default App;
