@@ -74,6 +74,9 @@
   color: var(--text-color);
   border-top: 1px solid var(--border-color);
 }
+.booking-table td:nth-child(4){
+  max-width: 90px;
+}
 
 .booking-table tbody tr:hover {
   background-color: var(--hover-color);

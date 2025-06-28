@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VendorContactsCreate from './Components/VendorPage/VendorContactsCreate';
 import BookingTable from './Components/Hcl_Page/BookingTable';
+import InvoiceBill from './Components/Invoice_Bill_Page/InvoiceBill';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path='/' element={<Login />} />
           <Route path='/access' element={<AccessCodeModal />} />
           <Route path='/loader' element={<Loader />} />
+          <Route path='/invo' element={<InvoiceBill/>}/>
 
           {/* Protected Main Layout Route */}
           <Route path='/nextpage' element={<MainFile />}>
@@ -34,6 +36,7 @@ function App() {
             <Route path='exam' element={<ExamFile />} />
             <Route path='contact' element={<VendorContactsCreate />} />
             <Route path='hcl-booking' element={<BookingTable />} />
+            
           </Route>
         </Routes>
 

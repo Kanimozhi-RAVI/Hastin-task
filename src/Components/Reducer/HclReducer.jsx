@@ -1,4 +1,4 @@
-import { GET_BOOKING_LIST_FAILURE, GET_BOOKING_LIST_REQUEST, GET_BOOKING_LIST_SUCCESS } from "../Type"
+import { GET_BOOKING_LIST_FAILURE, GET_BOOKING_LIST_REQUEST, GET_BOOKING_LIST_SUCCESS, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, GET_INVOICEBILL_SUCCESS } from "../Type"
 
 
 const initialState = {
@@ -26,6 +26,19 @@ const userlistReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload
       };
+
+      case GET_INVOICEBILL_REQUEST:
+        return{
+          ...state,loading:true, error:null,
+        };
+        case GET_INVOICEBILL_SUCCESS:
+          return{
+            ...state,loading:false, bookinguser:action.payload,
+          }
+           case GET_INVOICEBILL_FAILURE:
+          return{
+            ...state,loading:false, error:action.payload,
+          }
     default:
       return state; 
   }
