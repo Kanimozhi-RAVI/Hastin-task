@@ -51,21 +51,24 @@ function* invoiceBillSaga(action) {
   }
 }
  
-function* invoiceSaga(action){
-  try{
-    // const {id} = action.payload;
+function* invoiceSaga(action) {
+  try {
+    const { id } = action.payload;
     const config = getAuthHeaders();
-    const url = `${apiEndpoints.GET_PARTY_DETAILS}`
 
-    const response =yield call(axios.get,url,config);
-    console.log(response);
-    // const data = response.data?.data;
-    // console.log(data); 
-    yield put(getInvoicePartydetailsSuccess(response));
-    // console.log("api success", data)
+    const url = `https://hastin-container.com/staging/api/accouting/soc/invoice/get/${id}`;
+    const response = yield call(axios.get, url, config);
 
-  }catch(error){
-yield put(getInvoicePartydetailsFailure(error?.response?.data?.message || "Invoice fetch failed"))
+    const data = response?.data?.data;
+
+    if (data) {
+      yield put(getInvoicePartydetailsSuccess(data));
+    } else {
+      throw new Error('No data in response');
+    }
+
+  } catch (error) {
+    yield put(getInvoicePartydetailsFailure(error?.response?.data?.message || "Invoice fetch failed"));
   }
 }
 

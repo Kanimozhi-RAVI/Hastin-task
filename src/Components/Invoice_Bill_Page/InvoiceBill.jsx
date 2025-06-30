@@ -1,72 +1,83 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getInvoiceBillRequest,
-  getInvoicePartydetailsRequest,
-} from '../Action_file/HclBookingAction';
-import { useNavigate, useParams } from 'react-router';
-import '../Invoice_Bill_Page/InvoiceBill.css'
+import { getInvoiceBillRequest, getInvoicePartydetailsRequest } from '../Action_file/HclBookingAction';
+import { useParams, useNavigate } from 'react-router';
+import '../Invoice_Bill_Page/InvoiceBill.css';
 
 function InvoiceBill() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, invoiceId } = useParams(); // id = bookingId, invoiceId = selected invoice id
 
-  const invoice = useSelector(state => state.bookinginvoice?.invoice || {});
+  const invoiceList = useSelector(state => state.bookinginvoice?.invoice?.invoices || []);
+  const invoiceDetail = invoiceList.find(inv => inv.id === invoiceId) || {};
+  // Access party invoice data (from Redux)
+// const invoicePartyData = useSelector(state => state.bookinginvoice?.invoiceid || {});
+const invoicePartyData = useSelector(state => state.bookinginvoice?.invoiceDetail || {});
+const invoiceItems = invoicePartyData?.invoicesComponents || [];
+console.log("✅ Invoice Party Data:", invoicePartyData);
 
   useEffect(() => {
-    dispatch(getInvoiceBillRequest(id));
-    dispatch(getInvoicePartydetailsRequest());
+    if (id) {
+      dispatch(getInvoiceBillRequest(id));
+    }
   }, [dispatch, id]);
+
+  // 👉 Fetch selected invoice party details when invoiceId changes
+  useEffect(() => {
+    if (invoiceId) {
+      dispatch(getInvoicePartydetailsRequest({ id: invoiceId }));
+    }
+  }, [dispatch, invoiceId]);
 
   return (
     <div className="invoice-container">
-      <h4>INVOICE # {invoice.invoiceNo || '---'}</h4>
+      <h4>INVOICE # {invoiceDetail.invoiceNo || '---'}</h4>
 
       <div className="invoice-details-grid">
         <div className="left-box">
           <div className="field">
             <label>Bill To</label>
-            <div>{invoice.custName || '-'}</div>
+            <input value={invoiceDetail.custName || ''} readOnly />
           </div>
           <div className="field">
             <label>Issuing Agent</label>
-            <div>{invoice.issuingAgent || '-'}</div>
+            <input value={invoiceDetail.issuingAgent || ''} readOnly />
           </div>
           <div className="field">
             <label>Invoice Type</label>
-            <div>{invoice.invoiceCategory || '-'}</div>
+            <input value={invoiceDetail.invoiceCategory || ''} readOnly />
           </div>
           <div className="field">
             <label>Currency</label>
-            <div>{invoice.currency || '-'}</div>
+            <input value={invoiceDetail.currency || ''} readOnly />
           </div>
           <div className="field">
             <label>Currency Conv.Rate</label>
-            <div>2.01</div>
+            <input value="2.01" readOnly />
           </div>
         </div>
 
         <div className="right-box">
           <div className="field">
             <label>Invoice #</label>
-            <div>{invoice.invoiceNo || '-'}</div>
+            <input value={invoiceDetail.invoiceNo || ''} readOnly />
           </div>
           <div className="field">
             <label>Invoice Date</label>
-            <div>{invoice.invDate || '-'}</div>
+            <input value={invoiceDetail.invDate || ''} readOnly />
           </div>
           <div className="field">
             <label>Issue Date</label>
-            <div className="required">Required ✖</div>
+            <input value={invoiceDetail.issueDate || 'Required ✖'} readOnly />
           </div>
           <div className="field">
             <label>Due Date</label>
-            <div>{invoice.dueDate || '-'}</div>
+            <input value={invoiceDetail.dueDate || ''} readOnly />
           </div>
           <div className="field">
             <label>Reference No</label>
-            <div>77</div>
+            <input value="77" readOnly />
           </div>
         </div>
       </div>
@@ -86,30 +97,38 @@ function InvoiceBill() {
             <th>ACTION</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td className="link">PORT SECURITY</td>
-            <td>{invoice.currency || ''}</td>
-            <td>2.01</td>
-            <td>23</td>
-            <td>11.44</td>
-            <td>{invoice.amount}</td>
-            <td>0.00</td>
-            <td>0.00</td>
-            <td>
-              <button className="edit-btn">✎</button>
-              <button className="delete-btn">🗑️</button>
-            </td>
-          </tr>
-        </tbody>
+      <tbody>
+  {invoiceItems.length > 0 ? (
+    invoiceItems.map((item, index) => (
+      <tr key={item.id || index}>
+        <td>{index + 1}</td>
+        <td>{item.chargeName}</td>
+        <td>{item.currency}</td>
+        <td>{item.usdConversion}</td>
+        <td>{item.unit}</td>
+        <td>{item.unitAmount}</td>
+        <td>{item.totalAmount}</td>
+        <td>{item.taxPerStr}</td>
+        <td>{item.taxAmountStr}</td>
+        <td>
+          <button>✎</button>
+          <button>🗑️</button>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr><td colSpan="10" style={{ textAlign: 'center' }}>No charges found</td></tr>
+  )}
+</tbody>
+
+
       </table>
 
       <div className="notes-actions">
         <textarea className="notes-text" placeholder="Notes" />
         <div className="totals-right">
-          <p><strong>Sub Total (BZD):</strong> 263.12</p>
-          <p><strong>Grand Total:</strong> 263.12 BZD</p>
+          <p><strong>Sub Total (BZD):</strong> {invoiceDetail.amount || '0.00'}</p>
+          <p><strong>Grand Total:</strong> {invoiceDetail.amount || '0.00'} BZD</p>
         </div>
       </div>
 
@@ -118,6 +137,21 @@ function InvoiceBill() {
         <button className="btn receipt">Payment Receipt</button>
         <button className="btn print">Print</button>
         <button className="btn email">Send Email</button>
+      </div>
+
+      {/* 🔁 Invoice Switcher */}
+      <h5 style={{ marginTop: '20px' }}>Other Invoices</h5>
+      <div>
+        {invoiceList.map(inv => (
+          <div key={inv.id}>
+            <span
+              onClick={() => navigate(`/invoice/${id}/${inv.id}`)}
+              style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}
+            >
+              {inv.invoiceNo}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

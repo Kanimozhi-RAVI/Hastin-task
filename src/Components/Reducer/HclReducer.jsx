@@ -1,69 +1,66 @@
-import { GET_BOOKING_LIST_FAILURE, GET_BOOKING_LIST_REQUEST, GET_BOOKING_LIST_SUCCESS, GET_INVOICE_BILL_ID_FAILURE, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICE_BILL_ID_SUCCESS, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, GET_INVOICEBILL_SUCCESS } from "../Type"
-
+import {
+  GET_BOOKING_LIST_REQUEST,
+  GET_BOOKING_LIST_SUCCESS,
+  GET_BOOKING_LIST_FAILURE,
+  GET_INVOICEBILL_REQUEST,
+  GET_INVOICEBILL_SUCCESS,
+  GET_INVOICEBILL_FAILURE,
+  GET_INVOICE_BILL_ID_REQUEST,
+  GET_INVOICE_BILL_ID_SUCCESS,
+  GET_INVOICE_BILL_ID_FAILURE
+} from "../Type";
 
 const initialState = {
   bookinguser: [],
+  invoice: {}, // holds all invoices & bills
+  invoiceDetail: {}, // holds specific invoice by ID
   loading: false,
   error: null,
-  invoice:"",
-  invoiceId:[],
 };
 
 const userlistReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_BOOKING_LIST_REQUEST:
+    case GET_INVOICEBILL_REQUEST:
+    case GET_INVOICE_BILL_ID_REQUEST:
       return {
         ...state,
-        loading: true
+        loading: true,
+        error: null,
       };
+
     case GET_BOOKING_LIST_SUCCESS:
       return {
         ...state,
         loading: false,
-        bookinguser: action.payload
+        bookinguser: action.payload,
       };
-    case GET_BOOKING_LIST_FAILURE:
+
+    case GET_INVOICEBILL_SUCCESS:
       return {
         ...state,
         loading: false,
-        error: action.payload
+        invoice: action.payload, // contains invoices & bills
       };
 
-      case GET_INVOICEBILL_REQUEST:
-        return{
-          ...state,loading:true, error:null,
-        };
-        case GET_INVOICEBILL_SUCCESS:
-          return {
+    case GET_INVOICE_BILL_ID_SUCCESS:
+      return {
         ...state,
-        invoice:action.payload,
         loading: false,
+        invoiceDetail: action.payload, // specific invoice detail
       };
-           case GET_INVOICEBILL_FAILURE:
-          return{
-            ...state,loading:false, error:action.payload,
-          }
 
-          case GET_INVOICE_BILL_ID_REQUEST:
-            return{
-              ...state,
-              loading:true,
-              error:null,
-            }
-            case GET_INVOICE_BILL_ID_SUCCESS:
-              return{
-                ...state,
-                loading:false,
-                invoiceId:action.payload,
-              }
-              case GET_INVOICE_BILL_ID_FAILURE:
-                return{
-                  ...state,
-                  loading:false,
-                  error:action.payload,
-                }
+    case GET_BOOKING_LIST_FAILURE:
+    case GET_INVOICEBILL_FAILURE:
+    case GET_INVOICE_BILL_ID_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
     default:
-      return state; 
+      return state;
   }
 };
 

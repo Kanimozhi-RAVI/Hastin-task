@@ -24,6 +24,8 @@ function App() {
           <Route path='/access' element={<AccessCodeModal />} />
           <Route path='/loader' element={<Loader />} />
           <Route path='/invo/:id' element={<InvoiceBill/>}/>
+          <Route path="/invoice/:id/:invoiceId" element={<InvoiceBill />} />
+
 
           {/* Protected Main Layout Route */}
           <Route path='/nextpage' element={<MainFile />}>

@@ -27,9 +27,10 @@ export const getInvoiceBillFailure = (error) =>({
     payload:error,
 });
 
-export const  getInvoicePartydetailsRequest = (invoiceId) =>({
+export const  getInvoicePartydetailsRequest = (payload) =>({
     type:GET_INVOICE_BILL_ID_REQUEST,
-    payload:{invoiceId},
+    payload,
+    
 })
 export const  getInvoicePartydetailsSuccess = (data) =>({
     type:GET_INVOICE_BILL_ID_SUCCESS,
