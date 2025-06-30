@@ -3,9 +3,9 @@ import { defaultPagination } from "../utils/Constant";
 import { BASE_URL, getAuthHeaders } from "../utils/Service";
 import apiEndpoints from "../API/Endpoint";
 import { showError, showSuccess } from "../utils/ToastUtils";
-import { GET_BOOKING_LIST_REQUEST, GET_INVOICEBILL_FAILURE } from "../Type";
+import { GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST } from "../Type";
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { getBookinglistFailure, getBookinglistSuccess, getInvoiceBillFailure, getInvoiceBillSuccess } from "../Action_file/HclBookingAction";
+import { getBookinglistFailure, getBookinglistSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess } from "../Action_file/HclBookingAction";
 
 
 // const API = 'https://hastin-container.com/staging/api/soc/booking//search-all/active/bookings';
@@ -30,27 +30,48 @@ function* hclBookingSaga() {
   }
 }
 
-function*invoiceBillSaga(){
-  try{
-    const  config = getAuthHeaders();
+function* invoiceBillSaga(action) {
+  try {
+    const { id } = action.payload;
+    const config = getAuthHeaders();
 
-    const response = yield call(axios.get,apiEndpoints.GET_INVOICEBILL,config);
-    const tableData = response.data?.data || [];
-    yield put(getInvoiceBillSuccess(tableData));
-    console.log(tableData);
+    const url = `${apiEndpoints.GET_INVOICEBILL}/${id}`;
+    const response = yield call(axios.get, url, config);
+
+    const data = response.data?.data;
+ 
+    // const invoice =data?.invoices || [];
+    // const bill = data?.bills || [];
+    // const total = {invoice,bill}
+   console.log(data)
+
+    yield put(getInvoiceBillSuccess(data));
+  } catch (error) {
+    yield put(getInvoiceBillFailure(error?.response?.data?.message || "Invoice fetch failed"));
+  }
+}
+ 
+function* invoiceSaga(action){
+  try{
+    // const {id} = action.payload;
+    const config = getAuthHeaders();
+    const url = `${apiEndpoints.GET_PARTY_DETAILS}`
+
+    const response =yield call(axios.get,url,config);
+    console.log(response);
+    // const data = response.data?.data;
+    // console.log(data); 
+    yield put(getInvoicePartydetailsSuccess(response));
+    // console.log("api success", data)
 
   }catch(error){
-    console.error("❌ API Error:", error.response?.data || error.message);
-    yield put(getInvoiceBillFailure(error?.response?.data?.message || "Booking fetch failed"));
-    showError("invoice fetch failed!");
+yield put(getInvoicePartydetailsFailure(error?.response?.data?.message || "Invoice fetch failed"))
   }
 }
 
-
-   
-
    export default function* hclSaga(){
     yield takeLatest(GET_BOOKING_LIST_REQUEST, hclBookingSaga);
-    yield takeLatest(GET_INVOICEBILL_FAILURE, invoiceBillSaga)
+    yield takeLatest(GET_INVOICEBILL_REQUEST, invoiceBillSaga);
+    yield takeLatest(GET_INVOICE_BILL_ID_REQUEST,invoiceSaga)
    }
    

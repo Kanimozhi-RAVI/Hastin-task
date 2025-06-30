@@ -19,7 +19,8 @@ const apiEndpoints = {
   GET_CITIES: `${BASE_URL}/countryCities/get`,
 
   GET_BOOKINGS:`${BASE_URL}/soc/booking//search-all/active/bookings`,
-  GET_INVOICEBILL: (id)=>`${BASE_URL}/accouting/soc/export/get/${id}`
+  GET_INVOICEBILL:`${BASE_URL}/accouting/soc/export/get`,
+  GET_PARTY_DETAILS:(invoiceId) => `${BASE_URL}/accouting/soc/invoice/get/${invoiceId}`,
 
 };
 

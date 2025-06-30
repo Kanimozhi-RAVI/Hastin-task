@@ -1,4 +1,4 @@
-import { GET_BOOKING_LIST_FAILURE, GET_BOOKING_LIST_REQUEST, GET_BOOKING_LIST_SUCCESS, GET_INVOICEBILL_REQUEST } from "../Type";
+import { GET_BOOKING_LIST_FAILURE, GET_BOOKING_LIST_REQUEST, GET_BOOKING_LIST_SUCCESS, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICE_BILL_ID_SUCCESS, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, GET_INVOICEBILL_SUCCESS } from "../Type";
 
 
 export const getBookinglistRequest = () => ({
@@ -14,14 +14,28 @@ export const getBookinglistFailure = (error) => ({
     payload:error,
 });
 
-export const getInvoiceBillRequest = () =>({
+export const getInvoiceBillRequest = (id) =>({
     type:GET_INVOICEBILL_REQUEST,
+    payload:{id},
 });
 export const getInvoiceBillSuccess = (data) =>({
-    type:GET_INVOICEBILL_REQUEST,
-    paylooad:data,
+    type:GET_INVOICEBILL_SUCCESS,
+    payload:data,
 });
 export const getInvoiceBillFailure = (error) =>({
-    type:GET_INVOICEBILL_REQUEST,
+    type:GET_INVOICEBILL_FAILURE,
     payload:error,
 });
+
+export const  getInvoicePartydetailsRequest = (invoiceId) =>({
+    type:GET_INVOICE_BILL_ID_REQUEST,
+    payload:{invoiceId},
+})
+export const  getInvoicePartydetailsSuccess = (data) =>({
+    type:GET_INVOICE_BILL_ID_SUCCESS,
+    payload:data,
+})
+export const  getInvoicePartydetailsFailure = (error) =>({
+    type:GET_INVOICE_BILL_ID_REQUEST,
+    payload:error,
+})

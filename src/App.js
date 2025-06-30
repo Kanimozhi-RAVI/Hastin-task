@@ -23,7 +23,7 @@ function App() {
           <Route path='/' element={<Login />} />
           <Route path='/access' element={<AccessCodeModal />} />
           <Route path='/loader' element={<Loader />} />
-          <Route path='/invo' element={<InvoiceBill/>}/>
+          <Route path='/invo/:id' element={<InvoiceBill/>}/>
 
           {/* Protected Main Layout Route */}
           <Route path='/nextpage' element={<MainFile />}>

@@ -32,12 +32,7 @@ const Login = () => {
 
 useEffect(() => {
   if (accessCodeStatus?.data?.isValidAccessCode) {
-    // toast.success("Access code verified!", {
-    //   position: "top-right",
-    //   autoClose: 3000,
-    //   pauseOnHover: true,
-    //   theme: "colored",
-    // });
+  
     setIsModalOpen(false);
     navigate('/nextpage');
   }
@@ -68,12 +63,6 @@ useEffect(() => {
     <div className="body-text">
       <div className="extra-login-wrapper">
         <div className="extra-container glass">
-
-          <div className="extra-left">
-            {/* <h2>Welcome Back!</h2>
-            <p>Sign in to your account and manage your tasks easily.</p> */}
-          </div>
-
           <div className="extra-right">
             <div className='right-header'> 
               <FaUserCircle style={{fontSize:"50px"}} />

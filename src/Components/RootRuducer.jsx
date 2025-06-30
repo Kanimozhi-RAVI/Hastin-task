@@ -7,7 +7,7 @@ import userlistReducer from './Reducer/HclReducer'
 const rootReducer = combineReducers({
   user: userReducer,
   vendor:vendorReducer,
-  bookinguser:userlistReducer,
+  bookinginvoice:userlistReducer,
 
 });
 

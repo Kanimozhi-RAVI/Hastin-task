@@ -1,72 +1,77 @@
 import React, { useEffect } from 'react';
-import './InvoiceBill.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { getInvoiceBillRequest } from '../Action_file/HclBookingAction';
+import {
+  getInvoiceBillRequest,
+  getInvoicePartydetailsRequest,
+} from '../Action_file/HclBookingAction';
+import { useNavigate, useParams } from 'react-router';
+import '../Invoice_Bill_Page/InvoiceBill.css'
 
 function InvoiceBill() {
-    const dispatch = useDispatch();
-    const users = useSelector(state => state.bookinguser || []);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-    useEffect(()=>{
-        dispatch(getInvoiceBillRequest());
-    },[]);
+  const invoice = useSelector(state => state.bookinginvoice?.invoice || {});
+
+  useEffect(() => {
+    dispatch(getInvoiceBillRequest(id));
+    dispatch(getInvoicePartydetailsRequest());
+  }, [dispatch, id]);
 
   return (
-    <div className="invoice-page">
-      <h2>INVOICE ENTRY</h2>
+    <div className="invoice-container">
+      <h4>INVOICE # {invoice.invoiceNo || '---'}</h4>
 
-      <div className="invoice-header">
-        <div className="left-section">
-          <div className="form-group">
-            
-            <label>Bill To:</label>
-            <input type="text" placeholder="Enter customer name" />
+      <div className="invoice-details-grid">
+        <div className="left-box">
+          <div className="field">
+            <label>Bill To</label>
+            <div>{invoice.custName || '-'}</div>
           </div>
-          <div className="form-group">
-            <label>Issuing Agent:</label>
-            <input type="text" placeholder="Enter issuing agent" />
+          <div className="field">
+            <label>Issuing Agent</label>
+            <div>{invoice.issuingAgent || '-'}</div>
           </div>
-          <div className="form-group">
-            <label>Invoice Type:</label>
-            <input type="text" placeholder="e.g., EXPORT" />
+          <div className="field">
+            <label>Invoice Type</label>
+            <div>{invoice.invoiceCategory || '-'}</div>
           </div>
-          <div className="form-group">
-            <label>Currency:</label>
-            <input type="text" placeholder="e.g., USD" />
+          <div className="field">
+            <label>Currency</label>
+            <div>{invoice.currency || '-'}</div>
           </div>
-          <div className="form-group">
-            <label>Conv. Rate:</label>
-            <input type="number" step="0.01" placeholder="e.g., 2.01" />
+          <div className="field">
+            <label>Currency Conv.Rate</label>
+            <div>2.01</div>
           </div>
         </div>
 
-        <div className="right-section">
-          <div className="form-group">
-            <label>Invoice #:</label>
-            <input type="text" placeholder="e.g., INV 24-00723" />
+        <div className="right-box">
+          <div className="field">
+            <label>Invoice #</label>
+            <div>{invoice.invoiceNo || '-'}</div>
           </div>
-          <div className="form-group">
-            <label>Invoice Date:</label>
-            <input type="date" />
+          <div className="field">
+            <label>Invoice Date</label>
+            <div>{invoice.invDate || '-'}</div>
           </div>
-          <div className="form-group">
-            <label>Issue Date:</label>
-            <input type="date" />
+          <div className="field">
+            <label>Issue Date</label>
+            <div className="required">Required ✖</div>
           </div>
-          <div className="form-group">
-            <label>Due Date:</label>
-            <input type="date" />
+          <div className="field">
+            <label>Due Date</label>
+            <div>{invoice.dueDate || '-'}</div>
           </div>
-          <div className="form-group">
-            <label>Reference No:</label>
-            <input type="text" placeholder="e.g., 77" />
+          <div className="field">
+            <label>Reference No</label>
+            <div>77</div>
           </div>
         </div>
       </div>
 
-      <button className="add-charge-btn">Add Charge</button>
-
-      <table className="invoice-table">
+      <table className="invoice-table-ui">
         <thead>
           <tr>
             <th>S.NO</th>
@@ -85,11 +90,11 @@ function InvoiceBill() {
           <tr>
             <td>1</td>
             <td className="link">PORT SECURITY</td>
-            <td>BZD</td>
+            <td>{invoice.currency || ''}</td>
             <td>2.01</td>
             <td>23</td>
             <td>11.44</td>
-            <td>263.12</td>
+            <td>{invoice.amount}</td>
             <td>0.00</td>
             <td>0.00</td>
             <td>
@@ -100,20 +105,19 @@ function InvoiceBill() {
         </tbody>
       </table>
 
-      {/* Notes and Totals */}
-      <textarea className="notes-box" placeholder="Notes"></textarea>
-
-      <div className="totals">
-        <p><strong>Sub Total (BZD):</strong> 263.12</p>
-        <p><strong>Grand Total:</strong> 263.12 BZD</p>
+      <div className="notes-actions">
+        <textarea className="notes-text" placeholder="Notes" />
+        <div className="totals-right">
+          <p><strong>Sub Total (BZD):</strong> 263.12</p>
+          <p><strong>Grand Total:</strong> 263.12 BZD</p>
+        </div>
       </div>
 
-      {/* Bottom Action Buttons */}
-      <div className="action-buttons">
-        <button className="update-btn">Update</button>
-        <button className="receipt-btn">Payment Receipt</button>
-        <button className="print-btn">Print</button>
-        <button className="email-btn">Send Email</button>
+      <div className="action-buttons-ui">
+        <button className="btn update">Update</button>
+        <button className="btn receipt">Payment Receipt</button>
+        <button className="btn print">Print</button>
+        <button className="btn email">Send Email</button>
       </div>
     </div>
   );
