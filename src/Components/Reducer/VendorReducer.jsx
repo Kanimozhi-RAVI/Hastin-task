@@ -29,7 +29,7 @@ import {
   CREATE_VENDOR_REQUEST,
   CREATE_VENDOR_SUCESSS,
   CREATE_VENDOR_FAILURE,
-} from "../Type";
+} from "../Types_File/VendorType";
 
 const initialState = {
   loading: null,

@@ -25,16 +25,15 @@ function App() {
           <Route path='/loader' element={<Loader />} />
           <Route path='/invo/:id' element={<InvoiceBill/>}/>
           <Route path="/invoice/:id/:invoiceId" element={<InvoiceBill />} />
-
-
-          {/* Protected Main Layout Route */}
-          <Route path='/nextpage' element={<MainFile />}>
-            <Route index element={<VendorTable />} /> {/* default route under MainFile */}
-            <Route path='tab' element={<VendorTable />} />
-            <Route path='vendoredit/:id' element={<VendorEdit />} />
+           <Route path='vendoredit/:id' element={<VendorEdit />} />
             <Route path='vendorcreate' element={<VendorEdit />} />
             <Route path='vendor/update/:id' element={<VendorEdit />} />
             <Route path='vendorcontact' element={<VendorContacts />} />
+
+          <Route path='/nextpage' element={<MainFile />}>
+            <Route index element={<VendorTable />} /> 
+            <Route path='tab' element={<VendorTable />} />
+           
             <Route path='exam' element={<ExamFile />} />
             <Route path='contact' element={<VendorContactsCreate />} />
             <Route path='hcl-booking' element={<BookingTable />} />

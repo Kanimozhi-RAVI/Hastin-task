@@ -7,7 +7,7 @@ import {
   GET_USER_DETAILS_REQUEST,
 
  
-} from '../Type';
+} from '../Types_File/VendorType';
 import {
   postloginSuccess,
   postloginFailure,

@@ -20,7 +20,7 @@ const apiEndpoints = {
 
   GET_BOOKINGS:`${BASE_URL}/soc/booking//search-all/active/bookings`,
   GET_INVOICEBILL:`${BASE_URL}/accouting/soc/export/get`,
-  GET_PARTY_DETAILS:(invoiceId) => `${BASE_URL}/accouting/soc/invoice/get/${invoiceId}`,
+  GET_PARTY_DETAILS: `${BASE_URL}/accouting/soc/invoice/get`,
 
 };
 

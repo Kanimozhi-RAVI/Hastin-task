@@ -3,7 +3,7 @@ import { defaultPagination } from "../utils/Constant";
 import { BASE_URL, getAuthHeaders } from "../utils/Service";
 import apiEndpoints from "../API/Endpoint";
 import { showError, showSuccess } from "../utils/ToastUtils";
-import { GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST } from "../Type";
+import { GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST } from "../Types_File/HclType";
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { getBookinglistFailure, getBookinglistSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess } from "../Action_file/HclBookingAction";
 
@@ -56,7 +56,8 @@ function* invoiceSaga(action) {
     const { id } = action.payload;
     const config = getAuthHeaders();
 
-    const url = `https://hastin-container.com/staging/api/accouting/soc/invoice/get/${id}`;
+    // const url = `https://hastin-container.com/staging/api/accouting/soc/invoice/get/${id}`;
+    const url = `${apiEndpoints.GET_PARTY_DETAILS}/${id}`
     const response = yield call(axios.get, url, config);
 
     const data = response?.data?.data;

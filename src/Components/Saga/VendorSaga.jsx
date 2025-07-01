@@ -39,7 +39,7 @@ import {
   FETCH_INACTIVE_VENDORS_FAILURE,
   MARK_INACTIVE_REQUEST,
   MARK_ACTIVE_REQUEST,
-} from "../Type";
+} from "../Types_File/VendorType";
 
 import { takeLatest, put, call } from "redux-saga/effects";
 import { getAuthHeaders } from "../utils/Service";

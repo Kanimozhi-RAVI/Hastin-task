@@ -12,7 +12,7 @@ import {
   GET_USER_DETAILS_REQUEST,
   GET_USER_DETAILS_SUCCESS,
   GET_USER_DETAILS_FAILURE,
-} from '../Type';
+} from '../Types_File/VendorType';
 
 const initialState = {
   loading: false,

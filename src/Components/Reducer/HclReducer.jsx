@@ -8,7 +8,7 @@ import {
   GET_INVOICE_BILL_ID_REQUEST,
   GET_INVOICE_BILL_ID_SUCCESS,
   GET_INVOICE_BILL_ID_FAILURE
-} from "../Type";
+} from "../Types_File/HclType";
 
 const initialState = {
   bookinguser: [],
