@@ -22,6 +22,8 @@ const apiEndpoints = {
   GET_INVOICEBILL:`${BASE_URL}/accouting/soc/export/get`,
   GET_PARTY_DETAILS: `${BASE_URL}/accouting/soc/invoice/get`,
 
+  // GET_INVOICE_CURRENCY :`${BASE_URL}/meta/currencies`
+
 };
 
 export default apiEndpoints;

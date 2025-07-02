@@ -303,11 +303,7 @@ if (cleanedList.length === 0) {
                 <br/>
               <div className="form-card ">
                 <h3>Contact Info</h3>
-                {/* {defaultContactError && (
-                  <div className="error" style={{ color: 'red', marginBottom: '10px' }}>
-                    {defaultContactError}
-                  </div>
-                )} */}
+               
                 <div className='contact-design'> 
                  {!isEdit ? (
                   <VendorContactsCreate

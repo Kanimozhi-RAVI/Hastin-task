@@ -26,35 +26,6 @@
   min-height: 500px;
   backdrop-filter: blur(15px);
 }
-
-/* .extra-left {
-  flex: 1;
-   background-image: url('../Assets/login\ img.jpg');
-   object-fit: cover;
-  color: black;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 50px;
-  text-align: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  background-color: #6c63ff;
-} */
-/* 
-.extra-left h2 {
-  font-size: 32px;
-  margin-bottom: 15px;
-}
-
-.extra-left p {
-  font-size: 15px;
-  margin-bottom: 30px;
-} */
-
-
 .extra-right {
   flex: 1;
   padding: 30px 40px;
@@ -62,8 +33,7 @@
   flex-direction: column;
   justify-content: center;
   background-color: white;
-  /* align-items: center; */
-  text-align: center;
+ 
 }
 
 .glass {

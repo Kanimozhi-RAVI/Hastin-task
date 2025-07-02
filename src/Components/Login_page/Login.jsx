@@ -65,7 +65,7 @@ useEffect(() => {
         <div className="extra-container glass">
           <div className="extra-right">
             <div className='right-header'> 
-              <FaUserCircle style={{fontSize:"50px"}} />
+              <FaUserCircle style={{fontSize:"50px", display:"flex"}}  />
             <h3>LOGIN</h3>
             </div>
             <form onSubmit={handleSubmit}>

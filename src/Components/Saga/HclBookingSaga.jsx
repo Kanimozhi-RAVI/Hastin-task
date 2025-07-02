@@ -5,7 +5,10 @@ import apiEndpoints from "../API/Endpoint";
 import { showError, showSuccess } from "../utils/ToastUtils";
 import { GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST } from "../Types_File/HclType";
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { getBookinglistFailure, getBookinglistSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess } from "../Action_file/HclBookingAction";
+import { getBookinglistFailure, getBookinglistSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
+ from "../Action_file/HclBookingAction";
+import { fetchCurrenciesSuccess } from "../Action_file/VendorAction";
+import { FETCH_CURRENCIES_REQUEST } from "../Types_File/VendorType";
 
 
 // const API = 'https://hastin-container.com/staging/api/soc/booking//search-all/active/bookings';
@@ -56,7 +59,6 @@ function* invoiceSaga(action) {
     const { id } = action.payload;
     const config = getAuthHeaders();
 
-    // const url = `https://hastin-container.com/staging/api/accouting/soc/invoice/get/${id}`;
     const url = `${apiEndpoints.GET_PARTY_DETAILS}/${id}`
     const response = yield call(axios.get, url, config);
 
@@ -72,10 +74,23 @@ function* invoiceSaga(action) {
     yield put(getInvoicePartydetailsFailure(error?.response?.data?.message || "Invoice fetch failed"));
   }
 }
+// function* currencySaga(){
+//   try{
+//     const config = getAuthHeaders();
+//     const response = yield call(axios.get,apiEndpoints.GET_CURRENCIES,config);
+//     const data =response.data;
+//     yield put(fetchCurrenciesSuccess(data))  
+//   }catch (error) {
+//     console.log(error , "Currency failed");
+//   }
+// }
+
+
 
    export default function* hclSaga(){
     yield takeLatest(GET_BOOKING_LIST_REQUEST, hclBookingSaga);
     yield takeLatest(GET_INVOICEBILL_REQUEST, invoiceBillSaga);
-    yield takeLatest(GET_INVOICE_BILL_ID_REQUEST,invoiceSaga)
+    yield takeLatest(GET_INVOICE_BILL_ID_REQUEST,invoiceSaga);
+    // yield takeLatest(FETCH_CURRENCIES_REQUEST, currencySaga);
    }
    
