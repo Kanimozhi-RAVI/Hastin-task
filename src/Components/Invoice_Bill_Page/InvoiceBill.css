@@ -228,3 +228,10 @@ label {
   color: #888;
   padding: 20px 0;
 }
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+}
