@@ -3,9 +3,9 @@ import { defaultPagination } from "../utils/Constant";
 import { BASE_URL, getAuthHeaders } from "../utils/Service";
 import apiEndpoints from "../API/Endpoint";
 import { showError, showSuccess } from "../utils/ToastUtils";
-import { GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST } from "../Types_File/HclType";
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { getBookinglistFailure, getBookinglistSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
+import { GET_AGENT_REQUEST, GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, HEAD_REQUEST } from "../Types_File/HclType";
+import { call, put, take, takeLatest } from 'redux-saga/effects';
+import { getAgentFailure, getAgentSuccess, getBookinglistFailure, getBookinglistSuccess, getHeaderFailure, getHeaderSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
  from "../Action_file/HclBookingAction";
 import { fetchCurrenciesSuccess } from "../Action_file/VendorAction";
 import { FETCH_CURRENCIES_REQUEST } from "../Types_File/VendorType";
@@ -74,16 +74,35 @@ function* invoiceSaga(action) {
     yield put(getInvoicePartydetailsFailure(error?.response?.data?.message || "Invoice fetch failed"));
   }
 }
-// function* currencySaga(){
-//   try{
-//     const config = getAuthHeaders();
-//     const response = yield call(axios.get,apiEndpoints.GET_CURRENCIES,config);
-//     const data =response.data;
-//     yield put(fetchCurrenciesSuccess(data))  
-//   }catch (error) {
-//     console.log(error , "Currency failed");
-//   }
-// }
+ function* headerSaga() {
+  try {
+    const config = getAuthHeaders(); 
+    const URL = 'https://hastin-container.com/staging/api/account-head/get/all';
+
+    const response = yield call(axios.get, URL, config);
+    const data = response.data?.data;
+    yield put(getHeaderSuccess(data || []));
+  } catch (error) {
+    console.error('Header Fetch Error: ', error);
+    yield put(getHeaderFailure(error?.response?.data?.message || 'Header fetch failed'));
+  }
+}
+
+function* agentSaga(){
+  try{
+    const config = getAuthHeaders();
+    const url = 'https://hastin-container.com/staging/api/agent/get';
+     const response = yield call(axios.get, url, config);
+     const data =  response.data || [];
+     yield put(getAgentSuccess(data));
+     console.log(data);
+  yield put(getAgentSuccess(data))
+
+  }catch (error) {
+    console.error('Header Fetch Error: ', error);
+    yield put(getAgentFailure(error?.response?.data?.message || 'Header fetch failed'));
+  }
+}
 
 
 
@@ -91,6 +110,7 @@ function* invoiceSaga(action) {
     yield takeLatest(GET_BOOKING_LIST_REQUEST, hclBookingSaga);
     yield takeLatest(GET_INVOICEBILL_REQUEST, invoiceBillSaga);
     yield takeLatest(GET_INVOICE_BILL_ID_REQUEST,invoiceSaga);
-    // yield takeLatest(FETCH_CURRENCIES_REQUEST, currencySaga);
+    yield takeLatest(HEAD_REQUEST, headerSaga);
+    yield takeLatest(GET_AGENT_REQUEST, agentSaga)
    }
    

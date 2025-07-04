@@ -21,6 +21,7 @@ const apiEndpoints = {
   GET_BOOKINGS:`${BASE_URL}/soc/booking//search-all/active/bookings`,
   GET_INVOICEBILL:`${BASE_URL}/accouting/soc/export/get`,
   GET_PARTY_DETAILS: `${BASE_URL}/accouting/soc/invoice/get`,
+  GET_HEADER: `${BASE_URL}/account-head/get/all`
 
   // GET_INVOICE_CURRENCY :`${BASE_URL}/meta/currencies`
 

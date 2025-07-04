@@ -115,7 +115,8 @@ label {
   font-size: 14px;
    
 }
-.table-edit input,select{
+.table-edit input,select
+,.invoice-table-ui input{
   width: 100%;
   padding: 6px 10px;
   margin-bottom: 12px;
