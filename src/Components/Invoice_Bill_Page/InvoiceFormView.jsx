@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import InvoiceTable from './InvoiceTable';
 import { parse, isValid } from 'date-fns';
 
-function InvoiceFormView({ invoice, invoiceItems, currencies }) {
+function InvoiceFormView({ invoice, invoiceItems, currencies, bookinguser = {} }) {
   const safeParse = (dateStr) => {
     if (!dateStr) return null;
     const parsed = parse(dateStr, 'dd/MM/yyyy', new Date());
@@ -54,11 +54,19 @@ function InvoiceFormView({ invoice, invoiceItems, currencies }) {
           />
 
           <label>Issuing Agent</label>
-          <input
+          <select
             name="issuingAgent"
             value={formData.issuingAgent}
             onChange={handleChange}
-          />
+          >
+            <option value="">Select Agent</option>
+            {Array.isArray(bookinguser.data) &&
+              bookinguser.data.map((agent) => (
+                <option key={agent.id} value={agent.agentName}>
+                  {agent.agentName}
+                </option>
+              ))}
+          </select>
 
           <label>Invoice Type</label>
           <input value={invoice.invoiceCategory || ''} readOnly />
@@ -79,6 +87,9 @@ function InvoiceFormView({ invoice, invoiceItems, currencies }) {
             selected={formData.invDateStr}
             onChange={(date) => handleDateChange(date, 'invDateStr')}
             dateFormat="yyyy-MM-dd"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
             className="form-control"
           />
 
@@ -87,6 +98,9 @@ function InvoiceFormView({ invoice, invoiceItems, currencies }) {
             selected={formData.issueDateStr}
             onChange={(date) => handleDateChange(date, 'issueDateStr')}
             dateFormat="yyyy-MM-dd"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
             className="form-control"
           />
 
@@ -95,6 +109,9 @@ function InvoiceFormView({ invoice, invoiceItems, currencies }) {
             selected={formData.dueDateStr}
             onChange={(date) => handleDateChange(date, 'dueDateStr')}
             dateFormat="yyyy-MM-dd"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
             className="form-control"
           />
 

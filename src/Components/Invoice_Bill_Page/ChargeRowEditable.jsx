@@ -23,7 +23,7 @@ function ChargeRowEditable({
         />
       </td>
 
-      {/* 👇 Account Head Dropdown */}
+     
       <td>
         <select
           value={item.accountHeadId || ''}
@@ -96,6 +96,14 @@ function ChargeRowEditable({
       </td>
 
       <td>
+        <input
+          value={item.taxAmountStr}
+          onChange={(e) =>
+            handleChargeChange(index, 'taxAmountStr', e.target.value)
+          }
+        />
+      </td>
+       <td>
         <input
           value={item.taxAmountStr}
           onChange={(e) =>

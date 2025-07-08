@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import VendorContactsCreate from './Components/VendorPage/VendorContactsCreate';
 import BookingTable from './Components/Hcl_Page/BookingTable';
 import InvoiceBill from './Components/Invoice_Bill_Page/InvoiceBill';
+import Inputcard from './Components/Action_file/Inputcard';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <>
         <Routes>
           {/* Public login routes */}
+          <Route path='/ca' element={<Inputcard/>}/>
           <Route path='/' element={<Login />} />
           <Route path='/access' element={<AccessCodeModal />} />
           <Route path='/loader' element={<Loader />} />

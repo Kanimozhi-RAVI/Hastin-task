@@ -58,7 +58,7 @@ function InvoiceTable({
         <tr>
           <th>S.NO</th>
           <th>CHARGE</th>
-          <th>ACCOUNT HEAD</th>
+          {mode === 'add' && <th>ACCOUNT HEAD</th>}
           <th>CURRENCY</th>
           <th>CONV.RATE</th>
           <th>UNIT</th>
@@ -66,6 +66,8 @@ function InvoiceTable({
           <th>TOTAL</th>
           <th>TAX %</th>
           <th>TAX</th>
+          {mode === 'add' && <th>TAX AMOUNT</th> }
+          
           <th>ACTION</th>
         </tr>
       </thead>
@@ -88,7 +90,7 @@ function InvoiceTable({
               index={index}
               item={item}
               currencies={currencies}
-              accountHeads={accountHeads}
+              // accountHeads={accountHeads}
             />
           )
         )}

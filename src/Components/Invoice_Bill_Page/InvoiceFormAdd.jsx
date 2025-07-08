@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import InvoiceTable from './InvoiceTable';
 
-function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads = {} }) {
+function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads,bookinguser = {} }) {
   const [invoiceDate, setInvoiceDate] = useState(new Date());
   const [issueDate, setIssueDate] = useState(null);
   const [dueDate, setDueDate] = useState(new Date());
@@ -16,6 +16,7 @@ function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads = {} }) 
 
   const [selectedCurrencyId, setSelectedCurrencyId] = useState('');
   const [conversionRate, setConversionRate] = useState('');
+  const [bookAgent , setBookAgent] = useState("");
 
   const [chargeItems, setChargeItems] = useState([
     {
@@ -30,20 +31,21 @@ function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads = {} }) 
     }
   ]);
 
-  useEffect(() => {
-    if (invoiceData) {
-      setReferenceNo(invoiceData.transactionRef || '');
-      setIssuingAgent(invoiceData.issuingAgent || '');
-    //   setInvoiceType(invoiceData.invoiceCategory || '');
-    //   setInvoiceNo(invoiceData.invoiceNo || '');
+useEffect(() => {
+  if (invoiceData) {
+    setReferenceNo(invoiceData.transactionRef || '');
+    setIssuingAgent(invoiceData.issuingAgent || '');
+  } else {
+    setIssuingAgent('');
+    setBookAgent(bookinguser?.agentName || [])
+  }
+}, [invoiceData]);
 
-    //   if (invoiceData.currencyId) {
-    //     setSelectedCurrencyId(invoiceData.currencyId.toString());
-    //     const selected = currencies.find(c => c.id === invoiceData.currencyId);
-    //     setConversionRate(selected?.conversionRate || '');
-    //   }
-    }
-  }, [invoiceData, currencies]);
+//   useEffect(()=>{
+//  if(bookingAgent){
+//   setBookAgent(bookingAgent.data)
+//  }
+//   },[])
 
   const handleCurrencyChange = (e) => {
     const id = e.target.value;
@@ -63,12 +65,19 @@ function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads = {} }) 
           <label>Bill To</label>
           <input placeholder="Enter Customer" />
 
-          <label>Issuing Agent</label>
-          <input
-            placeholder="Enter Issuing Agent"
-            value={issuingAgent}
-            onChange={(e) => (e.target.value)}
-          />
+         <label>Issuing Agent</label>
+<select
+  value={issuingAgent}
+  onChange={(e) => setIssuingAgent(e.target.value)}
+>
+  <option value="">Select Agent</option>
+  {Array.isArray(bookinguser.data) &&
+    bookinguser.data.map((agent) => (
+      <option key={agent.id} value={agent.agentName}>
+        {agent.agentName}
+      </option>
+    ))}
+</select>
 
           <label>Invoice Type</label>
           <input
@@ -112,6 +121,9 @@ function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads = {} }) 
             onChange={(date) => setInvoiceDate(date)}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+             showMonthDropdown
+             showYearDropdown
+             dropdownMode="select"
           />
 
           <label>Issue Date</label>
@@ -120,6 +132,9 @@ function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads = {} }) 
             onChange={(date) => setIssueDate(date)}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+             showMonthDropdown
+             showYearDropdown
+             dropdownMode="select"
           />
 
           <label>Due Date</label>
@@ -128,6 +143,9 @@ function InvoiceFormAdd({ currencies, setMode, invoiceData,accountHeads = {} }) 
             onChange={(date) => setDueDate(date)}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+             showMonthDropdown
+             showYearDropdown
+             dropdownMode="select"
           />
 
           <label>Reference No</label>

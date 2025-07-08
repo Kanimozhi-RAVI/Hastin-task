@@ -3,7 +3,7 @@ import { defaultPagination } from "../utils/Constant";
 import { BASE_URL, getAuthHeaders } from "../utils/Service";
 import apiEndpoints from "../API/Endpoint";
 import { showError, showSuccess } from "../utils/ToastUtils";
-import { GET_AGENT_REQUEST, GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, HEAD_REQUEST } from "../Types_File/HclType";
+import { BOOKING_AGENT_REQUEST, GET_AGENT_REQUEST, GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, HEAD_REQUEST } from "../Types_File/HclType";
 import { call, put, take, takeLatest } from 'redux-saga/effects';
 import { getAgentFailure, getAgentSuccess, getBookinglistFailure, getBookinglistSuccess, getHeaderFailure, getHeaderSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
  from "../Action_file/HclBookingAction";
@@ -104,6 +104,20 @@ function* agentSaga(){
   }
 }
 
+function* bookingAgentSaga(){
+  try{
+    const  config = getAuthHeaders();
+    const url = 'https://hastin-container.com/staging/api/agent/fetch/booking-agent'
+    const response = yield call(axios.get,url,config);
+    const data = response.data || [];
+    yield put(getBookinglistSuccess(data))
+    console.log("BookingAGENT DATA",data)
+    
+  }catch(error){
+     console.error('Header Fetch Error: ', error);
+    yield put(getBookinglistFailure(error?.response?.data?.message || 'Header fetch failed'));
+  }
+}
 
 
    export default function* hclSaga(){
@@ -111,6 +125,7 @@ function* agentSaga(){
     yield takeLatest(GET_INVOICEBILL_REQUEST, invoiceBillSaga);
     yield takeLatest(GET_INVOICE_BILL_ID_REQUEST,invoiceSaga);
     yield takeLatest(HEAD_REQUEST, headerSaga);
-    yield takeLatest(GET_AGENT_REQUEST, agentSaga)
+    yield takeLatest(GET_AGENT_REQUEST, agentSaga);
+    yield takeLatest(BOOKING_AGENT_REQUEST,bookingAgentSaga)
    }
    

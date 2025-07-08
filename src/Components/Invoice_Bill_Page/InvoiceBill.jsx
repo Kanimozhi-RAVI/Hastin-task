@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import {
   getAgentRequest,
+  getBookingAgentRequest,
   getHeaderRequest,
   getInvoiceBillRequest,
   getInvoicePartydetailsRequest
@@ -30,6 +31,11 @@ function InvoiceBill() {
   const currencies = useSelector((state) => state.vendor?.currencies || []);
   const rawHeaders = useSelector((state) => state.bookinginvoice?.header || []);
 const accountHeads = useMemo(() => rawHeaders, [rawHeaders]);
+const bookinguser = useSelector((state)=> state.bookinginvoice?.bookinguser || []) 
+const state =  useSelector((state)=> state);
+console.log(state)
+
+console.log(bookinguser)
 
 console.log(accountHeads)
   const invoice = invoicePartyData.invoice || {};
@@ -39,6 +45,7 @@ console.log(accountHeads)
     dispatch(fetchCurrenciesRequest());
     dispatch(getHeaderRequest());
     dispatch(getAgentRequest())
+    dispatch(getBookingAgentRequest())
     if (id) dispatch(getInvoiceBillRequest(id));
   }, [dispatch, id]);
 
@@ -68,7 +75,8 @@ console.log(accountHeads)
           currencies={currencies}
           setMode={setMode}
           invoiceData={invoice}
-          accountHeads={accountHeads} // pass to charge row
+          accountHeads={accountHeads} 
+          bookinguser = {bookinguser}
         />
       ) : (
         <div className="invoice-tab-header">
@@ -87,7 +95,8 @@ console.log(accountHeads)
                   invoice={invoice}
                   invoiceItems={invoiceItems}
                   currencies={currencies}
-                  accountHeads={accountHeads} // pass to view if needed
+                  accountHeads={accountHeads} 
+                  bookinguser={bookinguser}
                 />
               )}
             </div>

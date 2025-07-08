@@ -1,0 +1,19 @@
+
+/* .card, .floating-label-border {
+  overflow: visible !important;
+  position: static !important;
+} */
+.floating-label-input label {
+  transition: all 0.2s ease;
+}
+.floating-label-input label.floating.active {
+  top: -8px;
+  font-size: 13px;
+}
+.floating-label-input label {
+  transition: 0.2s ease all;
+}
+.floating-label-input .form-control:focus + label,
+.floating-label-input .form-control:not(:placeholder-shown) + label {
+  top: -8px;
+}

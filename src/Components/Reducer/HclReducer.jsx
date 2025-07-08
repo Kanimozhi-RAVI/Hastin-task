@@ -13,7 +13,10 @@ import {
   HEAD_SUCCESS,
   GET_AGENT_REQUEST,
   GET_AGENT_FAILURE,
-  GET_AGENT_SUCCESS
+  GET_AGENT_SUCCESS,
+  BOOKING_AGENT_REQUEST,
+  BOOKING_AGENT_SUCCESS,
+  BOOKING_AGENT_FAILURE
 } from "../Types_File/HclType";
 
 const initialState = {
@@ -24,6 +27,7 @@ const initialState = {
   error: null,
   header:[],
   agent:[],
+
 };
 
 const userlistReducer = (state = initialState, action) => {
@@ -33,6 +37,7 @@ const userlistReducer = (state = initialState, action) => {
     case GET_INVOICE_BILL_ID_REQUEST:
       case HEAD_REQUEST:
         case GET_AGENT_REQUEST:
+          case BOOKING_AGENT_REQUEST:
 
       return {
         ...state,
@@ -51,21 +56,26 @@ const userlistReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        invoice: action.payload, // contains invoices & bills
+        invoice: action.payload, 
       };
 
     case GET_INVOICE_BILL_ID_SUCCESS:
       return {
         ...state,
         loading: false,
-        invoiceDetail: action.payload, // specific invoice detail
+        invoiceDetail: action.payload, 
       };
+      case BOOKING_AGENT_SUCCESS:
+        return{
+          ...state, loading:false, bookinguser:action.payload,
+        }
 
     case GET_BOOKING_LIST_FAILURE:
     case GET_INVOICEBILL_FAILURE:
     case GET_INVOICE_BILL_ID_FAILURE:
       case HEAD_FAILURE:
         case GET_AGENT_FAILURE:
+          case BOOKING_AGENT_FAILURE:
 
       return {
         ...state,
