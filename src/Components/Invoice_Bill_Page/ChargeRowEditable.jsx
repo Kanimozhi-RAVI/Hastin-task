@@ -6,6 +6,8 @@ function ChargeRowEditable({
   item,
   currencies,
   accountHeads,
+  chargeNames = [],
+  taxMasters = [],
   handleChargeChange,
   handleChargeCurrencyChange,
   handleRemoveChargeRow
@@ -14,39 +16,40 @@ function ChargeRowEditable({
     <tr>
       <td>{index + 1}</td>
 
+      {/* ✅ CHARGE dropdown - using chargeNames */}
       <td>
-        <input
+        <select
           value={item.chargeName}
-          onChange={(e) =>
-            handleChargeChange(index, 'chargeName', e.target.value)
-          }
-        />
+          onChange={(e) => handleChargeChange(index, 'chargeName', e.target.value)}
+        >
+          <option value="">Select</option>
+          {chargeNames.map((charge) => (
+            <option key={charge.id} value={charge.name}>
+              {charge.name}
+            </option>
+          ))}
+        </select>
       </td>
 
-     
       <td>
         <select
           value={item.accountHeadId || ''}
-          onChange={(e) =>
-            handleChargeChange(index, 'accountHeadId', e.target.value)
-          }
+          onChange={(e) => handleChargeChange(index, 'accountHeadId', e.target.value)}
         >
           <option value="">Select</option>
           {Array.isArray(accountHeads) &&
-  accountHeads.map((head) => (
-    <option key={head.id} value={head.id}>
-      {head.name}
-    </option>
-  ))}
+            accountHeads.map((head) => (
+              <option key={head.id} value={head.id}>
+                {head.name}
+              </option>
+            ))}
         </select>
       </td>
 
       <td>
         <select
           value={item.currency}
-          onChange={(e) =>
-            handleChargeCurrencyChange(index, e.target.value)
-          }
+          onChange={(e) => handleChargeCurrencyChange(index, e.target.value)}
         >
           <option value="">Select</option>
           {currencies.map((c) => (
@@ -71,52 +74,48 @@ function ChargeRowEditable({
       <td>
         <input
           value={item.unitAmount}
-          onChange={(e) =>
-            handleChargeChange(index, 'unitAmount', e.target.value)
-          }
+          onChange={(e) => handleChargeChange(index, 'unitAmount', e.target.value)}
         />
       </td>
 
       <td>
         <input
           value={item.totalAmount}
-          onChange={(e) =>
-            handleChargeChange(index, 'totalAmount', e.target.value)
-          }
+          onChange={(e) => handleChargeChange(index, 'totalAmount', e.target.value)}
         />
       </td>
 
+      {/* ✅ TAX % dropdown */}
       <td>
-        <input
+        <select
           value={item.taxPerStr}
-          onChange={(e) =>
-            handleChargeChange(index, 'taxPerStr', e.target.value)
-          }
-        />
-      </td>
-
-      <td>
-        <input
-          value={item.taxAmountStr}
-          onChange={(e) =>
-            handleChargeChange(index, 'taxAmountStr', e.target.value)
-          }
-        />
-      </td>
-       <td>
-        <input
-          value={item.taxAmountStr}
-          onChange={(e) =>
-            handleChargeChange(index, 'taxAmountStr', e.target.value)
-          }
-        />
-      </td>
-
-      <td>
-        <button
-          className="icon-btn delete"
-          onClick={() => handleRemoveChargeRow(index)}
+          onChange={(e) => handleChargeChange(index, 'taxPerStr', e.target.value)}
         >
+          <option value="">Select</option>
+          {taxMasters.map((tax) => (
+            <option key={tax.id} value={tax.percentage}>
+              {tax.name} - {tax.percentage}%
+            </option>
+          ))}
+        </select>
+      </td>
+
+      <td>
+        <input
+          value={item.taxAmountStr}
+          onChange={(e) => handleChargeChange(index, 'taxAmountStr', e.target.value)}
+        />
+      </td>
+
+      <td>
+        <input
+          value={item.taxAmountStr}
+          onChange={(e) => handleChargeChange(index, 'taxAmountStr', e.target.value)}
+        />
+      </td>
+
+      <td>
+        <button className="icon-btn delete" onClick={() => handleRemoveChargeRow(index)}>
           🗑️
         </button>
       </td>

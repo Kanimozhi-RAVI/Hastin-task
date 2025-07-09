@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import {
+  fetchChargeNamesRequest,
+  fetchChargeRequest,
+  fetchTaxMastersRequest,
   getAgentRequest,
   getBookingAgentRequest,
   getHeaderRequest,
@@ -33,6 +36,7 @@ function InvoiceBill() {
 const accountHeads = useMemo(() => rawHeaders, [rawHeaders]);
 const bookinguser = useSelector((state)=> state.bookinginvoice?.bookinguser || []) 
 const state =  useSelector((state)=> state);
+// const chargeTable = useSelector((state) => state.bookinginvoice || []);
 console.log(state)
 
 console.log(bookinguser)
@@ -40,19 +44,32 @@ console.log(bookinguser)
 console.log(accountHeads)
   const invoice = invoicePartyData.invoice || {};
   const invoiceItems = invoicePartyData.invoicesComponents || [];
+  const chargeTable = invoicePartyData.invoicesComponents || [];
+console.log(invoiceItems);
+console.log(chargeTable)
+
 
   useEffect(() => {
     dispatch(fetchCurrenciesRequest());
     dispatch(getHeaderRequest());
     dispatch(getAgentRequest())
-    dispatch(getBookingAgentRequest())
+    dispatch(getBookingAgentRequest());
+  
+dispatch(fetchTaxMastersRequest());
+
+
+
     if (id) dispatch(getInvoiceBillRequest(id));
   }, [dispatch, id]);
-
+useEffect(()=>{
+    dispatch(fetchChargeNamesRequest());
+},[])
   useEffect(() => {
     if (invoiceId) {
       setActiveInvoiceId(invoiceId);
       dispatch(getInvoicePartydetailsRequest({ id: invoiceId }));
+      // dispatch(fetchChargeRequest({ id: invoiceId }))
+
     }
   }, [dispatch, invoiceId]);
 
@@ -63,6 +80,8 @@ console.log(accountHeads)
       setActiveInvoiceId(invId);
       setMode('view');
       dispatch(getInvoicePartydetailsRequest({ id: invId }));
+      // dispatch(fetchChargeRequest({ id: invId }))
+
     }
   };
 

@@ -16,7 +16,9 @@ import {
   GET_AGENT_SUCCESS,
   BOOKING_AGENT_REQUEST,
   BOOKING_AGENT_SUCCESS,
-  BOOKING_AGENT_FAILURE
+  BOOKING_AGENT_FAILURE,
+  FETCH_CHARGE_TABLE_REQUEST,
+  FETCH_CHARGE_TABLE_SUCCESS
 } from "../Types_File/HclType";
 
 const initialState = {
@@ -27,6 +29,11 @@ const initialState = {
   error: null,
   header:[],
   agent:[],
+  selectedCharge:[],
+  taxMasters: [],
+    chargeNames: [],
+
+
 
 };
 
@@ -38,6 +45,7 @@ const userlistReducer = (state = initialState, action) => {
       case HEAD_REQUEST:
         case GET_AGENT_REQUEST:
           case BOOKING_AGENT_REQUEST:
+            case FETCH_CHARGE_TABLE_REQUEST:
 
       return {
         ...state,
@@ -69,6 +77,10 @@ const userlistReducer = (state = initialState, action) => {
         return{
           ...state, loading:false, bookinguser:action.payload,
         }
+        case FETCH_CHARGE_TABLE_SUCCESS:
+          return{
+            ...state,loading:false,selectedCharge:action.payload,
+          }
 
     case GET_BOOKING_LIST_FAILURE:
     case GET_INVOICEBILL_FAILURE:
@@ -95,6 +107,10 @@ const userlistReducer = (state = initialState, action) => {
           agent:action.payload
         }
 
+    case 'FETCH_CHARGE_NAMES_SUCCESS':
+      return { ...state, chargeNames: action.payload };
+    case 'FETCH_TAX_MASTERS_SUCCESS':
+      return { ...state, taxMasters: action.payload };
     default:
       return state;
   }

@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import InvoiceTable from './InvoiceTable';
 import { parse, isValid } from 'date-fns';
+import './ChargeModal'
 
 function InvoiceFormView({ invoice, invoiceItems, currencies, bookinguser = {} }) {
   const safeParse = (dateStr) => {
@@ -10,6 +11,7 @@ function InvoiceFormView({ invoice, invoiceItems, currencies, bookinguser = {} }
     const parsed = parse(dateStr, 'dd/MM/yyyy', new Date());
     return isValid(parsed) ? parsed : null;
   };
+  // const [showChargeModal, setShowChargeModal] = useState(false);
 
   const [formData, setFormData] = useState({
     custName: '',
@@ -123,7 +125,10 @@ function InvoiceFormView({ invoice, invoiceItems, currencies, bookinguser = {} }
           />
         </div>
       </div>
-
+<div  style={{textAlign:"end"}}>
+  <button className='add-button'>Add charge</button>
+</div>
+<br/>
       <InvoiceTable
         mode="view"
         chargeItems={invoiceItems}

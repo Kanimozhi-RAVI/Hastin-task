@@ -13,6 +13,7 @@ import VendorContactsCreate from './Components/VendorPage/VendorContactsCreate';
 import BookingTable from './Components/Hcl_Page/BookingTable';
 import InvoiceBill from './Components/Invoice_Bill_Page/InvoiceBill';
 import Inputcard from './Components/Action_file/Inputcard';
+import ChargeModal from './Components/Invoice_Bill_Page/ChargeModal';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path='/loader' element={<Loader />} />
           <Route path='/invo/:id' element={<InvoiceBill/>}/>
           <Route path="/invoice/:id/:invoiceId" element={<InvoiceBill />} />
+          <Route path='/modal' element={<ChargeModal/>}/>
            <Route path='vendoredit/:id' element={<VendorEdit />} />
             <Route path='vendorcreate' element={<VendorEdit />} />
             <Route path='vendor/update/:id' element={<VendorEdit />} />

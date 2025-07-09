@@ -3,12 +3,11 @@ import { defaultPagination } from "../utils/Constant";
 import { BASE_URL, getAuthHeaders } from "../utils/Service";
 import apiEndpoints from "../API/Endpoint";
 import { showError, showSuccess } from "../utils/ToastUtils";
-import { BOOKING_AGENT_REQUEST, GET_AGENT_REQUEST, GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, HEAD_REQUEST } from "../Types_File/HclType";
+import { BOOKING_AGENT_REQUEST, FETCH_CHARGE_NAMES_REQUEST, FETCH_CHARGE_NAMES_SUCCESS, FETCH_CHARGE_TABLE_REQUEST, FETCH_TAX_MASTERS_REQUEST, FETCH_TAX_MASTERS_SUCCESS, GET_AGENT_REQUEST, GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, HEAD_REQUEST } from "../Types_File/HclType";
 import { call, put, take, takeLatest } from 'redux-saga/effects';
-import { getAgentFailure, getAgentSuccess, getBookinglistFailure, getBookinglistSuccess, getHeaderFailure, getHeaderSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
+import { fetchChargeFailure, fetchChargeSucces, getAgentFailure, getAgentSuccess, getBookinglistFailure, getBookinglistSuccess, getHeaderFailure, getHeaderSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
  from "../Action_file/HclBookingAction";
-import { fetchCurrenciesSuccess } from "../Action_file/VendorAction";
-import { FETCH_CURRENCIES_REQUEST } from "../Types_File/VendorType";
+
 
 
 // const API = 'https://hastin-container.com/staging/api/soc/booking//search-all/active/bookings';
@@ -118,6 +117,53 @@ function* bookingAgentSaga(){
     yield put(getBookinglistFailure(error?.response?.data?.message || 'Header fetch failed'));
   }
 }
+// function* fetchChargeSaga(action){
+//   try{
+//     const {id} = action.payload;
+//     const config = getAuthHeaders();
+//     const url = `https://hastin-container.com/staging/api/accouting/soc/invoice/item/get/${id}`;
+//     const response = yield call(axios.get,url,config);
+//     const data = response || [];
+//     yield put(fetchChargeSucces(data));
+//     console.log(data)
+//   }catch(error){
+//      console.error('Header Fetch Error: ', error);
+//     yield put(fetchChargeFailure(error?.response?.data?.message || 'Header fetch failed'));
+//   }
+// }
+
+function* fetchChargeSaga(action) {
+  try {
+    const { id } = action.payload;
+    const config = getAuthHeaders();
+    const response = yield call(() =>
+      axios.get(`https://hastin-container.com/staging/api/accouting/soc/invoice/item/get/${id}`,config)
+    );
+
+    const component = response.data?.data?.invoicesComponents?.[0] || null;
+    yield put(fetchChargeSucces(component));
+  } catch (error) {
+    yield put(fetchChargeFailure(error));
+  }
+}
+function* fetchChargeNamesSaga() {
+    const config = getAuthHeaders();
+
+  const res = yield call(() =>
+    axios.get('https://hastin-container.com/staging/api/charge/get-all-by-port-booking-type/a28de388-ddfe-4770-bf13-1e4ff051c25a/SOC', config));
+  yield put({ type: FETCH_CHARGE_NAMES_SUCCESS, payload: res.data.data });
+}
+
+function* fetchTaxMastersSaga() {
+    const config = getAuthHeaders();
+
+  const res = yield call(() =>
+    axios.get('https://hastin-container.com/staging/api/tax/search/a28de388-ddfe-4770-bf13-1e4ff051c25a', config)
+
+  
+  );
+  yield put({ type: FETCH_TAX_MASTERS_SUCCESS, payload: res.data.data });
+}
 
 
    export default function* hclSaga(){
@@ -126,6 +172,9 @@ function* bookingAgentSaga(){
     yield takeLatest(GET_INVOICE_BILL_ID_REQUEST,invoiceSaga);
     yield takeLatest(HEAD_REQUEST, headerSaga);
     yield takeLatest(GET_AGENT_REQUEST, agentSaga);
-    yield takeLatest(BOOKING_AGENT_REQUEST,bookingAgentSaga)
+    yield takeLatest(BOOKING_AGENT_REQUEST,bookingAgentSaga);
+    yield takeLatest(FETCH_CHARGE_TABLE_REQUEST,fetchChargeSaga);
+    yield takeLatest(FETCH_CHARGE_NAMES_REQUEST,fetchChargeNamesSaga);
+    yield takeLatest(FETCH_TAX_MASTERS_REQUEST,fetchTaxMastersSaga)
    }
    

@@ -1,10 +1,18 @@
 import React from 'react';
 
-function ChargeRowReadOnly({ index, item }) {
+function ChargeRowReadOnly({ index, item,onChargeClick }) {
   return (
     <tr>
       <td>{index + 1}</td>
-      <td>{item.chargeName}</td>
+       <td>
+  <span
+    className="charge-name-link"
+    onClick={() => onChargeClick(item)}
+    style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+  >
+    {item.chargeName}
+  </span>
+</td>
       <td>{item.currency}</td>
       <td>{item.usdConversion}</td>
       <td>{item.unit}</td>
