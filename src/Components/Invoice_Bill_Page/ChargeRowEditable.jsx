@@ -16,7 +16,6 @@ function ChargeRowEditable({
     <tr>
       <td>{index + 1}</td>
 
-      {/* ✅ CHARGE dropdown - using chargeNames */}
       <td>
         <select
           value={item.chargeName}
@@ -85,7 +84,6 @@ function ChargeRowEditable({
         />
       </td>
 
-      {/* ✅ TAX % dropdown */}
       <td>
         <select
           value={item.taxPerStr}

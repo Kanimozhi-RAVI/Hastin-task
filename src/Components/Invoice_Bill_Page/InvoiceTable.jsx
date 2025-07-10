@@ -18,8 +18,8 @@ function InvoiceTable({
 
   const dispatch = useDispatch();
 
-  const chargeDetails = useSelector((state) => state.bookinginvoice?.chargeNames || []);
-  const chargeLoading = useSelector((state) => state.bookinginvoice?.taxMasters || []);
+   const chargeDetails = useSelector((state) => state.bookinginvoice?.chargeNames || []);
+  const taxMasters = useSelector((state) => state.bookinginvoice?.taxMasters || []);
 
   useEffect(() => {
     if (selectedCharge?.id && chargeDetails.length > 0) {
@@ -30,7 +30,6 @@ function InvoiceTable({
     }
   }, [chargeDetails, selectedCharge?.id]);
 
-  // ➕ Add a new row
   const handleAddChargeRow = () => {
     setChargeItems([
       ...chargeItems,
@@ -64,7 +63,6 @@ function InvoiceTable({
     setChargeItems(updated);
   };
 
-  // 📝 Change handler with auto-fill
   const handleChargeChange = (index, field, value) => {
     const updated = [...chargeItems];
     updated[index] = {
@@ -72,7 +70,6 @@ function InvoiceTable({
       [field]: value
     };
 
-    // If charge selected, auto-fill
     if (field === 'chargeName') {
       const selected = chargeDetails.find((c) => c.name === value);
       if (selected) {
@@ -88,7 +85,6 @@ function InvoiceTable({
       }
     }
 
-    // If tax % updated, auto-calc tax amount
     if (field === 'taxPerStr') {
       const unitAmt = parseFloat(updated[index].unitAmount || 0);
       const taxPer = parseFloat(value || 0);
@@ -99,7 +95,6 @@ function InvoiceTable({
     setChargeItems(updated);
   };
 
-  // 💱 Currency change handler
   const handleChargeCurrencyChange = (index, currencyId) => {
     const updated = [...chargeItems];
     const found = currencies.find((c) => c.id.toString() === currencyId);
@@ -151,7 +146,7 @@ function InvoiceTable({
                 currencies={currencies}
                 accountHeads={accountHeads}
                 chargeNames={chargeDetails}
-                taxMasters={chargeLoading}
+                taxMasters={taxMasters}
                 handleChargeChange={handleChargeChange}
                 handleChargeCurrencyChange={handleChargeCurrencyChange}
                 handleRemoveChargeRow={handleRemoveChargeRow}
@@ -181,16 +176,17 @@ function InvoiceTable({
 
       {/* Modal */}
       {showModal && selectedCharge && (
-        <ChargeModal
-          isOpen={showModal}
-          chargeData={selectedCharge}
-          char
-          currencies={currencies}
-          accountHeads={accountHeads}
-          loading={loading}
-          onClose={() => setShowModal(false)}
-          onUpdate={handleModalSave}
+          <ChargeModal
+             isOpen={showModal}
+             chargeData={selectedCharge}
+             currencies={currencies}
+             accountHeads={accountHeads}
+             chargeNames={chargeDetails} 
+             taxMasters={taxMasters}     
+             onClose={() => setShowModal(false)}
+             onUpdate={handleModalSave}
         />
+
       )}
     </>
   );

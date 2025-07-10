@@ -14,6 +14,7 @@ import BookingTable from './Components/Hcl_Page/BookingTable';
 import InvoiceBill from './Components/Invoice_Bill_Page/InvoiceBill';
 import Inputcard from './Components/Action_file/Inputcard';
 import ChargeModal from './Components/Invoice_Bill_Page/ChargeModal';
+import Drop from './Components/Action_file/Drop';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Routes>
           {/* Public login routes */}
           <Route path='/ca' element={<Inputcard/>}/>
+          <Route path='/dr' element={<Drop/>}/>
           <Route path='/' element={<Login />} />
           <Route path='/access' element={<AccessCodeModal />} />
           <Route path='/loader' element={<Loader />} />
