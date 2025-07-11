@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { parseISO, isValid } from 'date-fns';
 import InvoiceTable from './InvoiceTable';
+import { parse, isValid } from 'date-fns';
 import './ChargeModal.css';
 
 function InvoiceFormView({
@@ -14,11 +14,11 @@ function InvoiceFormView({
   suggestions = [],
   customerDetail = null,
   onBillToSearch = () => {},
-  onCustomerSelect = () => {},
+  onCustomerSelect = () => {}
 }) {
   const safeParse = (dateStr) => {
     if (!dateStr) return null;
-    const parsed = parseISO(dateStr);
+    const parsed = parse(dateStr, 'dd/MM/yyyy', new Date());
     return isValid(parsed) ? parsed : null;
   };
 
@@ -47,10 +47,10 @@ function InvoiceFormView({
   }, [invoice]);
 
   useEffect(() => {
-    if (customerDetail?.custName) {
+    if (customerDetail && customerDetail.custName) {
       setFormData((prev) => ({
         ...prev,
-        custName: customerDetail.custName,
+        custName: customerDetail.custName || ''
       }));
     }
   }, [customerDetail]);
@@ -58,7 +58,6 @@ function InvoiceFormView({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
     if (name === 'custName') {
       setShowSuggestions(true);
       onBillToSearch(value);
@@ -70,7 +69,7 @@ function InvoiceFormView({
   };
 
   const handleSuggestionClick = (item) => {
-    setFormData((prev) => ({ ...prev, custName: item.customerName }));
+    setFormData((prev) => ({ ...prev, custName:  item.customerName }));
     setShowSuggestions(false);
     onCustomerSelect(item.id);
   };
@@ -78,10 +77,9 @@ function InvoiceFormView({
   return (
     <div className="invoice-box expanded">
       <div className="invoice-grid">
-        {/* Left Section */}
         <div className="left-section input">
           <label>Bill To</label>
-          <div className="autocomplete-wrapper" style={{ position: 'relative' }}>
+          <div className="autocomplete-wrapper"style={{ position: 'relative' }}>
             <input
               name="custName"
               value={formData.custName}
@@ -89,13 +87,16 @@ function InvoiceFormView({
               autoComplete="off"
               placeholder="Enter customer name"
               onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-            />
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}  
+                        />
             {showSuggestions && suggestions?.length > 0 && (
               <ul className="suggestions-list">
                 {suggestions.map((item) => (
-                  <li key={item.id} onClick={() => handleSuggestionClick(item)}>
-                    {item.customerName || 'No Name'}
+                  <li
+                    key={item.id}
+                    onClick={() => handleSuggestionClick(item)}
+                  >
+                    {item.customerName}
                   </li>
                 ))}
               </ul>
@@ -127,7 +128,6 @@ function InvoiceFormView({
           <input value={invoice.usdConversion || ''} readOnly />
         </div>
 
-        {/* Right Section */}
         <div className="right-section input">
           <label>Invoice #</label>
           <input value={invoice.invoiceNo || ''} readOnly />
@@ -138,6 +138,9 @@ function InvoiceFormView({
             onChange={(date) => handleDateChange(date, 'invDateStr')}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+             showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
           />
 
           <label>Issue Date</label>
@@ -146,6 +149,9 @@ function InvoiceFormView({
             onChange={(date) => handleDateChange(date, 'issueDateStr')}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+             showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
           />
 
           <label>Due Date</label>
@@ -154,6 +160,9 @@ function InvoiceFormView({
             onChange={(date) => handleDateChange(date, 'dueDateStr')}
             dateFormat="yyyy-MM-dd"
             className="form-control"
+             showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
           />
 
           <label>Reference No</label>
@@ -166,32 +175,22 @@ function InvoiceFormView({
       </div>
 
       <div style={{ textAlign: 'end' }}>
-        <button className="add-button">Add charge</button>
+        <button className='add-button'>Add charge</button>
       </div>
 
       <br />
 
-      {/* Charges Table */}
       <InvoiceTable
         mode="view"
         chargeItems={invoiceItems}
         currencies={currencies}
       />
 
-      {/* Notes + Totals */}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <textarea className="notes-text" placeholder="Notes" readOnly />
         <div className="totals-right">
-          <p>
-            <strong>
-              Sub Total ({invoice.currency || '0.00'}): {invoice.subTotal}
-            </strong>
-          </p>
-          <p>
-            <strong>
-              Grand Total: {invoice.amount} {invoice.currency}
-            </strong>
-          </p>
+          <p><strong>Sub Total ({invoice.currency || '0.00'}): {invoice.subTotal}</strong></p>
+          <p><strong>Grand Total: {invoice.amount} {invoice.currency}</strong></p>
         </div>
       </div>
 
