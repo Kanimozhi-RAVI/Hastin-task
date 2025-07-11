@@ -10,15 +10,15 @@ function InvoiceTable({
   chargeItems = [],
   setChargeItems = () => {},
   currencies = [],
-  accountHeads = []
+  accountHeads = [],
+  onChargeChange = () => {},
 }) {
   const [selectedCharge, setSelectedCharge] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
-   const chargeDetails = useSelector((state) => state.bookinginvoice?.chargeNames || []);
+  const chargeDetails = useSelector((state) => state.bookinginvoice?.chargeNames || []);
   const taxMasters = useSelector((state) => state.bookinginvoice?.taxMasters || []);
 
   useEffect(() => {
@@ -42,21 +42,18 @@ function InvoiceTable({
         unitAmount: '',
         totalAmount: '',
         taxPerStr: '',
-        taxAmountStr: ''
-      }
+        taxAmountStr: '',
+        netAmount: '',
+      },
     ]);
   };
 
-  // 📥 Modal open
-  const handleChargeClick = async (chargeItem) => {
+  const handleChargeClick = (chargeItem) => {
     setSelectedCharge(chargeItem);
-    setLoading(true);
     dispatch(fetchChargeRequest({ id: chargeItem.id }));
     setShowModal(true);
-    setLoading(false);
   };
 
-  // 🗑️ Delete row
   const handleRemoveChargeRow = (index) => {
     const updated = [...chargeItems];
     updated.splice(index, 1);
@@ -65,34 +62,25 @@ function InvoiceTable({
 
   const handleChargeChange = (index, field, value) => {
     const updated = [...chargeItems];
-    updated[index] = {
-      ...updated[index],
-      [field]: value
-    };
+    const item = { ...updated[index], [field]: value };
 
-    if (field === 'chargeName') {
-      const selected = chargeDetails.find((c) => c.name === value);
-      if (selected) {
-        updated[index] = {
-          ...updated[index],
-          chargeName: selected.name,
-          unit: selected.unit || '',
-          unitAmount: selected.amount || '',
-          totalAmount: selected.amount || '',
-          taxPerStr: selected.taxPercentage || '',
-          taxAmountStr: selected.taxAmount || ''
-        };
-      }
+    // Recalculate if any of the key fields are changed
+    if (['unit', 'unitAmount', 'taxPerStr'].includes(field)) {
+      const unit = parseFloat(item.unit) || 0;
+      const unitAmount = parseFloat(item.unitAmount) || 0;
+      const total = unit * unitAmount;
+      const taxPer = parseFloat(item.taxPerStr) || 0;
+      const taxAmt = (total * taxPer) / 100;
+      const net = total + taxAmt;
+
+      item.totalAmount = total.toFixed(2);
+      item.taxAmountStr = taxAmt.toFixed(2);
+      item.netAmount = net.toFixed(2);
     }
 
-    if (field === 'taxPerStr') {
-      const unitAmt = parseFloat(updated[index].unitAmount || 0);
-      const taxPer = parseFloat(value || 0);
-      const taxAmt = ((unitAmt * taxPer) / 100).toFixed(2);
-      updated[index].taxAmountStr = taxAmt;
-    }
-
+    updated[index] = item;
     setChargeItems(updated);
+    onChargeChange(index, field, value);
   };
 
   const handleChargeCurrencyChange = (index, currencyId) => {
@@ -101,7 +89,7 @@ function InvoiceTable({
     updated[index] = {
       ...updated[index],
       currency: currencyId,
-      usdConversion: found?.conversionRate || ''
+      usdConversion: found?.conversionRate || '',
     };
     setChargeItems(updated);
   };
@@ -132,7 +120,7 @@ function InvoiceTable({
             <th>TOTAL</th>
             <th>TAX %</th>
             <th>TAX</th>
-            {mode === 'add' && <th>TAX AMOUNT</th>}
+            {mode === 'add' && <th>NET AMOUNT</th>}
             <th>ACTION</th>
           </tr>
         </thead>
@@ -174,19 +162,17 @@ function InvoiceTable({
         </tbody>
       </table>
 
-      {/* Modal */}
       {showModal && selectedCharge && (
-          <ChargeModal
-             isOpen={showModal}
-             chargeData={selectedCharge}
-             currencies={currencies}
-             accountHeads={accountHeads}
-             chargeNames={chargeDetails} 
-             taxMasters={taxMasters}     
-             onClose={() => setShowModal(false)}
-             onUpdate={handleModalSave}
+        <ChargeModal
+          isOpen={showModal}
+          chargeData={selectedCharge}
+          currencies={currencies}
+          accountHeads={accountHeads}
+          chargeNames={chargeDetails}
+          taxMasters={taxMasters}
+          onClose={() => setShowModal(false)}
+          onUpdate={handleModalSave}
         />
-
       )}
     </>
   );

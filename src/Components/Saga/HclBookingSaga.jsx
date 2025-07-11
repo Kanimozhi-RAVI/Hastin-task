@@ -3,9 +3,9 @@ import { defaultPagination } from "../utils/Constant";
 import { BASE_URL, getAuthHeaders } from "../utils/Service";
 import apiEndpoints from "../API/Endpoint";
 import { showError, showSuccess } from "../utils/ToastUtils";
-import { BOOKING_AGENT_REQUEST, FETCH_CHARGE_NAMES_REQUEST, FETCH_CHARGE_NAMES_SUCCESS, FETCH_CHARGE_TABLE_REQUEST, FETCH_TAX_MASTERS_REQUEST, FETCH_TAX_MASTERS_SUCCESS, GET_AGENT_REQUEST, GET_BOOKING_LIST_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, HEAD_REQUEST } from "../Types_File/HclType";
+import { BILL_TO_REQUEST, BOOKING_AGENT_REQUEST, FETCH_CHARGE_NAMES_REQUEST, FETCH_CHARGE_NAMES_SUCCESS, FETCH_CHARGE_TABLE_REQUEST, FETCH_TAX_MASTERS_REQUEST, FETCH_TAX_MASTERS_SUCCESS, GET_AGENT_REQUEST, GET_BOOKING_LIST_REQUEST, GET_CUSTOMER_DETAIL_REQUEST, GET_INVOICE_BILL_ID_REQUEST, GET_INVOICEBILL_FAILURE, GET_INVOICEBILL_REQUEST, HEAD_REQUEST } from "../Types_File/HclType";
 import { call, put, take, takeLatest } from 'redux-saga/effects';
-import { fetchChargeFailure, fetchChargeSucces, getAgentFailure, getAgentSuccess, getBookinglistFailure, getBookinglistSuccess, getHeaderFailure, getHeaderSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
+import { billtoFailure, billtoSuccess, fetchChargeFailure, fetchChargeSucces, getAgentFailure, getAgentSuccess, getBookinglistFailure, getBookinglistSuccess, getCustomerDetailFailure, getCustomerDetailSuccess, getHeaderFailure, getHeaderSuccess, getInvoiceBillFailure, getInvoiceBillRequest, getInvoiceBillSuccess, getInvoicePartydetailsFailure, getInvoicePartydetailsSuccess }
  from "../Action_file/HclBookingAction";
 
 
@@ -165,6 +165,36 @@ function* fetchTaxMastersSaga() {
   yield put({ type: FETCH_TAX_MASTERS_SUCCESS, payload: res.data.data });
 }
 
+function* fetchBillToSuggestions(action) {
+  try {
+    console.log("📡 Saga Triggered - billtoRequest:", action.payload); // ✅
+    const config = getAuthHeaders();
+    const searchTerm = action.payload;
+    const url = `https://hastin-container.com/staging/api/customer/auto/complete/${searchTerm}`;
+    const response = yield call(axios.get, url, config);
+    console.log(response)
+    yield put(billtoSuccess(response.data?.data || []));
+  } catch (error) {
+    console.error("❌ billtoRequest error", error);
+    yield put(billtoFailure(error));
+  }
+}
+
+
+function* fetchCustomerDetail(action) {
+  try {
+    const config = getAuthHeaders();
+    const customerId = action.payload;
+    const url = `https://hastin-container.com/staging/api/customer/get/${action.payload}`;
+    const response = yield call(axios.get, url, config);
+    const data = response.date?.data || [];
+    console.log(data)
+    yield put(getCustomerDetailSuccess(data));
+    console.log(response)
+  } catch (error) {
+    yield put(getCustomerDetailFailure(error));
+  }
+}
 
    export default function* hclSaga(){
     yield takeLatest(GET_BOOKING_LIST_REQUEST, hclBookingSaga);
@@ -175,6 +205,8 @@ function* fetchTaxMastersSaga() {
     yield takeLatest(BOOKING_AGENT_REQUEST,bookingAgentSaga);
     yield takeLatest(FETCH_CHARGE_TABLE_REQUEST,fetchChargeSaga);
     yield takeLatest(FETCH_CHARGE_NAMES_REQUEST,fetchChargeNamesSaga);
-    yield takeLatest(FETCH_TAX_MASTERS_REQUEST,fetchTaxMastersSaga)
+    yield takeLatest(FETCH_TAX_MASTERS_REQUEST,fetchTaxMastersSaga);
+    yield takeLatest(BILL_TO_REQUEST,fetchBillToSuggestions);
+    yield takeLatest(GET_CUSTOMER_DETAIL_REQUEST,fetchCustomerDetail)
    }
    

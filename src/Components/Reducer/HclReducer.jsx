@@ -18,7 +18,9 @@ import {
   BOOKING_AGENT_SUCCESS,
   BOOKING_AGENT_FAILURE,
   FETCH_CHARGE_TABLE_REQUEST,
-  FETCH_CHARGE_TABLE_SUCCESS
+  FETCH_CHARGE_TABLE_SUCCESS,
+  GET_CUSTOMER_DETAIL_REQUEST,
+  GET_CUSTOMER_DETAIL_FAILURE
 } from "../Types_File/HclType";
 
 const initialState = {
@@ -32,6 +34,8 @@ const initialState = {
   selectedCharge:[],
   taxMasters: [],
     chargeNames: [],
+    suggestions: [],
+  customerDetail: null,
 
 
 
@@ -88,6 +92,7 @@ const userlistReducer = (state = initialState, action) => {
       case HEAD_FAILURE:
         case GET_AGENT_FAILURE:
           case BOOKING_AGENT_FAILURE:
+            case GET_CUSTOMER_DETAIL_REQUEST:
 
       return {
         ...state,
@@ -111,6 +116,21 @@ const userlistReducer = (state = initialState, action) => {
       return { ...state, chargeNames: action.payload };
     case 'FETCH_TAX_MASTERS_SUCCESS':
       return { ...state, taxMasters: action.payload };
+      case 'BILL_TO_REQUEST':
+      return { ...state, loading: true , error:false};
+    case 'BILL_TO_SUCCESS':
+      console.log("✅ Reducer - Suggestions:", action.payload);
+      return { ...state, loading: false, suggestions: action.payload };
+    case 'BILL_TO_FAILURE':
+      return { ...state, loading: false, error: action.payload };
+
+    case 'GET_CUSTOMER_DETAIL_SUCCESS':
+      return { ...state, customerDetail: action.payload };
+      case GET_CUSTOMER_DETAIL_FAILURE:
+        return {
+          ...state, loading:false, error:action.payload
+        }
+
     default:
       return state;
   }

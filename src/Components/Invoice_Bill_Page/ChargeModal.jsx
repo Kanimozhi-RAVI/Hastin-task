@@ -5,7 +5,6 @@ function ChargeModal({
   isOpen,
   chargeData = {},
   currencies = [],
-  // accountHeads = [],
   chargeNames = [],
   taxMasters = [],
   onClose,
@@ -19,24 +18,36 @@ function ChargeModal({
     }
   }, [isOpen, chargeData]);
 
-  const handleChange = (field, value) => {
-    const updated = {
-      ...formData,
-      [field]: value,
-    };
+  const calculateAmounts = (data) => {
+    const unit = parseFloat(data.unit) || 0;
+    const unitAmount = parseFloat(data.unitAmount) || 0;
+    const totalAmount = unit * unitAmount;
+    const taxPer = parseFloat(data.taxPerStr) || 0;
+    const taxAmount = (totalAmount * taxPer) / 100;
+    const netAmount = totalAmount + taxAmount;
 
-    // Currency change → update conversion
+    return {
+      totalAmount: totalAmount.toFixed(2),
+      taxAmountStr: taxAmount.toFixed(2),
+      netAmount: netAmount.toFixed(2),
+    };
+  };
+
+  const handleChange = (field, value) => {
+    let updated = { ...formData, [field]: value };
+
+    // Update conversion rate if currency changes
     if (field === 'currencyId') {
       const selected = currencies.find((c) => c.id.toString() === value);
       updated.usdConversion = selected?.conversionRate || '';
     }
 
-    // Tax % change → recalculate tax amount
-    if (field === 'taxPerStr') {
-      const unitAmt = parseFloat(updated.unitAmount || 0);
-      const taxPer = parseFloat(value || 0);
-      const taxAmt = ((unitAmt * taxPer) / 100).toFixed(2);
-      updated.taxAmountStr = taxAmt;
+    // Recalculate if key values change
+    if (['unit', 'unitAmount', 'taxPerStr'].includes(field)) {
+      const { totalAmount, taxAmountStr, netAmount } = calculateAmounts(updated);
+      updated.totalAmount = totalAmount;
+      updated.taxAmountStr = taxAmountStr;
+      updated.netAmount = netAmount;
     }
 
     setFormData(updated);
@@ -71,20 +82,6 @@ function ChargeModal({
             </select>
           </div>
 
-          {/* Account Head */}
-          {/* <div className="modal-field">
-            <label>Account Head</label>
-            <select
-              value={formData.accountHeadId || ''}
-              onChange={(e) => handleChange('accountHeadId', e.target.value)}
-            >
-              <option value="">Select Account Head</option>
-              {accountHeads.map((a) => (
-                <option key={a.id} value={a.id}>{a.name}</option>
-              ))}
-            </select>
-          </div> */}
-
           {/* Currency */}
           <div className="modal-field">
             <label>Currency</label>
@@ -109,6 +106,7 @@ function ChargeModal({
           <div className="modal-field">
             <label>Unit</label>
             <input
+              type="number"
               value={formData.unit || ''}
               onChange={(e) => handleChange('unit', e.target.value)}
             />
@@ -116,8 +114,9 @@ function ChargeModal({
 
           {/* Unit Amount */}
           <div className="modal-field">
-            <label>Amount</label>
+            <label>Unit Amount</label>
             <input
+              type="number"
               value={formData.unitAmount || ''}
               onChange={(e) => handleChange('unitAmount', e.target.value)}
             />
@@ -126,10 +125,7 @@ function ChargeModal({
           {/* Total Amount */}
           <div className="modal-field">
             <label>Total Amount</label>
-            <input
-              value={formData.totalAmount || ''}
-              onChange={(e) => handleChange('totalAmount', e.target.value)}
-            />
+            <input value={formData.totalAmount || ''} readOnly />
           </div>
 
           {/* Tax % */}
@@ -141,8 +137,8 @@ function ChargeModal({
             >
               <option value="">Select Tax</option>
               {taxMasters.map((t) => (
-                <option key={t.id} value={t.percentage}>
-                  {t.name} - {t.percentage}%
+                <option key={t.id} value={t.taxPercentage}>
+                  {t.name} - {t.taxPercentage}%
                 </option>
               ))}
             </select>
@@ -151,10 +147,13 @@ function ChargeModal({
           {/* Tax Amount */}
           <div className="modal-field">
             <label>Tax Amount</label>
-            <input
-              value={formData.taxAmountStr || ''}
-              onChange={(e) => handleChange('taxAmountStr', e.target.value)}
-            />
+            <input value={formData.taxAmountStr || ''} readOnly />
+          </div>
+
+          {/* Net Amount */}
+          <div className="modal-field">
+            <label>Net Amount</label>
+            <input value={formData.netAmount || ''} readOnly />
           </div>
 
           {/* Notes */}

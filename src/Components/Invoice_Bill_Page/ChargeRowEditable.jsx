@@ -85,18 +85,19 @@ function ChargeRowEditable({
       </td>
 
       <td>
-        <select
-          value={item.taxPerStr}
-          onChange={(e) => handleChargeChange(index, 'taxPerStr', e.target.value)}
-        >
-          <option value="">Select</option>
-          {taxMasters.map((tax) => (
-            <option key={tax.id} value={tax.percentage}>
-              {tax.name} - {tax.percentage}%
-            </option>
-          ))}
-        </select>
-      </td>
+  <select
+    value={item.taxPerStr}
+    onChange={(e) => handleChargeChange(index, 'taxPerStr', e.target.value)}
+  >
+    <option value="">Select</option>
+    {taxMasters.map((tax) => (
+      <option key={tax.id} value={tax.taxPercentage}>
+        {tax.name} - {tax.taxPercentage}%
+      </option>
+    ))}
+  </select>
+</td>
+
 
       <td>
         <input

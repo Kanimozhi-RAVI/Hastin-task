@@ -156,3 +156,22 @@
     opacity: 1;
   }
 }
+.suggestions-list {
+  border: 1px solid #ccc;
+  padding: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  position: absolute;
+  z-index: 99;
+  width: 100%;
+}
+
+.suggestions-list li {
+  padding: 6px;
+  cursor: pointer;
+}
+
+.suggestions-list li:hover {
+  background: #f0f0f0;
+}

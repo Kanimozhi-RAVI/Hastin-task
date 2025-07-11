@@ -49,11 +49,13 @@ const HclBookingTable = () => {
     { label: 'STATUS', accessor: 'bookingStatus' },
   ];
 
-const filteredData = bookingData.filter(item =>
-  Object.values(item).some(val =>
-    val && typeof val === 'string' && val.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-);
+const filteredData = Array.isArray(bookingData)
+  ? bookingData.filter(item =>
+      Object.values(item).some(val =>
+        typeof val === 'string' && val.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    )
+  : [];
 
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortConfig.key) return 0;
